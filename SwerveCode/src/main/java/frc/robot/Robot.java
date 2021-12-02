@@ -25,9 +25,7 @@ public class Robot extends TimedRobot {
   public XboxController driverController;
   public XboxController shooterController;
 
-  public shooter    turretLauncher;
   public driveTrain drive;
-  public collector  collectorControl;
   public Autonomous autonomous;
 
   
@@ -42,9 +40,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
-    turretLauncher    = new shooter();
     drive             = new driveTrain();
-    collectorControl  = new collector();
   }
 
   /**
@@ -74,7 +70,7 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
-    autonomous = new Autonomous(turretLauncher, drive);
+    autonomous = new Autonomous(drive);
   }
 
   /** This function is called periodically during autonomous. */
@@ -108,16 +104,9 @@ public class Robot extends TimedRobot {
   @Override
   
   public void teleopPeriodic(){
-    turretLauncher.autoAim();
-    turretLauncher.teleopmoveTurret(shooterController);
-    //turretLauncher.manualAim(shooterController);  // In case of auto aim failure
-    turretLauncher.startFlywheel();
-    turretLauncher.teleopBall(shooterController);
-    turretLauncher.postTurretAngle();
-    //
+    
     drive.driveTrainPeriodic(driverController);
     //
-    collectorControl.collectorPeriodic(shooterController);
   }
 
   /** This function is called once when the robot is disabled. */

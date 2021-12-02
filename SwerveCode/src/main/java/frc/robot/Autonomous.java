@@ -7,11 +7,9 @@ public class Autonomous {
     private enum AutoState{SHOOT, DRIVE, STOP};
     private AutoState currentState = AutoState.SHOOT;
     private Timer autonomousTimer;
-    private shooter turretLauncher;
     private driveTrain drive;
     
-    public Autonomous(shooter turretLauncher, driveTrain drive) {
-        this.turretLauncher = turretLauncher;
+    public Autonomous(driveTrain drive) {
         this.drive = drive;
         autonomousTimer = new Timer();
 
@@ -22,13 +20,9 @@ public class Autonomous {
     public void autoPeriodic() {
         switch(currentState) {
             case SHOOT:                   //shoots ball for 6 seconds
-                turretLauncher.autoAim();       
-                turretLauncher.moveTurret();    
-                turretLauncher.startFlywheel(); 
-                turretLauncher.shootBall();
+                
                 if (autonomousTimer.get() >= 6){       //after 6 seconds we stop shooting and start driving
                     autonomousTimer.reset();
-                    turretLauncher.stopBall();
                     currentState = AutoState.DRIVE;
                 }
                 break;
