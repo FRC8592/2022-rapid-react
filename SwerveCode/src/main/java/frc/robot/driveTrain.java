@@ -6,6 +6,12 @@ import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller s
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+import com.swervedrivespecialties.swervelib.SwerveModule;
+import frc.robot.Constants;
+
+import static frc.robot.Constants.*;
 
 public class driveTrain {
   // Constants
@@ -15,10 +21,11 @@ public class driveTrain {
   private static final double RAMP_TIME   = 0.25;    // Smooth application of motor power
 
   // Motor controllers
-  public WPI_TalonFX frontLeft;
-  public WPI_TalonFX frontRight;
-  public WPI_TalonFX rearLeft;
-  public WPI_TalonFX rearRight;
+  // These are our modules. We initialize them in the constructor.
+  private final SwerveModule m_frontLeftModule;
+  private final SwerveModule m_frontRightModule;
+  private final SwerveModule m_backLeftModule;
+  private final SwerveModule m_backRightModule;
 
   // Motor groups
 	SpeedControllerGroup leftDrive;
@@ -33,23 +40,53 @@ public class driveTrain {
    */
   public driveTrain(){
     // Create motor objects
-    frontLeft  = new WPI_TalonFX(config_hw.leftFrontCAN); 
-    rearLeft   = new WPI_TalonFX(config_hw.leftBackCAN);
-    frontRight = new WPI_TalonFX(config_hw.rightFrontCAN);
-    rearRight  = new WPI_TalonFX(config_hw.rightBackCAN);
+    
+    // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
+    // you MUST change it. If you do not, your code will crash on startup.
+    // FIXME Setup motor configuration
+    m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
+            // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
+            /*tab.getLayout("Front Left Module", BuiltInLayouts.kList)
+                    .withSize(2, 4)
+                    .withPosition(0, 0),
+                    */
+            // This can either be STANDARD or FAST depending on your gear configuration
+            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            // This is the ID of the drive motor
+            FRONT_LEFT_MODULE_DRIVE_MOTOR,
+            // This is the ID of the steer motor
+            FRONT_LEFT_MODULE_STEER_MOTOR,
+            // This is the ID of the steer encoder
+            FRONT_LEFT_MODULE_STEER_ENCODER,
+            // This is how much the steer encoder is offset from true zero (In our case, zero is facing straight forward)
+            FRONT_LEFT_MODULE_STEER_OFFSET
+    );
 
-    // Configure motor ramp time to smooth out acceleration
-		frontLeft.configOpenloopRamp(RAMP_TIME);
-		rearLeft.configOpenloopRamp(RAMP_TIME);
-		frontRight.configOpenloopRamp(RAMP_TIME);
-	  rearRight.configOpenloopRamp(RAMP_TIME);
-	
-		// Pair up motors into control groups
-		leftDrive  = new SpeedControllerGroup(frontLeft, rearLeft);
-		rightDrive = new SpeedControllerGroup(frontRight, rearRight);
-		  
-		// Initialize drive system
-  	robotDrive = new DifferentialDrive(rightDrive, leftDrive);
+    // We will do the same for the other modules
+    m_frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
+            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            FRONT_RIGHT_MODULE_DRIVE_MOTOR,
+            FRONT_RIGHT_MODULE_STEER_MOTOR,
+            FRONT_RIGHT_MODULE_STEER_ENCODER,
+            FRONT_RIGHT_MODULE_STEER_OFFSET
+    );
+
+    m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
+            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            BACK_LEFT_MODULE_DRIVE_MOTOR,
+            BACK_LEFT_MODULE_STEER_MOTOR,
+            BACK_LEFT_MODULE_STEER_ENCODER,
+            BACK_LEFT_MODULE_STEER_OFFSET
+    );
+
+    m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
+            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            BACK_RIGHT_MODULE_DRIVE_MOTOR,
+            BACK_RIGHT_MODULE_STEER_MOTOR,
+            BACK_RIGHT_MODULE_STEER_ENCODER,
+            BACK_RIGHT_MODULE_STEER_OFFSET
+    );
+
   }
 
 /**Drives robot: forwards, backwards, turning*/
