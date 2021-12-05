@@ -19,11 +19,6 @@ import frc.robot.Constants;
 import static frc.robot.Constants.*;
 
 public class driveTrain {
-  // Constants
-  private static final double DRIVE_POWER = 1.0;    // Forward/reverse power scaling
-  private static final double TURN_POWER  = 0.6;    // Turning power scaling
-  private static final double TURN_IN_PLACE_POWER  = 0.45;    // Turning power scaling
-  private static final double RAMP_TIME   = 0.25;    // Smooth application of motor power
 
   // Motor controllers
   // These are our modules. We initialize them in the constructor.
@@ -31,13 +26,6 @@ public class driveTrain {
   private final SwerveModule m_frontRightModule;
   private final SwerveModule m_backLeftModule;
   private final SwerveModule m_backRightModule;
-
-  // Motor groups
-	SpeedControllerGroup leftDrive;
-	SpeedControllerGroup rightDrive;
-	  
-	// Differential drive class
-  DifferentialDrive robotDrive;
 
   /**
    * The maximum voltage that will be delivered to the drive motors.
@@ -57,8 +45,8 @@ public class driveTrain {
    * This is a measure of how fast the robot should be able to drive in a straight line.
    */
   public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-          SdsModuleConfigurations.MK3_STANDARD.getDriveReduction() *
-          SdsModuleConfigurations.MK3_STANDARD.getWheelDiameter() * Math.PI;
+          SdsModuleConfigurations.MK4_L2.getDriveReduction() *
+          SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
   /**
    * The maximum angular velocity of the robot in radians per second.
    * <p>
@@ -78,6 +66,22 @@ public class driveTrain {
           // Back right
           new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
   );
+
+  // By default we use a Pigeon for our gyroscope. But if you use another gyroscope, like a NavX, you can change this.
+  // The important thing about how you configure your gyroscope is that rotating the robot counter-clockwise should
+  // cause the angle reading to increase until it wraps back over to zero.
+  // FIXME Remove if you are using a Pigeon
+  // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
+  // FIXME Uncomment if you are using a NavX
+  private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
+
+ // These are our modules. We initialize them in the constructor.
+ private final SwerveModule m_frontLeftModule;
+ private final SwerveModule m_frontRightModule;
+ private final SwerveModule m_backLeftModule;
+ private final SwerveModule m_backRightModule;
+
+ private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
   /**
    * Initialize drivetrain
@@ -133,40 +137,56 @@ public class driveTrain {
 
   }
 
+ /**
+   * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
+   * 'forwards' direction.
+   */
+  public void zeroGyroscope() {
+    // FIXME Remove if you are using a Pigeon
+    // m_pigeon.setFusedHeading(0.0);
+
+    // FIXME Uncomment if you are using a NavX
+    m_navx.zeroYaw();
+  }
+
+  public Rotation2d getGyroscopeRotation() {
+    // FIXME Remove if you are using a Pigeon
+    // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+
+    // FIXME Uncomment if you are using a NavX
+    if (m_navx.isMagnetometerCalibrated()) {
+     // We will only get valid fused headings if the magnetometer is calibrated
+     return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+   }
+
+   // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
+   return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
+  }
+
 /**Drives robot: forwards, backwards, turning*/
   public void driveTrainPeriodic(XboxController driveTrainController){
-    double  forward;
-    double  reverse;
     double  throttle;
     double  turn;
-    boolean reverseControl;
-    boolean curveOff;
 
     // Read gamepad controls
-    forward = driveTrainController.getTriggerAxis(GenericHID.Hand.kRight);  // Right trigger
-    reverse = driveTrainController.getTriggerAxis(GenericHID.Hand.kLeft);   // Left Trigger
-    turn    = driveTrainController.getX(GenericHID.Hand.kLeft) * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;             // Left joystick
-    //
-    reverseControl = driveTrainController.getBButton();                      // B button
-    curveOff       = driveTrainController.getBumper(GenericHID.Hand.kRight); // Right bumper
-  
-    // Combine and scale inputs
-    throttle = (-forward + reverse) * MAX_VELOCITY_METERS_PER_SECOND;
-
-    // Apply a different power curve for turn-in-place
-    if (!curveOff)
-      turn = turn * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
-    else
-      turn = turn * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;
-
-    // If reverseControl is being pressed, invert all inputs so the robot can be driven backwards
-    if (reverseControl) {
-      throttle = -throttle;
-    }
+    turn     = driveTrainController.getX(GenericHID.Hand.kRight);            // Right joystick
+    throttle = driveTrainController.getX(GenericHID.Hand.kLeft);             //Left joystick
     
     // Send controls to the robot drive system
     
-    drive(new ChassisSpeeds(throttle, 0.0, turn));
+    drive(ChassisSpeeds(throttle, 0.0, turn));
+  }
+
+  public void execute() {
+    // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
+    m_drivetrainSubsystem.drive(
+            ChassisSpeeds.fromFieldRelativeSpeeds(
+                    m_translationXSupplier.getAsDouble(),
+                    m_translationYSupplier.getAsDouble(),
+                    m_rotationSupplier.getAsDouble(),
+                    m_drivetrainSubsystem.getGyroscopeRotation()
+            )
+    );
   }
 
   public void autoDrive(){

@@ -51,7 +51,20 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    double translateX;
+    double translateY;
+    double rotate;
+
+    // Read gamepad controls
+    rotate     = driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;            // Right joystick
+    translateX = driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
+    translateY = driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
+
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(translateX, translateY, rotate, drive.getGyroscopeRotation())
+      );
+
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
