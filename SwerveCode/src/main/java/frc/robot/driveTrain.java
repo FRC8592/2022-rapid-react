@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.SPI;
 
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
@@ -76,11 +78,6 @@ public class driveTrain {
   // FIXME Uncomment if you are using a NavX
   private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
 
- // These are our modules. We initialize them in the constructor.
- private final SwerveModule m_frontLeftModule;
- private final SwerveModule m_frontRightModule;
- private final SwerveModule m_backLeftModule;
- private final SwerveModule m_backRightModule;
 
  private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
@@ -147,7 +144,7 @@ public class driveTrain {
     // m_pigeon.setFusedHeading(0.0);
 
     // FIXME Uncomment if you are using a NavX
-    m_navx.zeroYaw();
+    //m_navx.zeroYaw();
   }
 
   public Rotation2d getGyroscopeRotation() {
@@ -164,36 +161,10 @@ public class driveTrain {
    return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
   }
 
-/**Drives robot: forwards, backwards, turning*/
-  public void driveTrainPeriodic(XboxController driveTrainController){
-    double  throttle;
-    double  turn;
-
-    // Read gamepad controls
-    turn     = driveTrainController.getX(GenericHID.Hand.kRight);            // Right joystick
-    throttle = driveTrainController.getX(GenericHID.Hand.kLeft);             //Left joystick
-    
-    // Send controls to the robot drive system
-    
-    drive(ChassisSpeeds(throttle, 0.0, turn));
-  }
-
-  public void execute() {
-    // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-    m_drivetrainSubsystem.drive(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                    m_translationXSupplier.getAsDouble(),
-                    m_translationYSupplier.getAsDouble(),
-                    m_rotationSupplier.getAsDouble(),
-                    m_drivetrainSubsystem.getGyroscopeRotation()
-            )
-    );
-  }
-
   public void autoDrive(){
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.3, 0.0, 0.0);
-    drive(chassisSpeeds);
-  }
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.3, 0.0, 0.0);
+        drive(chassisSpeeds);
+        }
 
   public void driveStop(){
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);

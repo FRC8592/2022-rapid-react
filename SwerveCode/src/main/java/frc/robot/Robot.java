@@ -7,6 +7,8 @@ package frc.robot;
 //import edu.wpi.first.wpilibj.PowerDistributionPanel; idk what this is but im keeping it
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
 
@@ -118,7 +120,7 @@ public class Robot extends TimedRobot {
   
   public void teleopPeriodic(){
     
-    drive.driveTrainPeriodic(driverController);
+    //drive.driveTrainPeriodic(driverController); we deleted this function
     //
   }
 
