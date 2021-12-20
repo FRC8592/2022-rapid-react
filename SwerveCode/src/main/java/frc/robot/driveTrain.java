@@ -1,11 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
-
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
@@ -16,7 +10,6 @@ import edu.wpi.first.wpilibj.SPI;
 import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
-import frc.robot.Constants;
 
 import static frc.robot.Constants.*;
 import com.kauailabs.navx.frc.*;
@@ -57,7 +50,7 @@ public class driveTrain {
    */
   // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
   public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
-          Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
+          Math.hypot(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
   private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(
           // Front left
@@ -144,7 +137,7 @@ public class driveTrain {
     // m_pigeon.setFusedHeading(0.0);
 
     // FIXME Uncomment if you are using a NavX
-    //m_navx.zeroYaw();
+    m_navx.zeroYaw();
   }
 
   public Rotation2d getGyroscopeRotation() {

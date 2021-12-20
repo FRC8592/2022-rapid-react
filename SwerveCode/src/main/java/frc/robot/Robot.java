@@ -54,17 +54,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    double translateX;
-    double translateY;
-    double rotate;
-
-    // Read gamepad controls
-    rotate     = driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;            // Right joystick
-    translateX = driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
-    translateY = driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
-
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(translateX, translateY, rotate, drive.getGyroscopeRotation())
-      );
+    
 
   }
 
@@ -119,9 +109,17 @@ public class Robot extends TimedRobot {
   @Override
   
   public void teleopPeriodic(){
-    
-    //drive.driveTrainPeriodic(driverController); we deleted this function
-    //
+    double translateX;
+    double translateY;
+    double rotate;
+
+    // Read gamepad controls
+    rotate     = driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;            // Right joystick
+    translateX = driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
+    translateY = driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
+
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(translateX, translateY, rotate, drive.getGyroscopeRotation())
+      );
   }
 
   /** This function is called once when the robot is disabled. */
