@@ -43,6 +43,7 @@ public class Robot extends TimedRobot {
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
     drive             = new driveTrain();
+    
   }
 
   /**
@@ -96,7 +97,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-
+    drive.zeroGyroscope();
     //Create the primary controller object
   }
 
@@ -114,11 +115,13 @@ public class Robot extends TimedRobot {
     double rotate;
 
     // Read gamepad controls
-    rotate     = driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND;            // Right joystick
-    translateX = driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
-    translateY = driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
+    rotate     = (driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 4;            // Right joystick
+    translateX = (driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 4;             //X is forward Direction, Forward on Joystick is Y
+    translateY = (driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 4;
 
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(translateX, translateY, rotate, drive.getGyroscopeRotation())
+    
+
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation())     //Inverted due to Robot Directions being the opposite of controller directions 
       );
   }
 
@@ -137,4 +140,15 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
-}
+
+
+  public double joystickDeadband(double inputJoystick) {
+    if(Math.abs(inputJoystick) < 0.05){
+      return 0;
+    } else {
+      return inputJoystick;
+    }
+  }
+    
+    
+  }
