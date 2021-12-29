@@ -28,7 +28,7 @@ public class Autonomous {
                 break;
 
             case DRIVE:                  //drives robot forward for 1 sec
-                drive.autoDrive();
+                //drive.autoDrive();
                 if (autonomousTimer.get() >= 1){       //after 1 second we stop
                     autonomousTimer.reset();
                     currentState = AutoState.STOP;
@@ -36,7 +36,7 @@ public class Autonomous {
                 break;
             
             case STOP:                  //autonomous finished
-                drive.driveStop();
+                //drive.driveStop();
                 break;
         }
 
