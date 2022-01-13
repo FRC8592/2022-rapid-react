@@ -19,7 +19,7 @@ public class Vision {
   //constantse
   private static double TURRET_ERROR = 0.5;           // Allowed aiming error in degrees
   private static double LOCK_ERROR = 1.0;
-  private static double TURRET_ROTATE_KP = 1.0;   // Proportional constant for turret rotate speed
+  private static double TURRET_ROTATE_KP = 20.0;   // Proportional constant for turret rotate speed
   private static double RPM_TO_TICKS_MS = 2048.0/600.0;  // Conversion factor for rotational velocity
   private static double TRIGGER_MOTOR_SPEED = 0.4;       // Maximum power for the motor feeding the flywheel
   private static double SHOOTING_RPM_RANGE = 20;         // Allowed RPM error for flywheel
@@ -125,6 +125,7 @@ public class Vision {
     }
      
     //post driver data to smart dashboard periodically
+    SmartDashboard.putNumber("xerror in radians", Math.toRadians(xError));
     SmartDashboard.putNumber("LimelightX", xError);
     SmartDashboard.putNumber("LimelightY", yError);
     SmartDashboard.putNumber("LimelightArea", area);

@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
-    SmartDashboard.putNumber("Rotate", -joystickDeadband(rotate));
+    SmartDashboard.putNumber("Rotate", rotate);
   }
 
   /** This function is called once when the robot is disabled. */
