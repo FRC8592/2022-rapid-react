@@ -28,4 +28,5 @@ public final class config_hw {
     public static final int turretRotateCAN = 12;     // Control rotation of turret
     public static final int ballProcessCAN  = 13;     // Controls belt driving balls towards turret
     public static final int ballTriggerCAN  = 11;     // Feed balls to flywheel (5k RPM max!  Be careful!)
+    public static final double degreeToRadian = 0.0174533;
 }

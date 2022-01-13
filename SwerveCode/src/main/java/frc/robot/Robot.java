@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
 
   public driveTrain drive;
   public Autonomous autonomous;
-
+  public Vision vision;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
     drive             = new driveTrain();
-    
+    vision            = new Vision();
   }
 
   /**
@@ -119,10 +119,11 @@ public class Robot extends TimedRobot {
     translateX = (driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 4;             //X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 4;
 
-    
-
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation())     //Inverted due to Robot Directions being the opposite of controller directions 
-      );
+  
+    if(driverController.getBumper(GenericHID.Hand.kRight) == true){
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
+    } 
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
   }
 
   /** This function is called once when the robot is disabled. */
