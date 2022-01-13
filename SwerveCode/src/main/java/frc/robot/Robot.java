@@ -122,8 +122,11 @@ public class Robot extends TimedRobot {
   
     if(driverController.getBumper(GenericHID.Hand.kRight) == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
-    } 
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
+    } else {
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+    }
+
+    SmartDashboard.putNumber("Rotate", -joystickDeadband(rotate));
   }
 
   /** This function is called once when the robot is disabled. */
