@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc;
 
 import static frc.robot.Constants.*;
 
