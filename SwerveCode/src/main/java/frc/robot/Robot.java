@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
 
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -30,6 +31,7 @@ public class Robot extends TimedRobot {
   public driveTrain drive;
   public Autonomous autonomous;
   public Vision vision;
+
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -115,9 +117,9 @@ public class Robot extends TimedRobot {
     double rotate;
 
     // Read gamepad controls
-    rotate     = (driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 4;            // Right joystick
-    translateX = (driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 4;             //X is forward Direction, Forward on Joystick is Y
-    translateY = (driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 4;
+    rotate     = (driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
+    translateX = (driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;             //X is forward Direction, Forward on Joystick is Y
+    translateY = (driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
 
   
     if(driverController.getBumper(GenericHID.Hand.kRight) == true){

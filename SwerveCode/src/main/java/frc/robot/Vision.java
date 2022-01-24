@@ -13,13 +13,14 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 
 
 public class Vision {
   //constantse
   private static double TURRET_ERROR = 0.5;           // Allowed aiming error in degrees
   private static double LOCK_ERROR = 1.0;
-  private static double TURRET_ROTATE_KP = 18.0;   // Proportional constant for turret rotate speed
+  private static double TURRET_ROTATE_KP = 15.6;   // Proportional constant for turret rotate speed
   private static double RPM_TO_TICKS_MS = 2048.0/600.0;  // Conversion factor for rotational velocity
   private static double TRIGGER_MOTOR_SPEED = 0.4;       // Maximum power for the motor feeding the flywheel
   private static double SHOOTING_RPM_RANGE = 20;         // Allowed RPM error for flywheel
@@ -44,11 +45,17 @@ public class Vision {
   public boolean targetValid;     // Indicate when the Limelight camera has found a target
   public boolean targetLocked;    // Indicate when the turret is centered on the target
   public double  targetRange;     // Range from robot to target (inches)
+  public Timer timer;
   //Private autoaim variables
-   private double  turretSpeed;
-   private double  xError;
-   private double  yError;
-   private double  area;
+   private double turretSpeed;
+   private double xError;
+   private double yError;
+   private double area;
+   private double turret_rotate_kd = 0;
+   private double lastTime = 0;
+   private double xtime = 0;
+   private double lastAngle = 0;
+   private double changeInAngleError = 0;
 
   public static boolean autonomousEnabled;
   
@@ -68,9 +75,17 @@ public class Vision {
     targetValid   = false;
     targetLocked  = false;
     targetRange   = 0.0;
+    timer = new Timer();
+    timer.start();
   }
 
-
+  public double delta(){ //gets the change in angle over time(seconds)
+    xtime = timer.get(); 
+    changeInAngleError = (xError - lastAngle)/(xtime - lastTime);
+    lastAngle = xError; // reset initial angle
+    lastTime = xtime; // reset initial time
+    return changeInAngleError;
+  }
   /**
    * Converts the RPM input to the ticks/100ms velocity metric used by the
    * Falcon 500 motor
@@ -112,10 +127,9 @@ public class Vision {
     // Setting power based on the xError causes the turret to slow down as the error approaches 0
     // This prevents the turret from overshooting 0 and oscillating back and forth
     // KP is a scaling factor that we tested
-    turretSpeed = Math.toRadians(xError) * TURRET_ROTATE_KP;
-
-    turretSpeed = Math.max(turretSpeed, -2);
-    turretSpeed = Math.min(turretSpeed, 2);
+    turretSpeed = Math.toRadians(xError) * TURRET_ROTATE_KP + turret_rotate_kd*delta();
+    turretSpeed = Math.max(turretSpeed, -4);
+    turretSpeed = Math.min(turretSpeed, 4);
 
     if (Math.abs(xError) < LOCK_ERROR) {               // Turret is pointing at target (or no target)
       targetLocked = targetValid;                     // We are only locked when targetValid
@@ -133,6 +147,7 @@ public class Vision {
     SmartDashboard.putBoolean("Target Valid", targetValid);
     SmartDashboard.putBoolean("Target Locked", targetLocked);
     SmartDashboard.putNumber("Turret Speed", turretSpeed);
+    SmartDashboard.putNumber("Change in Angle Error", changeInAngleError);
 
     //x = 0 when the camera sees the target is in the center
     // Only allow the turret to track when commanded
