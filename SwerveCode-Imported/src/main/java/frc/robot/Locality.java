@@ -14,13 +14,15 @@ public class Locality {
     private boolean isGoodData;                  //can this data be used
     private double positionX;                    //position in x;
     private double positionY;                    //position in y;
+    private final double KP_velocity_X = 0.5;
+    private final double KP_velocity_Y = 0.5;
 
     /**
      * 
      * @param hubCenterX
      * @param hubCenterY
      */
-    public Locality(double hubCenterX, double hubCenterY) {
+    public Locality(double hubCenterX, double hubCenterY) { 
         Locality.hubCenterX = hubCenterX;
         Locality.hubCenterY = hubCenterY;
         this.robotRotation = 0;
@@ -39,10 +41,10 @@ public class Locality {
         double targetDistance = 1; // TODO = vision.getDistance()
         double targetOffsetRotation = 1; //TODO = vision.xAngle()\
         if(vision.targetLocked){
-        double distance2 = (targetDistance + Locality.hubRadius)/Math.cos(targetOffsetRotation);
-        this.positionX = -distance2 * Math.cos(robotRotation + targetOffsetRotation) + hubCenterX;
-        this.positionY = -distance2 * Math.sin(robotRotation + targetOffsetRotation) + hubCenterY;
-        this.isGoodData = true;
+            double distance2 = (targetDistance + Locality.hubRadius)/Math.cos(targetOffsetRotation);
+            this.positionX = -distance2 * Math.cos(robotRotation + targetOffsetRotation) + hubCenterX;
+            this.positionY = -distance2 * Math.sin(robotRotation + targetOffsetRotation) + hubCenterY;
+            this.isGoodData = true;
         } else {
             this.isGoodData = false;
         }
@@ -71,6 +73,24 @@ public class Locality {
     public boolean isGood(){
         return this.isGoodData;
     }
+    public double[] moveTo(double setPointX, double setPointY, Vision vision){
+        double[] velocity = new double [2]; 
+        velocity[0] = 0;
+        velocity[1] = 0;
+        
+        updatePosition(robotRotation, vision);
+        if(isGoodData){
+            double errorX = setPointX - this.positionX;
+            double errorY = setPointY - this.positionY;
+            velocity[0] = errorX * KP_velocity_X;
+            velocity[0] = Math.min(velocity[0], -1.7);
+            velocity[0] = Math.max(velocity[0], 1.7);
+            velocity[1] = errorY * KP_velocity_Y;
+            velocity[1] = Math.min(velocity[1], -1.7);
+            velocity[1] = Math.max(velocity[1], 1.7);
 
+        }
+        return velocity;
+    }
     
 }

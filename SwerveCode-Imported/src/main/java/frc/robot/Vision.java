@@ -30,6 +30,12 @@ public class Vision {
   private static double TARGET_HEIGHT = 98.25;           // Center of target above ground (inches)
   private static double TARGET_HEIGHT_DELTA = TARGET_HEIGHT - CAMERA_HEIGHT;
   //
+  private static double targetHeight = 1;
+  private double targetAngle;
+  private double targetDistance;
+  private static double cameraAngle = 1;
+  private static double cameraHeight = 1;
+  //
   private static double MANUAL_POWER = 0.5;             // Turret power for manual control
   //
   private static double TURRET_TICKS_PER_DEGREE = 1770 / 90;  // Encoder ticks per degree
@@ -113,6 +119,12 @@ public class Vision {
    * 
    * @param ballShooterController Used to enable autoAim turret motion
    */
+
+  public void distanceToTarget(){
+
+  }
+
+
   public double autoAim() {
 
     // Read the Limelight data from the Network Tables
@@ -120,17 +132,27 @@ public class Vision {
     yError      = ty.getDouble(0.0);
     area        = ta.getDouble(0.0);
     targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
-    // Compute range to target.
-    // Formula taken from https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
-    targetRange = TARGET_HEIGHT_DELTA / Math.tan(Math.toRadians(CAMERA_ANGLE + yError));
+    if (targetValid){
+      // Compute range to target.
+      // Formula taken from https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
+      targetRange = TARGET_HEIGHT_DELTA / Math.tan(Math.toRadians(CAMERA_ANGLE + yError));
     
-    // Setting power based on the xError causes the turret to slow down as the error approaches 0
-    // This prevents the turret from overshooting 0 and oscillating back and forth
-    // KP is a scaling factor that we tested
-    turretSpeed = Math.toRadians(xError) * TURRET_ROTATE_KP + turret_rotate_kd*delta();
-    turretSpeed = Math.max(turretSpeed, -4);
-    turretSpeed = Math.min(turretSpeed, 4);
-
+      // Setting power based on the xError causes the turret to slow down as the error approaches 0
+      // This prevents the turret from overshooting 0 and oscillating back and forth
+      // KP is a scaling factor that we tested
+      turretSpeed = Math.toRadians(xError) * TURRET_ROTATE_KP + turret_rotate_kd*delta();
+      turretSpeed = Math.max(turretSpeed, -4);
+      turretSpeed = Math.min(turretSpeed, 4);
+    }
+    else if(lastAngle != 0){
+      turretSpeed = Math.toRadians(lastAngle) * TURRET_ROTATE_KP;
+      turretSpeed = Math.max(turretSpeed, -4);
+      turretSpeed = Math.min(turretSpeed, 4);
+    }
+    else{
+      turretSpeed = 1;
+    }
+    
     if (Math.abs(xError) < LOCK_ERROR) {               // Turret is pointing at target (or no target)
       targetLocked = targetValid;                     // We are only locked when targetValid
     }
@@ -138,6 +160,7 @@ public class Vision {
       targetLocked = false;
     }
      
+
     //post driver data to smart dashboard periodically
     SmartDashboard.putNumber("xerror in radians", Math.toRadians(xError));
     SmartDashboard.putNumber("LimelightX", xError);
