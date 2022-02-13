@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
   public driveTrain drive;
   public Autonomous autonomous;
   public Vision vision;
-
+  public shooter shooter;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
     shooterController = new XboxController(1);
     drive             = new driveTrain();
     vision            = new Vision();
+    shooter = new shooter();
   }
 
   /**
@@ -129,6 +130,8 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putNumber("Rotate", rotate);
+
+    shooter.testshooter(shooterController);
   }
 
   /** This function is called once when the robot is disabled. */
