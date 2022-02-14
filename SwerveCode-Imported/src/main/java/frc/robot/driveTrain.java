@@ -1,14 +1,15 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.swervedrivespecialties.swervelib.Mk3SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
@@ -34,7 +35,12 @@ public class driveTrain {
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
      * TODO: 12.0 volts may be a little high.  Monitor battery voltage to determine if a lower voltage will work better
      */
-    public static final double MAX_VOLTAGE = 12.0;
+    private static final double MAX_VOLTAGE = 12.0;
+
+
+    // Maximum current provided to motors to help limit battery drain
+    private static final double MAX_DRIVE_CURRENT = 20.0;
+    private static final double MAX_STEER_CURRENT = 20.0;
 
     // Measure the drivetrain's maximum velocity (m/s) or calculate the theoretical maximum.
     //
@@ -74,20 +80,29 @@ public class driveTrain {
      * 
      */
     public driveTrain() {
+        Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+
+        // Create configuration object for motors.  We do this primarily for current limiting
+        swerveMotorConfig = new Mk4ModuleConfiguration();
+        swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
+        swerveMotorConfig.setDriveCurrentLimit(MAX_DRIVE_CURRENT);
+        swerveMotorConfig.setSteerCurrentLimit(MAX_STEER_CURRENT);
 
         // Create motor objects
         //
         // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
         // you MUST change it. If you do not, your code will crash on startup.
-        m_frontLeftModule = Mk3SwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
                     .withPosition(0, 0),
-            // This can either be STANDARD or FAST depending on your gear configuration
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            // Motor configuration
+            swerveMotorConfig,
+            // This can either be L!, L2, L3 or L4
+            Mk4SwerveModuleHelper.GearRatio.L2,
             // This is the ID of the drive motor
             FRONT_LEFT_MODULE_DRIVE_MOTOR,
             // This is the ID of the steer motor
@@ -99,39 +114,43 @@ public class driveTrain {
         );
 
         // We will do the same for the other modules
-        m_frontRightModule = Mk3SwerveModuleHelper.createFalcon500(
+        m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(2, 0),
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            swerveMotorConfig,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR,
             FRONT_RIGHT_MODULE_STEER_MOTOR,
             FRONT_RIGHT_MODULE_STEER_ENCODER,
             FRONT_RIGHT_MODULE_STEER_OFFSET
         );
 
-        m_backLeftModule = Mk3SwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Left Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(4, 0),
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            swerveMotorConfig,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR,
             BACK_LEFT_MODULE_STEER_ENCODER,
             BACK_LEFT_MODULE_STEER_OFFSET
         );
 
-        m_backRightModule = Mk3SwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Back Right Module", BuiltInLayouts.kList)
             .withSize(2, 4)
             .withPosition(6, 0),
-            Mk3SwerveModuleHelper.GearRatio.STANDARD,
+            swerveMotorConfig,
+            Mk4SwerveModuleHelper.GearRatio.L2,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
     }
+
 
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
@@ -143,6 +162,7 @@ public class driveTrain {
         // FIXME Uncomment if you are using a NavX
         m_navx.zeroYaw();
     }
+
 
     public Rotation2d getGyroscopeRotation() {
         // FIXME Remove if you are using a Pigeon
@@ -161,7 +181,7 @@ public class driveTrain {
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
-        SwerveDriveKinematics.normalizeWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());

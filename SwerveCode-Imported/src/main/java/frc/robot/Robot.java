@@ -4,14 +4,13 @@
 
 package frc.robot;
 
-//import edu.wpi.first.wpilibj.PowerDistributionPanel; idk what this is but im keeping it
+//import edu.wpi.first.wpilibj.PowerDistribution; idk what this is but im keeping it
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
-
+import frc.robot.shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -31,7 +30,8 @@ public class Robot extends TimedRobot {
   public driveTrain drive;
   public Autonomous autonomous;
   public Vision vision;
-  public shooter shooter;
+  public shooter s;
+
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
     shooterController = new XboxController(1);
     drive             = new driveTrain();
     vision            = new Vision();
-    shooter = new shooter();
+    s                 = new shooter();
   }
 
   /**
@@ -118,20 +118,19 @@ public class Robot extends TimedRobot {
     double rotate;
 
     // Read gamepad controls
-    rotate     = (driverController.getX(GenericHID.Hand.kRight) * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
-    translateX = (driverController.getY(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;             //X is forward Direction, Forward on Joystick is Y
-    translateY = (driverController.getX(GenericHID.Hand.kLeft) * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
+    rotate     = (driverController.getRightX() * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
+    translateX = (driverController.getLeftY() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;             //X is forward Direction, Forward on Joystick is Y
+    translateY = (driverController.getLeftX() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
 
+    s.testshooter(shooterController);
   
-    if(driverController.getBumper(GenericHID.Hand.kRight) == true){
+    if(driverController.getRightBumper() == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
     } else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
     SmartDashboard.putNumber("Rotate", rotate);
-
-    shooter.testshooter(shooterController);
   }
 
   /** This function is called once when the robot is disabled. */
