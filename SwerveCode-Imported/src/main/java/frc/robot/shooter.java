@@ -32,11 +32,11 @@ public class shooter{
     // Line break sensor
     private DigitalInput lineSensorA;
 
-    public void shooter(){
-        WPI_TalonFX collector = new WPI_TalonFX(config_hw.newFlywheelCollector);
-        WPI_TalonFX flyWheelLeft = new WPI_TalonFX(config_hw.newFlywheelLeft);
-        WPI_TalonFX flyWheelRight = new WPI_TalonFX(config_hw.newFlywheelRight);
-        WPI_TalonFX staging = new WPI_TalonFX(config_hw.newFlywheelStaging);
+    public shooter(){
+        collector = new WPI_TalonFX(config_hw.newFlywheelCollector);
+        flyWheelLeft = new WPI_TalonFX(config_hw.newFlywheelLeft);
+        flyWheelRight = new WPI_TalonFX(config_hw.newFlywheelRight);
+        staging = new WPI_TalonFX(config_hw.newFlywheelStaging);
         flyWheel  = new MotorControllerGroup(flyWheelLeft, flyWheelRight);
 
         lineSensorA = new DigitalInput(LineBreakSensorPort);
@@ -48,7 +48,6 @@ public class shooter{
     public void testshooter(XboxController shooterController) {
 
         // Line break sensor
-        lineSensorA.get();
 
         SmartDashboard.putBoolean("Line Sensor", lineSensorA.get());
 
