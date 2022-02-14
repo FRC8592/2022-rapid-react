@@ -158,6 +158,10 @@ public class driveTrain {
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+    public double getYaw(){
+        return 360.0 - m_navx.getYaw();
+
+    }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);

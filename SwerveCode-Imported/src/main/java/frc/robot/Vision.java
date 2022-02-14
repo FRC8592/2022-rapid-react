@@ -24,10 +24,10 @@ public class Vision {
   private static double RPM_TO_TICKS_MS = 2048.0/600.0;  // Conversion factor for rotational velocity
   private static double TRIGGER_MOTOR_SPEED = 0.4;       // Maximum power for the motor feeding the flywheel
   private static double SHOOTING_RPM_RANGE = 20;         // Allowed RPM error for flywheel
-  //
+  //distance 
   private static double CAMERA_HEIGHT = 16.0;            // Limelight height above ground (inches)
   private static double CAMERA_ANGLE  = 25.0;            // Limelight camera angle above horizontal (degrees)
-  private static double TARGET_HEIGHT = 98.25;           // Center of target above ground (inches)
+  private static double TARGET_HEIGHT = 96;           // Center of target above ground (inches)
   private static double TARGET_HEIGHT_DELTA = TARGET_HEIGHT - CAMERA_HEIGHT;
   //
   private static double targetHeight = 1;
@@ -64,6 +64,8 @@ public class Vision {
    private double changeInAngleError = 0;
 
   public static boolean autonomousEnabled;
+  private final double DEG_TO_RAD = 0.0174533;
+  private final double IN_TO_METERS = 0.0254;
   
   /**
    * This constructor will intialize the motors and internal variables for the robot turret
@@ -119,11 +121,30 @@ public class Vision {
    * 
    * @param ballShooterController Used to enable autoAim turret motion
    */
-
-  public void distanceToTarget(){
-
+  /**
+   * Gives distance from the robot to the target in meters
+   * 
+   * @return distance in meters
+   */
+  public double distanceToTarget(){
+    targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
+    double targetAngle = ty.getDouble(0.0);
+    if (targetValid){
+      double distanceInches = TARGET_HEIGHT_DELTA / Math.tan((cameraAngle + targetAngle) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
+      return distanceInches * IN_TO_METERS;
+    }
+    return -1;
   }
+  /**
+   * 
+   * 
+   * @return angle offset in radians 
+   */
+  public double offsetAngle(){
+    double offsetAngle = tx.getDouble(0.0);
 
+    return Math.toRadians(offsetAngle);
+  }
 
   public double autoAim() {
 

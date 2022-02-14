@@ -4,6 +4,7 @@ package frc.robot;
  * @author audrey chiang
  * FRC Season 2022
  */
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Locality {
 
@@ -36,10 +37,11 @@ public class Locality {
      * 
      * @param robotRotation
      * @param vision
+     * @param SmartDashboard 
      */
     public void updatePosition(double robotRotation, Vision vision){     
-        double targetDistance = 1; // TODO = vision.getDistance()
-        double targetOffsetRotation = 1; //TODO = vision.xAngle()\
+        double targetDistance = vision.distanceToTarget(); 
+        double targetOffsetRotation = vision.offsetAngle(); 
         if(vision.targetLocked){
             double distance2 = (targetDistance + Locality.hubRadius)/Math.cos(targetOffsetRotation);
             this.positionX = -distance2 * Math.cos(robotRotation + targetOffsetRotation) + hubCenterX;
@@ -48,6 +50,10 @@ public class Locality {
         } else {
             this.isGoodData = false;
         }
+        SmartDashboard.putNumber("Position Y", positionY);
+        SmartDashboard.putNumber("Position X", positionX);
+        SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
+        
     }
 
     /**

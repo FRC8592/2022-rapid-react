@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
   public driveTrain drive;
   public Autonomous autonomous;
   public Vision vision;
+  public Locality locality; 
 
   
   /**
@@ -46,6 +47,7 @@ public class Robot extends TimedRobot {
     shooterController = new XboxController(1);
     drive             = new driveTrain();
     vision            = new Vision();
+    locality          = new Locality(0, 0);
   }
 
   /**
@@ -115,6 +117,8 @@ public class Robot extends TimedRobot {
     double translateX;
     double translateY;
     double rotate;
+    
+    locality.updatePosition(drive.getYaw(), vision);
 
     // Read gamepad controls
     rotate     = (driverController.getRightX() * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
