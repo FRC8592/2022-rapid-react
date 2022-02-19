@@ -143,6 +143,10 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("Rotate", rotate);
 
+    if(proximity > 200){
+      currentBallColor = getCurrentBallColor();
+    }
+
 
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
