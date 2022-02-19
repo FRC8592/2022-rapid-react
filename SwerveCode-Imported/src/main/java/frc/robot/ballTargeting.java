@@ -29,10 +29,13 @@ public class ballTargeting{
     public boolean ballLocked;    // Indicate when the turret is centered on the target
     public double  ballRange;     // Range from robot to target (inches)
     //Private autoaim variables
-    private double  turretSpeed;   
+    private double  turnSpeed;   
     private double  xError;
     private double  yError;
     private double  area;
+
+    private static int BLUE_PIPELINE = 2;
+    private static int RED_PIPELINE = 1;
 
     private static double Ball_ERROR = 0.5;           // Allowed aiming error in degrees
     private static double LOCK_ERROR = 1.0;
@@ -43,6 +46,10 @@ public class ballTargeting{
     private static double CAMERA_ANGLE  = 0;            // Limelight camera angle above horizontal (degrees)
     private static double TARGET_HEIGHT = 4.5;           // Center of target above ground (inches)
     private static double TARGET_HEIGHT_DELTA = TARGET_HEIGHT - CAMERA_HEIGHT;
+
+    double translateX = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;        //X is forward Direction, Forward on Joystick is Y
+    double translateY = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
+    double MAX_SPEED = driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
 
     public driveTrain drive;
 
@@ -55,7 +62,7 @@ public class ballTargeting{
         drive     = new driveTrain();
 
         //set up networktables for limelight
-        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight ball");
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
@@ -67,6 +74,7 @@ public class ballTargeting{
         ballValid   = false;
         ballLocked  = false;
         ballRange   = 0.0;
+
 
     }
 
@@ -85,7 +93,7 @@ public class ballTargeting{
         // Setting power based on the xError causes the turret to slow down as the error approaches 0
         // This prevents the turret from overshooting 0 and oscillating back and forth
         // KP is a scaling factor that we tested
-        turretSpeed = xError * BALL_ROTATE_KP;
+        turnSpeed = xError * BALL_ROTATE_KP;
     
         if (Math.abs(xError) < LOCK_ERROR) {               // Turret is pointing at target (or no target)
           ballLocked = ballValid;                     // We are only locked when targetValid
@@ -96,13 +104,13 @@ public class ballTargeting{
     
         //post driver data to smart dashboard periodically
         SmartDashboard.putNumber("xerror in radians", Math.toRadians(xError));
-        SmartDashboard.putNumber("LimelightX", xError);
-        SmartDashboard.putNumber("LimelightY", yError);
-        SmartDashboard.putNumber("LimelightArea", area);
+        SmartDashboard.putNumber("Limelight BallX", xError);
+        SmartDashboard.putNumber("Limelight BallY", yError);
+        SmartDashboard.putNumber("Limelight BallArea", area);
         SmartDashboard.putNumber("Ball Range", ballRange);
         SmartDashboard.putBoolean("Ball Valid", ballValid);
         SmartDashboard.putBoolean("Ball Locked", ballLocked);
-        SmartDashboard.putNumber("Turret Speed", turretSpeed);
+        SmartDashboard.putNumber("Turn Speed", turnSpeed);
 
             //x = 0 when the camera sees the target is in the center
         // Only allow the turret to track when commanded
@@ -110,28 +118,33 @@ public class ballTargeting{
             return 0.0; //Returns 0 if the turret is within the margin error
         }
         else {
-            return turretSpeed;
+            return turnSpeed;
         }
         }
 
-      public void turnRobot(){ 
-        double translateX;
-        double translateY;
-
-        translateX = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;             //X is forward Direction, Forward on Joystick is Y
-        translateY = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
-        
+      public void moveTowardsBall(){ 
         //x = 0 when the camera sees the target is in the center
         // Only allow the turret to track when commanded
+        
+        
         if (Math.abs(xError) < Ball_ERROR) {               // Turret is pointing at target (or no target)
             drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,0, drive.getGyroscopeRotation()));
-          
         }
         else {
-            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-translateX,-translateY, ballAim() , drive.getGyroscopeRotation()));
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, ballAim() , drive.getGyroscopeRotation()));
         }
       }
 
+      public void setLimelightAllianceColor(int allianceColor){
+        if (allianceColor == Red){
+          NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
+        }
+        else {
+          NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
+        }
+      }
+
+      
     }
     
 
