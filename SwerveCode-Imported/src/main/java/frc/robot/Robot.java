@@ -10,6 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.util.Color;
+import com.revrobotics.ColorSensorV3;
 import frc.robot.shooter;
 
 /**
@@ -22,6 +25,10 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
+  private final I2C.Port i2cPort = I2C.Port.kOnboard;
+  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+  private String alliance;
+  private String currentBallColor;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   //this defines "driverController" as an object
   public XboxController driverController;
@@ -47,6 +54,8 @@ public class Robot extends TimedRobot {
     drive             = new driveTrain();
     vision            = new Vision();
     s                 = new shooter();
+    alliance = getCurrentBallColor();
+    currentBallColor = getCurrentBallColor();
   }
 
   /**
@@ -116,6 +125,8 @@ public class Robot extends TimedRobot {
     double translateX;
     double translateY;
     double rotate;
+    Color detectedColor = m_colorSensor.getColor();
+    int proximity = m_colorSensor.getProximity();
 
     // Read gamepad controls
     rotate     = (driverController.getRightX() * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
@@ -131,6 +142,13 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putNumber("Rotate", rotate);
+
+
+    SmartDashboard.putNumber("Red", detectedColor.red);
+    SmartDashboard.putNumber("Blue", detectedColor.blue);
+    SmartDashboard.putNumber("Proximity", proximity);  
+    SmartDashboard.putString("alliance", alliance);
+    //System.out.println(detectedColor.red);
   }
 
   /** This function is called once when the robot is disabled. */
@@ -158,5 +176,13 @@ public class Robot extends TimedRobot {
     }
   }
     
+  public String getCurrentBallColor(){
+    Color detectedColor = m_colorSensor.getColor();
+    if(detectedColor.blue > detectedColor.red){
+      return "BLUE";
+    }else if(detectedColor.red > detectedColor.blue){
+      return "RED";
+    }else{return "NONE";}
+  }
     
   }
