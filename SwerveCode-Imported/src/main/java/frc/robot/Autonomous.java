@@ -8,12 +8,18 @@ public class Autonomous {
     private AutoState currentState = AutoState.SHOOT;
     private Timer autonomousTimer;
     private driveTrain drive;
+    private ballTargeting ballTargeting;
+
     
     public Autonomous(driveTrain drive) {
         this.drive = drive;
+        this.ballTargeting = new ballTargeting();
         autonomousTimer = new Timer();
-
+        
+        ballTargeting.setLimelightAllianceColor(AllianceColor.RED);
+        
         autonomousTimer.start();
+
 
     }
 
