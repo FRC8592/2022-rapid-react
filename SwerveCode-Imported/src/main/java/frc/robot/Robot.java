@@ -9,10 +9,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.XboxController; // This puts in the xbox contoller stuff
-//import frc.robot.ConfigRun; // Robot configuration for driver and autonomous
-//import frc.robot.Shooter;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
+import frc.robot.Shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -32,10 +31,12 @@ public class Robot extends TimedRobot {
   public XboxController driverController;
   public XboxController shooterController;
 
-  public driveTrain drive;
+  public Drivetrain drive;
   public Autonomous autonomous;
   public Vision vision;
   public Locality locality; 
+  public Shooter shooter;
+  public Collector collector;
 
   
   /**
@@ -49,9 +50,12 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
-    drive             = new driveTrain();
+    drive             = new Drivetrain();
     vision            = new Vision();
     locality          = new Locality(0, 0);
+    shooter           = new Shooter();
+    
+
   }
 
   /**
@@ -118,9 +122,9 @@ public class Robot extends TimedRobot {
     locality.updatePosition(drive.getYaw(), vision);
 
     // Read gamepad controls
-    rotate     = (driverController.getRightX() * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;            // Right joystick
-    translateX = (driverController.getLeftY() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
-    translateY = (driverController.getLeftX() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
+    rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;            // Right joystick
+    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
+    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
 
     
   
@@ -129,6 +133,15 @@ public class Robot extends TimedRobot {
     } else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
+
+    //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
+    if(shooterController.getAButton()){
+      shooter.testshooter(shooterController);
+    }else{
+      collector.ballControl();
+    }
+
+    SmartDashboard.putNumber("Rotate", rotate);
   }
 
     /** This function is called once when the robot is disabled. */
