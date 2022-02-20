@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import static frc.robot.Constants.*;
 
 
-public class driveTrain {
+public class Drivetrain {
     /**
      * Swerve module controllers, intialized in the constructor
      */  
@@ -79,7 +79,7 @@ public class driveTrain {
     /**Initialize drivetrain
      * 
      */
-    public driveTrain() {
+    public Drivetrain() {
         Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");

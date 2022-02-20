@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
-import frc.robot.shooter;
+import frc.robot.Shooter;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,10 +27,11 @@ public class Robot extends TimedRobot {
   public XboxController driverController;
   public XboxController shooterController;
 
-  public driveTrain drive;
+  public Drivetrain drive;
   public Autonomous autonomous;
   public Vision vision;
-  public shooter s;
+  public Shooter shooter;
+  public Collector collector;
   public ColorSensor color;
 
   
@@ -45,10 +46,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
-    drive             = new driveTrain();
+    drive             = new Drivetrain();
     vision            = new Vision();
-    s                 = new shooter();
-    color = new ColorSensor();
+    shooter           = new Shooter();
+    color             = new ColorSensor();
+
   }
 
   /**
@@ -120,16 +122,22 @@ public class Robot extends TimedRobot {
     double rotate;
 
     // Read gamepad controls
-    rotate     = (driverController.getRightX() * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
-    translateX = (driverController.getLeftY() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;             //X is forward Direction, Forward on Joystick is Y
-    translateY = (driverController.getLeftX() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
+    rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
+    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;             //X is forward Direction, Forward on Joystick is Y
+    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
 
-    s.testshooter(shooterController);
   
     if(driverController.getRightBumper() == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
     } else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+    }
+
+    //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
+    if(shooterController.getAButton()){
+      shooter.testshooter(shooterController);
+    }else{
+      collector.ballControl();
     }
 
     SmartDashboard.putNumber("Rotate", rotate);
