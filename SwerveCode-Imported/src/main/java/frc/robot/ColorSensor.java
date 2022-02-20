@@ -43,7 +43,7 @@ public class ColorSensor{
     public boolean compareBallToAlliance(){
         if(currentBallColor.equals(alliance)){
             return true;
-        }else if(currentBallColor != alliance){
+        }else if(!currentBallColor.equals(alliance)){
             return false;
         }else{return false;}
     }
