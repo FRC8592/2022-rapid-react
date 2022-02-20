@@ -15,10 +15,10 @@ public class Collector {
 
     //This class will contain all new collector specific methods
     public Collector(){
-        WPI_TalonFX processing = new WPI_TalonFX(config_hw.newFlywheelCollector);
-        WPI_TalonFX staging = new WPI_TalonFX(config_hw.newFlywheelStaging);
-        lineSensorBottom = new DigitalInput(config_hw.LINE_BREAK_BOTTOM_SENSOR_PORT);
-        lineSensorTop = new DigitalInput(config_hw.LINE_BREAK_TOP_SENSOR_PORT);
+        WPI_TalonFX processing = new WPI_TalonFX(Constants.newFlywheelCollector);
+        WPI_TalonFX staging = new WPI_TalonFX(Constants.newFlywheelStaging);
+        lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
+        lineSensorTop = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
     }
 
     //Drives the processing wheels for state machine

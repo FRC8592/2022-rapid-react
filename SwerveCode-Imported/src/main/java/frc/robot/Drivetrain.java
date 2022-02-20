@@ -74,7 +74,7 @@ public class Drivetrain {
     // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
     // FIXME Uncomment if you are using a NavX
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
-
+    
 
     /**Initialize drivetrain
      * 
@@ -178,6 +178,10 @@ public class Drivetrain {
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+    public double getYaw(){
+        return m_navx.getYaw();
+
+    }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);

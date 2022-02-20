@@ -13,6 +13,9 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+    // Treat like a static class.  No instantiation
+    private Constants() {throw new UnsupportedOperationException();}
+
     /**
      * The left-to-right distance between the drivetrain wheels
      *
@@ -26,27 +29,43 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.597;
 
-    public static final int DRIVETRAIN_PIGEON_ID = 0; // FIXME Set Pigeon ID
+    //public static final int DRIVETRAIN_PIGEON_ID = 0; // FIXME Set Pigeon ID
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 6;
-    public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 5;
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 4;
+    //
+    // CAN IDs for the drivertrain motors and CANcoders
+    //
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR    = 6;
+    public static final int FRONT_LEFT_MODULE_STEER_MOTOR    = 5;
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER  = 4;
     public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(148.8);
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 3;
-    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 2;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 1;
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR     = 3;
+    public static final int FRONT_RIGHT_MODULE_STEER_MOTOR     = 2;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 1;
     public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(79.5);
 
-    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 9;
-    public static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
-    public static final int BACK_LEFT_MODULE_STEER_ENCODER = 7;
+    public static final int BACK_LEFT_MODULE_DRIVE_MOTOR     = 9;
+    public static final int BACK_LEFT_MODULE_STEER_MOTOR     = 8;
+    public static final int BACK_LEFT_MODULE_STEER_ENCODER   = 7;
     public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(134.7);
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 12;
-    public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 11;
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10;
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR     = 12;
+    public static final int BACK_RIGHT_MODULE_STEER_MOTOR     = 11;
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 10;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
+
+
+    //
+    // CAN IDs for the ball collector and launching system
+    //
+    public static final int newFlywheelLeft      = 22;
+    public static final int newFlywheelRight     = 20;
+    public static final int newFlywheelStaging   = 21;
+    public static final int newFlywheelCollector = 23;
+
+      //IR sensor ports
+      public static final int LINE_BREAK_TOP_SENSOR_PORT = -2;
+      public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = -1;
 
     public static enum ALLIANCE_COLOR {
         BLUE, RED, NONE
