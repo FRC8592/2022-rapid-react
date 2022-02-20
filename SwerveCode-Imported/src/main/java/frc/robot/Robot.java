@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
     public driveTrain drive;
     public Autonomous autonomous;
     public Vision     vision;
-    public Shooter    s;
+    public shooter    s;
 
 
     /**
@@ -52,7 +52,7 @@ public class Robot extends TimedRobot {
         shooterController = new XboxController(1);
         drive = new driveTrain();
         vision = new Vision();
-        s = new Shooter();
+        s = new shooter();
     }
 
     

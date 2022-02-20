@@ -33,10 +33,10 @@ public class shooter{
     private DigitalInput lineSensorA;
 
     public shooter(){
-        collector     = new WPI_TalonFX(config_hw.newFlywheelCollector);
-        flyWheelLeft  = new WPI_TalonFX(config_hw.newFlywheelLeft);
-        flyWheelRight = new WPI_TalonFX(config_hw.newFlywheelRight);
-        staging       = new WPI_TalonFX(config_hw.newFlywheelStaging);
+        collector     = new WPI_TalonFX(Constants.newFlywheelCollector);
+        flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
+        flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
+        staging       = new WPI_TalonFX(Constants.newFlywheelStaging);
         flyWheel      = new MotorControllerGroup(flyWheelLeft, flyWheelRight);
 
         lineSensorA = new DigitalInput(LineBreakSensorPort);
