@@ -34,8 +34,8 @@ public class ballTargeting{
     private double  yError;
     private double  area;
 
-    private static int BLUE_PIPELINE = 2;
-    private static int RED_PIPELINE = 1;
+    private static int BLUE_PIPELINE = 1;
+    private static int RED_PIPELINE = 0;
 
     private static double Ball_ERROR = 0.5;           // Allowed aiming error in degrees
     private static double LOCK_ERROR = 1.0;
@@ -49,20 +49,19 @@ public class ballTargeting{
 
     double translateX = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;        //X is forward Direction, Forward on Joystick is Y
     double translateY = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
-    double MAX_SPEED = driveTrain.MAX_VELOCITY_METERS_PER_SECOND;
 
     public driveTrain drive;
+    public AllianceColor color;
 
     //motor controllors
     public WPI_TalonFX collector;
     
 
     public ballTargeting(){
-        collector = new WPI_TalonFX(config_hw.newFlywheelCollector);
-        drive     = new driveTrain();
+        //collector = new WPI_TalonFX(config_hw.newFlywheelCollector);
 
         //set up networktables for limelight
-        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight ball");
+        NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-ball");
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
@@ -135,8 +134,8 @@ public class ballTargeting{
         }
       }
 
-      public void setLimelightAllianceColor(int allianceColor){
-        if (allianceColor == Red){
+      public void setLimelightAllianceColor(AllianceColor color){
+        if (color == AllianceColor.RED){
           NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
         }
         else {

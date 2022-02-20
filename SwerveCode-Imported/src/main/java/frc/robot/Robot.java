@@ -31,6 +31,7 @@ public class Robot extends TimedRobot {
   public Autonomous autonomous;
   public Vision vision;
   public shooter s;
+  public ballTargeting ball;
 
   
   /**
@@ -47,6 +48,9 @@ public class Robot extends TimedRobot {
     drive             = new driveTrain();
     vision            = new Vision();
     s                 = new shooter();
+    ball              = new ballTargeting();
+
+    ball.setLimelightAllianceColor(AllianceColor.RED);
   }
 
   /**
@@ -123,14 +127,20 @@ public class Robot extends TimedRobot {
     translateY = (driverController.getLeftX() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
 
     s.testshooter(shooterController);
+
+    ball.ballAim();
   
     if(driverController.getRightBumper() == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
-    } else {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+    } 
+    else if(driverController.getLeftBumper() == true) {
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, -ball.ballAim() , drive.getGyroscopeRotation()));
     }
+     else {
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+  
 
-    SmartDashboard.putNumber("Rotate", rotate);
+    SmartDashboard.putNumber("Rotate", rotate);}
   }
 
   /** This function is called once when the robot is disabled. */
