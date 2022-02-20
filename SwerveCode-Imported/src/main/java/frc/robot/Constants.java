@@ -47,4 +47,8 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 11;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
+
+    public static enum ALLIANCE_COLOR {
+        BLUE, RED, NONE
+    }
 }
