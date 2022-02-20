@@ -7,11 +7,13 @@ public class Autonomous {
     private enum AutoState{SHOOT, DRIVE, STOP};
     private AutoState currentState = AutoState.SHOOT;
     private Timer autonomousTimer;
-    private driveTrain drive;
+    private Drivetrain drive;
+    private Collector collector;
     
-    public Autonomous(driveTrain drive) {
+    public Autonomous(Drivetrain drive) {
         this.drive = drive;
         autonomousTimer = new Timer();
+        collector = new Collector();
 
         autonomousTimer.start();
 
@@ -41,4 +43,7 @@ public class Autonomous {
         }
 
     }
+
+
+
 }
