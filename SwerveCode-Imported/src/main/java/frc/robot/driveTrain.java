@@ -68,7 +68,7 @@ public class driveTrain {
     // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
     // FIXME Uncomment if you are using a NavX
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
-
+    
 
     /**Initialize drivetrain
      * 
@@ -159,7 +159,7 @@ public class driveTrain {
     }
 
     public double getYaw(){
-        return 360.0 - m_navx.getYaw();
+        return m_navx.getYaw();
 
     }
 

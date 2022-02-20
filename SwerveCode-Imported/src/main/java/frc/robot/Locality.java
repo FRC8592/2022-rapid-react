@@ -42,14 +42,16 @@ public class Locality {
     public void updatePosition(double robotRotation, Vision vision){     
         double targetDistance = vision.distanceToTarget(); 
         double targetOffsetRotation = vision.offsetAngle(); 
-        if(vision.targetLocked){
+        double robotRotationRad = Math.toRadians(robotRotation);
+        if(vision.targetValid){
             double distance2 = (targetDistance + Locality.hubRadius)/Math.cos(targetOffsetRotation);
-            this.positionX = -distance2 * Math.cos(robotRotation + targetOffsetRotation) + hubCenterX;
-            this.positionY = -distance2 * Math.sin(robotRotation + targetOffsetRotation) + hubCenterY;
+            this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
+            this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
             this.isGoodData = true;
         } else {
             this.isGoodData = false;
         }
+        SmartDashboard.putNumber("Yaw value", robotRotation);
         SmartDashboard.putNumber("Position Y", positionY);
         SmartDashboard.putNumber("Position X", positionX);
         SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);

@@ -25,15 +25,15 @@ public class Vision {
   private static double TRIGGER_MOTOR_SPEED = 0.4;       // Maximum power for the motor feeding the flywheel
   private static double SHOOTING_RPM_RANGE = 20;         // Allowed RPM error for flywheel
   //distance 
-  private static double CAMERA_HEIGHT = 16.0;            // Limelight height above ground (inches)
-  private static double CAMERA_ANGLE  = 25.0;            // Limelight camera angle above horizontal (degrees)
-  private static double TARGET_HEIGHT = 96;           // Center of target above ground (inches)
+  private static double CAMERA_HEIGHT = 59.0;            // Limelight height above ground (inches)
+  private static double CAMERA_ANGLE  = 0.0;            // Limelight camera angle above horizontal (degrees)
+  private static double TARGET_HEIGHT = 104;           // Center of target above ground (inches)
   private static double TARGET_HEIGHT_DELTA = TARGET_HEIGHT - CAMERA_HEIGHT;
   //
-  private static double targetHeight = 1;
+  private static double targetHeight = 104;
   private double targetAngle;
   private double targetDistance;
-  private static double cameraAngle = 1;
+  private static double cameraAngle = 0;
   private static double cameraHeight = 1;
   //
   private static double MANUAL_POWER = 0.5;             // Turret power for manual control
@@ -73,7 +73,7 @@ public class Vision {
   public Vision() {
 
     //set up networktables for limelight
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-ring");
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
     ta = table.getEntry("ta");
