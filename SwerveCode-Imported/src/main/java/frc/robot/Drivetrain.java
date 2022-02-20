@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import static frc.robot.Constants.*;
 
 
-public class driveTrain {
+public class Drivetrain {
     /**
      * Swerve module controllers, intialized in the constructor
      */  
@@ -74,12 +74,12 @@ public class driveTrain {
     // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
     // FIXME Uncomment if you are using a NavX
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
-
+    
 
     /**Initialize drivetrain
      * 
      */
-    public driveTrain() {
+    public Drivetrain() {
         Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -178,6 +178,10 @@ public class driveTrain {
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+    public double getYaw(){
+        return m_navx.getYaw();
+
+    }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);

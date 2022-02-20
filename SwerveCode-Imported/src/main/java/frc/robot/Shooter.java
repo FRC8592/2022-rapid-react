@@ -15,7 +15,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-public class shooter{ 
+public class Shooter{ 
 
     //constants
     private static final int LineBreakSensorPort = 0;
@@ -32,12 +32,12 @@ public class shooter{
     // Line break sensor
     private DigitalInput lineSensorA;
 
-    public shooter(){
-        collector = new WPI_TalonFX(config_hw.newFlywheelCollector);
-        flyWheelLeft = new WPI_TalonFX(config_hw.newFlywheelLeft);
-        flyWheelRight = new WPI_TalonFX(config_hw.newFlywheelRight);
-        staging = new WPI_TalonFX(config_hw.newFlywheelStaging);
-        flyWheel  = new MotorControllerGroup(flyWheelLeft, flyWheelRight);
+    public Shooter(){
+        collector     = new WPI_TalonFX(Constants.newFlywheelCollector);
+        flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
+        flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
+        staging       = new WPI_TalonFX(Constants.newFlywheelStaging);
+        flyWheel      = new MotorControllerGroup(flyWheelLeft, flyWheelRight);
 
         lineSensorA = new DigitalInput(LineBreakSensorPort);
 

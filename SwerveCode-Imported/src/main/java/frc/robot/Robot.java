@@ -4,18 +4,22 @@
 
 package frc.robot;
 
-//import edu.wpi.first.wpilibj.PowerDistribution; idk what this is but im keeping it
+//import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
-import frc.robot.shooter;
+import frc.robot.Shooter;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
@@ -27,11 +31,17 @@ public class Robot extends TimedRobot {
   public XboxController driverController;
   public XboxController shooterController;
 
-  public driveTrain drive;
+  public Drivetrain drive;
   public Autonomous autonomous;
   public Vision vision;
+<<<<<<< HEAD
   public shooter s;
   public ballTargeting ball;
+=======
+  public Locality locality; 
+  public Shooter shooter;
+  public Collector collector;
+>>>>>>> origin
 
   
   /**
@@ -45,12 +55,19 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
-    drive             = new driveTrain();
+    drive             = new Drivetrain();
     vision            = new Vision();
+<<<<<<< HEAD
     s                 = new shooter();
     ball              = new ballTargeting();
 
     ball.setLimelightAllianceColor(AllianceColor.RED);
+=======
+    locality          = new Locality(0, 0);
+    shooter           = new Shooter();
+    
+
+>>>>>>> origin
   }
 
   /**
@@ -63,43 +80,36 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     
-
-  }
-
-  /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using the SendableChooser make sure to add them to the
-   * chooser code above as well.
-   */
-  @Override
-  public void autonomousInit() {
-    
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
-
-    autonomous = new Autonomous(drive);
-  }
-
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {
-    
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        autonomous.autoPeriodic();
-        break;
     }
-  }
+
+
+    /**
+     * This autonomous (along with the chooser code above) shows how to select
+     * between different
+     * autonomous modes using the dashboard. The sendable chooser code works with
+     * the Java
+     * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the
+     * chooser code and
+     * uncomment the getString line to get the auto name from the text box below the
+     * Gyro
+     *
+     * <p>
+     * You can add additional auto modes by adding additional comparisons to the
+     * switch structure
+     * below with additional strings. If using the SendableChooser make sure to add
+     * them to the
+     * chooser code above as well.
+     */
+    @Override
+    public void autonomousInit() {
+
+        m_autoSelected = m_chooser.getSelected();
+        // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+        System.out.println("Auto selected: " + m_autoSelected);
+
+        autonomous = new Autonomous(drive);
+    }
+  
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -120,11 +130,13 @@ public class Robot extends TimedRobot {
     double translateX;
     double translateY;
     double rotate;
+    
+    locality.updatePosition(drive.getYaw(), vision);
 
     // Read gamepad controls
-    rotate     = (driverController.getRightX() * driveTrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) / 2;            // Right joystick
-    translateX = (driverController.getLeftY() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;             //X is forward Direction, Forward on Joystick is Y
-    translateY = (driverController.getLeftX() * driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
+    rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;            // Right joystick
+    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
+    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
 
     s.testshooter(shooterController);
 
@@ -140,33 +152,43 @@ public class Robot extends TimedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
   
 
-    SmartDashboard.putNumber("Rotate", rotate);}
-  }
-
-  /** This function is called once when the robot is disabled. */
-  @Override
-  public void disabledInit() {}
-
-  /** This function is called periodically when disabled. */
-  @Override
-  public void disabledPeriodic() {}
-
-  /** This function is called once when test mode is enabled. */
-  @Override
-  public void testInit() {}
-
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {}
-
-
-  public double joystickDeadband(double inputJoystick) {
-    if(Math.abs(inputJoystick) < 0.05){
-      return 0;
-    } else {
-      return inputJoystick;
+    //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
+    if(shooterController.getAButton()){
+      shooter.testshooter(shooterController);
+    }else{
+      collector.ballControl();
     }
+
+    SmartDashboard.putNumber("Rotate", rotate);
   }
-    
-    
-  }
+
+    /** This function is called once when the robot is disabled. */
+    @Override
+    public void disabledInit() {
+    }
+
+    /** This function is called periodically when disabled. */
+    @Override
+    public void disabledPeriodic() {
+    }
+
+    /** This function is called once when test mode is enabled. */
+    @Override
+    public void testInit() {
+    }
+
+    /** This function is called periodically during test mode. */
+    @Override
+    public void testPeriodic() {
+    }
+
+
+    public double joystickDeadband(double inputJoystick) {
+        if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
+            return 0;
+        } else {
+            return inputJoystick;
+        }
+    }
+
+}

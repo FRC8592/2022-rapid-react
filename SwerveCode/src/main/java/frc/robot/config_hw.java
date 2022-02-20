@@ -17,18 +17,19 @@ public final class config_hw {
     public static final int rightFrontCAN = 4;
     public static final int rightBackCAN  = 2;
 
-    // Collector CAN bus IDs
+   /* // Collector CAN bus IDs
     public static final int intakeSpinCAN = 16;     // Spins collector wheels on intake
     public static final int compressorCAN = 20;
     public static final int intakeSolPortA = 2;
     public static final int intakeSolPortB = 3;
 
     // Turret CAN bus IDs
-    public static final int turretLaunchCAN = 7;      // High speed shooter flywheel
+    /*public static final int turretLaunchCAN = 7;      // High speed shooter flywheel
     public static final int turretRotateCAN = 12;     // Control rotation of turret
     public static final int ballProcessCAN  = 13;     // Controls belt driving balls towards turret
     public static final int ballTriggerCAN  = 11;     // Feed balls to flywheel (5k RPM max!  Be careful!)
     public static final double degreeToRadian = 0.0174533;
+    */
 
     //new turret CAN
     public static final int newFlywheelLeft = 22;
