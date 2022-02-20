@@ -34,14 +34,10 @@ public class Robot extends TimedRobot {
   public Drivetrain drive;
   public Autonomous autonomous;
   public Vision vision;
-<<<<<<< HEAD
-  public shooter s;
   public ballTargeting ball;
-=======
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
->>>>>>> origin
 
   
   /**
@@ -57,17 +53,13 @@ public class Robot extends TimedRobot {
     shooterController = new XboxController(1);
     drive             = new Drivetrain();
     vision            = new Vision();
-<<<<<<< HEAD
-    s                 = new shooter();
     ball              = new ballTargeting();
 
-    ball.setLimelightAllianceColor(AllianceColor.RED);
-=======
+    //ball.setLimelightAllianceColor(AllianceColor.RED);
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     
 
->>>>>>> origin
   }
 
   /**
@@ -138,7 +130,7 @@ public class Robot extends TimedRobot {
     translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
 
-    s.testshooter(shooterController);
+    shooter.testshooter(shooterController);
 
     ball.ballAim();
   
@@ -150,7 +142,7 @@ public class Robot extends TimedRobot {
     }
      else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
-  
+    }
 
     //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
     if(shooterController.getAButton()){
@@ -161,7 +153,6 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("Rotate", rotate);
   }
-
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {

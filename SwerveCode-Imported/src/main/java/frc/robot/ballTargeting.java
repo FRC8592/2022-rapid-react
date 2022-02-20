@@ -47,11 +47,10 @@ public class ballTargeting{
     private static double TARGET_HEIGHT = 4.5;           // Center of target above ground (inches)
     private static double TARGET_HEIGHT_DELTA = TARGET_HEIGHT - CAMERA_HEIGHT;
 
-    double translateX = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;        //X is forward Direction, Forward on Joystick is Y
-    double translateY = (driveTrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
+    double translateX = (Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;        //X is forward Direction, Forward on Joystick is Y
+    double translateY = (Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
 
-    public driveTrain drive;
-    public AllianceColor color;
+    public Drivetrain drive;
 
     //motor controllors
     public WPI_TalonFX collector;
@@ -134,14 +133,14 @@ public class ballTargeting{
         }
       }
 
-      public void setLimelightAllianceColor(AllianceColor color){
-        if (color == AllianceColor.RED){
-          NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
-        }
-        else {
-          NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
-        }
-      }
+      //public void setLimelightAllianceColor(AllianceColor color){
+        //if (color == AllianceColor.RED){
+          //NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
+        //}
+        //else {
+          //NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
+        //}
+      //}
 
       
     }
