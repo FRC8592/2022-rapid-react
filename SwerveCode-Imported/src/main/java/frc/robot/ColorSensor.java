@@ -3,44 +3,48 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation.Alliance; // idk what this is but im keeping it
 import edu.wpi.first.wpilibj.util.Color;
+import frc.robot.Constants.ALLIANCE_COLOR;
+
 import com.revrobotics.ColorSensorV3;
 
 public class ColorSensor{
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
     private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+    
 
-    private String alliance;
-    private String currentBallColor;
+    private ALLIANCE_COLOR alliance;
+    private ALLIANCE_COLOR currentBallColor;
 
 
     public ColorSensor(){
         alliance = updateCurrentBallColor();
-        currentBallColor = updateCurrentBallColor();
+        currentBallColor = alliance;
     }
 
     public void getColors(){
         Color detectedColor = m_colorSensor.getColor();
         int proximity = m_colorSensor.getProximity();
       
-        SmartDashboard.putNumber("Red", detectedColor.red);
-        SmartDashboard.putNumber("Blue", detectedColor.blue);
-        SmartDashboard.putNumber("Proximity", proximity);  
-        SmartDashboard.putString("alliance", alliance);
+        SmartDashboard.putNumber("Red", detectedColor.red); //output the seen overall red value to the smartdashboard
+        SmartDashboard.putNumber("Blue", detectedColor.blue); //output the seen overall blue value to the smartdashboard
+        SmartDashboard.putNumber("Proximity", proximity);  //distance from colorsensor to the nearest object (2047 to 0) output to the smartdashboard
+        SmartDashboard.putString("alliance", this.toString()); //current alliance value output the the smartdashboard
         //System.out.println(detectedColor.red);
     }
 
-    public String updateCurrentBallColor(){
+    public ALLIANCE_COLOR updateCurrentBallColor(){
         Color detectedColor = m_colorSensor.getColor();
         if(detectedColor.blue > detectedColor.red){
-          return "BLUE";
+          return ALLIANCE_COLOR.BLUE;
         }else if(detectedColor.red > detectedColor.blue){
-          return "RED";
-        }else{return "NONE";}
+          return ALLIANCE_COLOR.RED;
+        }else{
+            return ALLIANCE_COLOR.NONE;}
       }
 
-    public boolean compairBallToAlliance(){
+    public boolean compareBallToAlliance(){
         if(currentBallColor == alliance){
             return true;
         }else if(currentBallColor != alliance){
@@ -53,11 +57,25 @@ public class ColorSensor{
         return m_colorSensor.getProximity();
     }
 
-    public String getAlliance(){
+    public ALLIANCE_COLOR getAlliance(){
         return alliance;
     }
 
-    public String getCurrentBallColor(){
+    public ALLIANCE_COLOR getCurrentBallColor(){
         return currentBallColor;
+    }
+
+    public String toString(){
+        String s = "None";
+        switch(alliance) {
+            case BLUE:
+                s = "BLUE";
+                break;
+            case RED:
+                s = "RED";
+            default:
+                s = "NONE";    
+        }
+        return s;
     }
 }
