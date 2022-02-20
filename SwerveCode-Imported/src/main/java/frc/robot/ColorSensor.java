@@ -17,17 +17,17 @@ public class ColorSensor{
 
     public ColorSensor(){
         alliance = updateCurrentBallColor();
-        currentBallColor = updateCurrentBallColor();
+        currentBallColor = alliance;
     }
 
     public void getColors(){
         Color detectedColor = m_colorSensor.getColor();
         int proximity = m_colorSensor.getProximity();
       
-        SmartDashboard.putNumber("Red", detectedColor.red);
-        SmartDashboard.putNumber("Blue", detectedColor.blue);
-        SmartDashboard.putNumber("Proximity", proximity);  
-        SmartDashboard.putString("alliance", alliance);
+        SmartDashboard.putNumber("Red", detectedColor.red); //output the seen overall red value to the smartdashboard
+        SmartDashboard.putNumber("Blue", detectedColor.blue); //output the seen overall blue value to the smartdashboard
+        SmartDashboard.putNumber("Proximity", proximity);  //distance from colorsensor to the nearest object (2047 to 0) output to the smartdashboard
+        SmartDashboard.putString("alliance", alliance); //current alliance value output the the smartdashboard
         //System.out.println(detectedColor.red);
     }
 
@@ -40,8 +40,8 @@ public class ColorSensor{
         }else{return "NONE";}
       }
 
-    public boolean compairBallToAlliance(){
-        if(currentBallColor == alliance){
+    public boolean compareBallToAlliance(){
+        if(currentBallColor.equals(alliance)){
             return true;
         }else if(currentBallColor != alliance){
             return false;
