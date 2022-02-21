@@ -54,6 +54,7 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 10;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
 
+
     //
     // CAN IDs for the ball collector and launching system
     //
@@ -62,12 +63,11 @@ public final class Constants {
     public static final int newFlywheelStaging   = 21;
     public static final int newFlywheelCollector = 23;
 
-      //IR sensor ports
-      public static final int LINE_BREAK_TOP_SENSOR_PORT = -2;
-      public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = -1;
+    //IR sensor ports
+    public static final int LINE_BREAK_TOP_SENSOR_PORT = -2;
+    public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = -1;
 
-      public static enum ALLIANCE_COLOR {
+    public static enum ALLIANCE_COLOR {
         BLUE, RED, NONE
-      }
-
+    }
 }
