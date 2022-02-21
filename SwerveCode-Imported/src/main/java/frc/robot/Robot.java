@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
 import frc.robot.Shooter;
+import frc.robot.Constants.ALLIANCE_COLOR;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,6 +35,7 @@ public class Robot extends TimedRobot {
   public Drivetrain drive;
   public Autonomous autonomous;
   public Vision vision;
+  public ballTargeting ball;
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
@@ -53,9 +55,12 @@ public class Robot extends TimedRobot {
     shooterController = new XboxController(1);
     drive             = new Drivetrain();
     vision            = new Vision();
+    ball              = new ballTargeting();
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
+
+    ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
   }
 
@@ -127,11 +132,17 @@ public class Robot extends TimedRobot {
     translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
 
-    
+    shooter.testshooter(shooterController);
+
+    ball.ballAim();
   
     if(driverController.getRightBumper() == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
-    } else {
+    } 
+    else if(driverController.getLeftBumper() == true) {
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, -ball.ballAim() , drive.getGyroscopeRotation()));
+    }
+     else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
@@ -150,7 +161,6 @@ public class Robot extends TimedRobot {
 
 
   }
-
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {

@@ -13,9 +13,12 @@ public class Autonomous {
     public Autonomous(Drivetrain drive) {
         this.drive = drive;
         autonomousTimer = new Timer();
+        
+        
         collector = new Collector();
 
         autonomousTimer.start();
+
 
     }
 
