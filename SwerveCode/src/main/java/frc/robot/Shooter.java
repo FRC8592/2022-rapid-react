@@ -25,7 +25,7 @@ public class Shooter{
     public WPI_TalonFX flyWheelLeft;
     public WPI_TalonFX flyWheelRight;
     public WPI_TalonFX staging;
-    
+    public ColorSensor cSensor;
     //motor groups
     MotorControllerGroup flyWheel;
 
@@ -61,7 +61,13 @@ public class Shooter{
         staging.set(shooterController.getLeftTriggerAxis());
     
             flyWheel.set(flyWheelSpeed);
+    }
+
+    public void compareBallToAlliance(){
+        if(cSensor.compareBallToAlliance() == false){
+            flyWheel.set(0.2);
         }
     }
+}
     
 
