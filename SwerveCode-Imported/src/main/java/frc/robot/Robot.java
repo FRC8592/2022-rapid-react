@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
 import frc.robot.Shooter;
+import frc.robot.Constants.ALLIANCE_COLOR;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -55,11 +56,11 @@ public class Robot extends TimedRobot {
     drive             = new Drivetrain();
     vision            = new Vision();
     ball              = new ballTargeting();
-
-    //ball.setLimelightAllianceColor(AllianceColor.RED);
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
+
+    ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
   }
 

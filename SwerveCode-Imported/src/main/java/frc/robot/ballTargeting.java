@@ -1,5 +1,6 @@
 package frc.robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.ALLIANCE_COLOR;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -51,6 +52,7 @@ public class ballTargeting{
     double translateY = (Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
 
     public Drivetrain drive;
+    public ColorSensor sensor;
 
     //motor controllors
     public WPI_TalonFX collector;
@@ -133,14 +135,15 @@ public class ballTargeting{
         }
       }
 
-      //public void setLimelightAllianceColor(AllianceColor color){
-        //if (color == AllianceColor.RED){
-          //NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
-        //}
-        //else {
-          //NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
-        //}
-      //}
+
+      public void setLimelightAllianceColor(ALLIANCE_COLOR color){
+        if (sensor.getCurrentBallColor() == ALLIANCE_COLOR.RED){
+          NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
+        }
+        else {
+          NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
+        }
+      }
 
       
     }
