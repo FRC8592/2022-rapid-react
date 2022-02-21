@@ -12,10 +12,8 @@ public class Autonomous {
     
     public Autonomous(Drivetrain drive) {
         this.drive = drive;
-        //this.ballTargeting = new ballTargeting();
         autonomousTimer = new Timer();
         
-        //ballTargeting.setLimelightAllianceColor(AllianceColor.RED);
         
         collector = new Collector();
 
