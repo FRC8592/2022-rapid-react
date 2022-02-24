@@ -40,7 +40,6 @@ public class Robot extends TimedRobot {
   public Shooter shooter;
   public Collector collector;
   public ColorSensor color;
-
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -59,6 +58,7 @@ public class Robot extends TimedRobot {
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
+    collector         = new Collector();
 
     ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
@@ -145,6 +145,17 @@ public class Robot extends TimedRobot {
      else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
+
+    if(shooterController.getBButton()){
+      collector.startIntakeDown();  
+
+    }
+
+    if (shooterController.getXButton()){
+      collector.startIntakeUp();
+
+    }
+    collector.intakePosition();
 
     //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
     if(shooterController.getAButton()){

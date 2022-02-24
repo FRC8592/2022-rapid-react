@@ -8,17 +8,76 @@ public class Collector {
 
     private DigitalInput lineSensorTop;
     private DigitalInput lineSensorBottom;
+    private boolean intakeDownCommand;
+    private boolean intakeUpCommand;
     WPI_TalonFX processing;
     WPI_TalonFX staging;
+    WPI_TalonFX intakePosition;
     public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
     private CollectorState collectorState;
+
+    DigitalInput limitSwitchBottom;
+    DigitalInput limitSwitchTop;
 
     //This class will contain all new collector specific methods
     public Collector(){
         WPI_TalonFX processing = new WPI_TalonFX(Constants.newFlywheelCollector);
         WPI_TalonFX staging = new WPI_TalonFX(Constants.newFlywheelStaging);
+        WPI_TalonFX intakePosition = new WPI_TalonFX(Constants.intakePosition);
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
         lineSensorTop = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
+        limitSwitchBottom = new DigitalInput(Constants.LIMIT_SWITCH_BOTTOM_PORT);
+        limitSwitchTop = new DigitalInput(Constants.LIMIT_SWITCH_TOP_PORT);
+
+    }
+
+    public void intakePosition(){
+        if (intakeDownCommand){
+            intakeDown();
+
+        }
+        else if (intakeUpCommand){
+            intakeUp();
+
+        }
+
+    }
+
+    public void startIntakeDown(){
+        intakeDownCommand = true;
+        intakeUpCommand = false;
+
+    }
+
+    public void startIntakeUp(){
+        intakeDownCommand = false;
+        intakeUpCommand = true;
+
+    }
+
+    public void intakeDown(){
+        if (limitSwitchBottom.get()){
+            intakePosition.set(0.0);
+            intakeUpCommand = false;
+            intakeDownCommand = false;
+
+        }
+        else {
+            intakePosition.set(-0.25);
+
+        }
+
+    }
+
+    public void intakeUp(){
+        if (limitSwitchTop.get()){
+            intakePosition.set(0.0);
+            intakeDownCommand = false;
+            intakeUpCommand = false;
+
+        }
+        intakePosition.set(0.25);
+
     }
 
     //Drives the processing wheels for state machine
