@@ -70,4 +70,20 @@ public final class Constants {
     public static enum ALLIANCE_COLOR {
         BLUE, RED, NONE
     }
+
+    //ringVision constants
+    private static double RING_LOCK_ERROR       = 1.0;
+    private static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
+    private static double RING_CAMERA_HEIGHT    = 59;            // Limelight height above ground (inches)
+    private static double RING_CAMERA_ANGLE     = 0.0;           // Limelight camera angle above horizontal (degrees)
+    private static double RING_TARGET_HEIGHT    = 104;           // Center of target above ground (inches)
+    private static double TURRET_ROTATE_KP      = 15.6;          // Proportional constant for turret rotate speed
+
+    //ballVision constants
+    private static double BALL_LOCK_ERROR       = 1.0;
+    private static double Ball_ERROR            = 0.5;           // Allowed aiming error in degrees
+    private static double BALL_CAMERA_HEIGHT    = 0.0;
+    private static double BALL_CAMERA_ANGLE     = 0.0;
+    private static double BALL_TARGET_HEIGHT    = 0.0;
+    private static double BALL_ROTATE_KP = 1.0 / 15.0;   // Proportional constant for turret rotate speed
 }

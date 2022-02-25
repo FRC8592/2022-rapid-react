@@ -15,26 +15,32 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 
+import frc.robot.Constants.ALLIANCE_COLOR;
+
 
 public class Vision {
-  //constantse
-  private static double TURRET_ERROR = 0.5;           // Allowed aiming error in degrees
-  private static double LOCK_ERROR = 1.0;
-  private static double TURRET_ROTATE_KP = 15.6;   // Proportional constant for turret rotate speed
+  
+  private double lockError;
+  private double directionError;
+  private double cameraHeight;
+  private double cameraAngle;
+  private double targetHeight;
+  private double rotationKP;
+
+  
+  //constants
+  
+  
+  
   private static double RPM_TO_TICKS_MS = 2048.0/600.0;  // Conversion factor for rotational velocity
   private static double TRIGGER_MOTOR_SPEED = 0.4;       // Maximum power for the motor feeding the flywheel
   private static double SHOOTING_RPM_RANGE = 20;         // Allowed RPM error for flywheel
-  //distance 
-  private static double CAMERA_HEIGHT = 59.0;            // Limelight height above ground (inches)
-  private static double CAMERA_ANGLE  = 0.0;            // Limelight camera angle above horizontal (degrees)
-  private static double TARGET_HEIGHT = 104;           // Center of target above ground (inches)
+  //distance          
   private static double TARGET_HEIGHT_DELTA = TARGET_HEIGHT - CAMERA_HEIGHT;
   //
-  private static double targetHeight = 104;
   private double targetAngle;
   private double targetDistance;
-  private static double cameraAngle = 0;
-  private static double cameraHeight = 1;
+
   //
   private static double MANUAL_POWER = 0.5;             // Turret power for manual control
   //
@@ -63,17 +69,24 @@ public class Vision {
    private double lastAngle = 0;
    private double changeInAngleError = 0;
 
+  //pipeline constants
+   private static int BLUE_PIPELINE = 1;
+   private static int RED_PIPELINE = 0;
+
   public static boolean autonomousEnabled;
   private final double DEG_TO_RAD = 0.0174533;
   private final double IN_TO_METERS = 0.0254;
+
+  public Drivetrain drive;
+  public ColorSensor colorSensor;
   
   /**
    * This constructor will intialize the motors and internal variables for the robot turret
    */
-  public Vision() {
+  public Vision(String limelightName, double lockError, double directionError, double cameraHeight, double cameraAngle, double targetHeight, double rotationKP) {
 
     //set up networktables for limelight
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-ring");
+    NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
     ta = table.getEntry("ta");
@@ -85,6 +98,14 @@ public class Vision {
     targetRange   = 0.0;
     timer = new Timer();
     timer.start();
+
+    this.lockError      = lockError;
+    this.directionError = directionError;
+    this.cameraHeight   = cameraHeight;
+    this.cameraAngle    = cameraAngle;
+    this.targetHeight   = targetHeight;
+    this.rotationKP     = rotationKP;
+
   }
 
   public double delta(){ //gets the change in angle over time(seconds)
@@ -202,8 +223,31 @@ public class Vision {
       return turretSpeed;
     }
 
-    
   }
+  public void moveTowardsBall(){ 
+    //x = 0 when the camera sees the target is in the center
+    // Only allow the turret to track when commanded
+    
+    
+    if (Math.abs(xError) < Ball_ERROR) {               // Turret is pointing at target (or no target)
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,0, drive.getGyroscopeRotation()));
+    }
+    else {
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, ballAim() , drive.getGyroscopeRotation()));
+    }
+  }
+
+
+  public void setLimelightAllianceColor(ALLIANCE_COLOR color){
+    if (colorSensor.getCurrentBallColor() == ALLIANCE_COLOR.RED){
+      NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
+    }
+    else {
+      NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
+    }
+  }
+
+
 
   
 }
