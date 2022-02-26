@@ -52,7 +52,7 @@ public class ballTargeting{
     double translateY = (Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) / 2;
 
     public Drivetrain drive;
-    public ColorSensor colorSensor;
+    //public ColorSensor colorSensor;
 
     //motor controllors
     public WPI_TalonFX collector;
@@ -136,7 +136,7 @@ public class ballTargeting{
       }
 
 
-      public void setLimelightAllianceColor(ALLIANCE_COLOR color){
+     /* public void setLimelightAllianceColor(ALLIANCE_COLOR color){
         if (colorSensor.getCurrentBallColor() == ALLIANCE_COLOR.RED){
           NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
         }
@@ -144,7 +144,7 @@ public class ballTargeting{
           NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
         }
       }
-
+      */
       
     }
     

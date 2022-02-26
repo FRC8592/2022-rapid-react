@@ -23,12 +23,12 @@ public class Collector {
 
     //Drives the processing wheels for state machine
     public void driveProcessingWheels(){
-        processing.set(0.5);
+        processing.set(0.2);
     }
 
     //Drives staging wheel for state machine
     public void driveStagingWheels(){
-        processing.set(0.5);
+        processing.set(0.2);
     }
 
     //Stops processing wheels for state machine
@@ -43,12 +43,12 @@ public class Collector {
 
     //Manually reverses the Staging wheels
     public void reverseStagingWheels(){
-        staging.set(-1);
+        staging.set(-0.2);
     }
 
     //Manually reverses the Processing wheels
     public void reverseProcessingWheels(){
-        processing.set(-1);
+        processing.set(-0.2);
     }
 
     //Stops entire intake system if needed
