@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
-  public ColorSensor color;
+ // public ColorSensor color;
 
   
   /**
@@ -58,9 +58,10 @@ public class Robot extends TimedRobot {
     ball              = new ballTargeting();
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
-    color             = new ColorSensor();
+    collector         = new Collector();
+    //color             = new ColorSensor();
 
-    ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
+    //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
   }
 
@@ -154,11 +155,11 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putNumber("Rotate", rotate);
-    color.getColors();
+    /*color.getColors();
     if(color.getProximity() > 200){
       color.updateCurrentBallColor();
-    }
-
+      { 
+        */
 
   }
     /** This function is called once when the robot is disabled. */

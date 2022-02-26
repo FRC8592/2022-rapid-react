@@ -18,7 +18,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 public class Shooter{ 
 
     //constants
-    private static final int LineBreakSensorPort = 0;
 
     //motor controllors
     public WPI_TalonFX collector;
@@ -39,8 +38,6 @@ public class Shooter{
         staging       = new WPI_TalonFX(Constants.newFlywheelStaging);
         flyWheel      = new MotorControllerGroup(flyWheelLeft, flyWheelRight);
 
-        lineSensorA = new DigitalInput(LineBreakSensorPort);
-
         flyWheelLeft.setInverted(true);
         collector.setInverted(true);
     }
@@ -48,8 +45,6 @@ public class Shooter{
     public void testshooter(XboxController shooterController) {
 
         // Line break sensor
-
-        SmartDashboard.putBoolean("Line Sensor", lineSensorA.get());
 
         double flyWheelSpeed;
 

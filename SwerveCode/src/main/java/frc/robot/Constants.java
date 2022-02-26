@@ -58,14 +58,14 @@ public final class Constants {
     //
     // CAN IDs for the ball collector and launching system
     //
-    public static final int newFlywheelLeft      = 22;
+    public static final int newFlywheelLeft      = 23;
     public static final int newFlywheelRight     = 20;
-    public static final int newFlywheelStaging   = 21;
-    public static final int newFlywheelCollector = 23;
+    public static final int newFlywheelStaging   = 22;
+    public static final int newFlywheelCollector = 21;
 
     //IR sensor ports
-    public static final int LINE_BREAK_TOP_SENSOR_PORT = -2;
-    public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = -1;
+    public static final int LINE_BREAK_TOP_SENSOR_PORT = 0;
+    public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = 1;
 
     public static enum ALLIANCE_COLOR {
         BLUE, RED, NONE

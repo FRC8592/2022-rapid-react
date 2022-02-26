@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Collector {
 
@@ -15,40 +16,43 @@ public class Collector {
 
     //This class will contain all new collector specific methods
     public Collector(){
-        WPI_TalonFX processing = new WPI_TalonFX(Constants.newFlywheelCollector);
-        WPI_TalonFX staging = new WPI_TalonFX(Constants.newFlywheelStaging);
+        processing = new WPI_TalonFX(Constants.newFlywheelCollector);
+        staging = new WPI_TalonFX(Constants.newFlywheelStaging);
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
         lineSensorTop = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
+        
+        processing.setInverted(true);
+        staging.setInverted(true);
     }
 
     //Drives the processing wheels for state machine
     public void driveProcessingWheels(){
-        processing.set(0.5);
+        this.processing.set(0.2);
     }
 
     //Drives staging wheel for state machine
     public void driveStagingWheels(){
-        processing.set(0.5);
+        this.staging.set(0.2);
     }
 
     //Stops processing wheels for state machine
     public void stopProcessingWheels(){
-        processing.set(0);
+        this.processing.set(0);
     }
 
     //Stops Staging wheels for state machine
     public void stopStagingWheels(){
-        processing.set(0);
+        this.staging.set(0);
     }
 
     //Manually reverses the Staging wheels
     public void reverseStagingWheels(){
-        staging.set(-1);
+        this.staging.set(-0.2);
     }
 
     //Manually reverses the Processing wheels
     public void reverseProcessingWheels(){
-        processing.set(-1);
+        this.processing.set(-0.2);
     }
 
     //Stops entire intake system if needed
@@ -71,18 +75,19 @@ public class Collector {
 
     public CollectorState determineCollectorState(){
         boolean topState = lineSensorTop.get();
+        SmartDashboard.getBoolean("LineSensorTop", topState);
         boolean bottomState = lineSensorBottom.get();
-
+        SmartDashboard.getBoolean("LineSensorBottom", bottomState);
 
         //this makes sure to tell which states are which
-        if(bottomState){
-            if(topState){
+        if(!bottomState){
+            if(!topState){
                 collectorState = CollectorState.TWO_BALLS;
             }else{
                 collectorState = CollectorState.ONE_BALL_BOTTOM;
             }
         }else{
-            if(topState){
+            if(!topState){
                 collectorState = CollectorState.ONE_BALL_TOP;
             }else{
                 collectorState = CollectorState.NO_BALLS_LOADED;
@@ -98,22 +103,26 @@ public class Collector {
         switch(this.determineCollectorState()){
             case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
                 this.driveProcessingWheels();
+                this.stopStagingWheels();
             break;
           
             case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to stop the wheels pushing it in and start driving the middle wheels
-                this.stopProcessingWheels();
+                this.driveProcessingWheels();
                 this.driveStagingWheels();
             break;
             
             case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball and run the bottom wheels to collect another
-                this.stopStagingWheels();
-                this.driveProcessingWheels();
+                this.driveStagingWheels();
+                this.stopProcessingWheels();
             break;
 
             case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
                 this.intakeAllStop();
             break;
         }
+
+        SmartDashboard.putBoolean("LineSensorTop", lineSensorTop.get());
+        SmartDashboard.putBoolean("LineSensorBottom", lineSensorBottom.get());
     }
 
 
