@@ -12,11 +12,14 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import java.util.LinkedList;
 
 
 public class ballTargeting{ 
@@ -35,15 +38,18 @@ public class ballTargeting{
     private double  yError;
     private double  area;
 
+    private LinkedList<LimelightData> previousCoordinates;
+
     private static int BLUE_PIPELINE = 1;
     private static int RED_PIPELINE = 0;
 
     private static double Ball_ERROR = 0.5;           // Allowed aiming error in degrees
     private static double LOCK_ERROR = 1.0;
     private static double BALL_ROTATE_KP = 1.0 / 15.0;   // Proportional constant for turret rotate speed
+    
 
     
-    private static double CAMERA_HEIGHT = 0;            // Limelight height above ground (inches)
+    private static double CAMERA_HEIGHT = 36;            // Limelight height above ground (inches)
     private static double CAMERA_ANGLE  = 0;            // Limelight camera angle above horizontal (degrees)
     private static double TARGET_HEIGHT = 4.5;           // Center of target above ground (inches)
     private static double TARGET_HEIGHT_DELTA = TARGET_HEIGHT - CAMERA_HEIGHT;
@@ -68,16 +74,13 @@ public class ballTargeting{
         ta = table.getEntry("ta");
         tv = table.getEntry("tv");
         
-
+        previousCoordinates = new LinkedList<LimelightData>();
 
         // Establish initial values for variables we share
         ballValid   = false;
         ballLocked  = false;
         ballRange   = 0.0;
-
-
     }
-
     public double ballAim() {
         
         // Read the Limelight data from the Network Tables
@@ -85,6 +88,25 @@ public class ballTargeting{
         yError      = ty.getDouble(0.0);
         area        = ta.getDouble(0.0);
         ballValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
+        double totalDx = 0.0;
+        double totalDy = 0.0;
+        int totalBallValid = 0;
+
+        previousCoordinates.add(new LimelightData(xError, yError, ballValid));
+        if (previousCoordinates.size() > 5){
+          previousCoordinates.removeFirst();
+        }
+        
+        for(LimelightData data: previousCoordinates){
+          if (data.ballValid == true){
+            totalDx = data.dx + totalDx;
+            totalDy = data.dy + totalDy;
+            totalBallValid = totalBallValid +1;
+          }
+        }
+
+        double averageDx = totalDx/totalBallValid;
+        double averageDy = totalDy/totalBallValid;
 
         // Compute range to target.
         // Formula taken from https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
@@ -95,13 +117,14 @@ public class ballTargeting{
         // KP is a scaling factor that we tested
         turnSpeed = xError * BALL_ROTATE_KP;
     
-        if (Math.abs(xError) < LOCK_ERROR) {               // Turret is pointing at target (or no target)
+        if (Math.abs(xError) < LOCK_ERROR && totalBallValid > 3) {               // Turret is pointing at target (or no target)
           ballLocked = ballValid;                     // We are only locked when targetValid
         }
         else{
           ballLocked = false;
         }
-    
+
+  
         //post driver data to smart dashboard periodically
         SmartDashboard.putNumber("xerror in radians", Math.toRadians(xError));
         SmartDashboard.putNumber("Limelight BallX", xError);
@@ -145,7 +168,21 @@ public class ballTargeting{
         }
       }
 
-      
+    private static class LimelightData{ 
+      double dx;
+      double dy;
+      boolean ballValid;
+
+      public LimelightData(double xError, double yError, boolean ballValid){
+        dx = xError;
+        dy = yError;
+        this.ballValid = ballValid;
+      }
+    }
+
+
+
+
     }
     
 
