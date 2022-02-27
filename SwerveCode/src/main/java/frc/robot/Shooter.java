@@ -67,6 +67,9 @@ public class Shooter{
         if(cSensor.compareBallToAlliance() == false){
             flyWheel.set(0.2);
         }
+        if(cSensor.compareBallToAlliance() == true){
+            flyWheel.set(1);
+        }
     }
 }
     
