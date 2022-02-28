@@ -7,9 +7,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Collector {
 
+    
     private DigitalInput lineSensorTop;
     private DigitalInput lineSensorBottom;
     WPI_TalonFX processing;
+    private int i;
     WPI_TalonFX staging;
     public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
     private CollectorState collectorState;
@@ -31,14 +33,15 @@ public class Collector {
     }
 
     //Drives staging wheel for state machine
-    public void driveStagingWheels(){
-        this.staging.set(0.2);
+    public void driveStagingWheels(double speed){
+        this.staging.set(speed);
     }
 
     //Stops processing wheels for state machine
     public void stopProcessingWheels(){
         this.processing.set(0);
     }
+
 
     //Stops Staging wheels for state machine
     public void stopStagingWheels(){
@@ -64,7 +67,7 @@ public class Collector {
     //This runs the intake system in its entirety if needed
     public void intakeAllRun(){
         this.driveProcessingWheels();
-        this.driveStagingWheels();
+        this.driveStagingWheels(0.2);
     }
 
     //reverses intake entirely in the event we need it
@@ -99,21 +102,23 @@ public class Collector {
     }
 
     public void ballControl(){
+        i = 0;
+
         //this is a simple state machine controlling what ball wheels run and when
         switch(this.determineCollectorState()){
             case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
                 this.driveProcessingWheels();
-                this.stopStagingWheels();
+                this.driveStagingWheels(0.2);
             break;
           
             case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to stop the wheels pushing it in and start driving the middle wheels
                 this.driveProcessingWheels();
-                this.driveStagingWheels();
+                this.driveStagingWheels(0.2);
             break;
-            
+             
             case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball and run the bottom wheels to collect another
-                this.driveStagingWheels();
-                this.stopProcessingWheels();
+                this.stopStagingWheels();
+                this.driveProcessingWheels();
             break;
 
             case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules

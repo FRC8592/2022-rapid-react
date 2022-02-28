@@ -53,7 +53,7 @@ public class Shooter{
         //control speed of the flywheel
         flyWheelSpeed = shooterController.getRightTriggerAxis();
         collector.set(shooterController.getLeftTriggerAxis());
-        staging.set(shooterController.getLeftTriggerAxis());
+        staging.set(shooterController.getRightTriggerAxis());
     
             flyWheel.set(flyWheelSpeed);
         }
