@@ -34,7 +34,8 @@ public class Robot extends TimedRobot {
 
   public Drivetrain drive;
   public Autonomous autonomous;
-  public Vision vision;
+  public Vision visionRing;
+  public Vision visionBall;
   public ballTargeting ball;
   public Locality locality; 
   public Shooter shooter;
@@ -54,7 +55,8 @@ public class Robot extends TimedRobot {
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
     drive             = new Drivetrain();
-    vision            = new Vision();
+    visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR, Constants.RING_CAMERA_HEIGHT, Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT, Constants.TURRET_ROTATE_KP);
+    visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
     ball              = new ballTargeting();
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
@@ -125,7 +127,7 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
     
-    locality.updatePosition(drive.getYaw(), vision);
+    locality.updatePosition(drive.getYaw(), visionRing);
 
     // Read gamepad controls
     rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;            // Right joystick
