@@ -117,7 +117,7 @@ public class ballTargeting{
         // KP is a scaling factor that we tested
         turnSpeed = xError * BALL_ROTATE_KP;
     
-        if (Math.abs(xError) < LOCK_ERROR && totalBallValid > 3) {               // Turret is pointing at target (or no target)
+        if ((Math.abs(xError) < LOCK_ERROR) && (totalBallValid >= 3)) {               // Turret is pointing at target (or no target)
           ballLocked = ballValid;                     // We are only locked when targetValid
         }
         else{
