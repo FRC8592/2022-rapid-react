@@ -36,7 +36,6 @@ public class Robot extends TimedRobot {
   public Autonomous autonomous;
   public Vision visionRing;
   public Vision visionBall;
-  public ballTargeting ball;
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
@@ -57,12 +56,11 @@ public class Robot extends TimedRobot {
     drive             = new Drivetrain();
     visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR, Constants.RING_CAMERA_HEIGHT, Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT, Constants.TURRET_ROTATE_KP);
     visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
-    ball              = new ballTargeting();
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
 
-    ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
+    //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
   }
 
@@ -136,24 +134,24 @@ public class Robot extends TimedRobot {
 
     shooter.testshooter(shooterController);
 
-    ball.ballAim();
+    //visionBall.autoAim();
   
     if(driverController.getRightBumper() == true){
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -visionRing.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
     } 
     else if(driverController.getLeftBumper() == true) {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, -ball.ballAim() , drive.getGyroscopeRotation()));
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, -visionBall.autoAim() , drive.getGyroscopeRotation()));
     }
      else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
     //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
-    if(shooterController.getAButton()){
-      shooter.testshooter(shooterController);
-    }else{
-      collector.ballControl();
-    }
+    //if(shooterController.getAButton()){
+    //  shooter.testshooter(shooterController);
+    //}else{
+    //  collector.ballControl();
+    //}
 
     SmartDashboard.putNumber("Rotate", rotate);
     color.getColors();

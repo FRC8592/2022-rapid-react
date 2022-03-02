@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 import frc.robot.Constants.ALLIANCE_COLOR;
 
+import java.util.LinkedList;
 
 public class Vision {
   
@@ -30,7 +31,7 @@ public class Vision {
   public double  targetRange;     // Range from robot to target (inches)
   public Timer timer;
   //Private autoaim variables
-   private double turretSpeed;
+   private double turnSpeed;
    private double xError;
    private double yError;
    private double area;
@@ -38,6 +39,8 @@ public class Vision {
    private double xtime = 0;
    private double lastAngle = 0;
    private double changeInAngleError = 0;
+
+  private LinkedList<LimelightData> previousCoordinates;
 
   //pipeline constants
    private static int BLUE_PIPELINE = 1;
@@ -92,6 +95,17 @@ public class Vision {
    * Formula taken from https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
    * @return distance in meters
    */
+  public double distanceToTarget(double averageDy){
+    //targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
+    //double targetAngle = targetAngle.getDouble(0.0);
+    if (targetValid){
+      double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + averageDy) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
+      return distanceInches * IN_TO_METERS;
+    }
+    return -1;
+  }
+
+
   public double distanceToTarget(){
     targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
     double targetAngle = ty.getDouble(0.0);
@@ -123,23 +137,43 @@ public class Vision {
     area        = ta.getDouble(0.0);
     targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
 
+    double totalDx = 0.0;
+    double totalDy = 0.0;
+    int totalBallValid = 0;
+
+    previousCoordinates.add(new LimelightData(xError, yError, targetValid));
+    if (previousCoordinates.size() > 5){
+      previousCoordinates.removeFirst();
+    }
+
+    for(LimelightData data: previousCoordinates){
+      if (data.ballValid == true){
+        totalDx = data.dx + totalDx;
+        totalDy = data.dy + totalDy;
+        totalBallValid = totalBallValid +1;
+      }
+    }
+
+    double averageDx = totalDx/totalBallValid;
+    double averageDy = totalDy/totalBallValid;
+
     if (targetValid){
-      targetRange = distanceToTarget();
+      targetRange = distanceToTarget(averageDy);
     
       // Setting power based on the xError causes the turret to slow down as the error approaches 0
       // This prevents the turret from overshooting 0 and oscillating back and forth
       // KP is a scaling factor that we tested
-      turretSpeed = Math.toRadians(xError) * rotationKP; // + turret_rotate_kd*delta();
-      turretSpeed = Math.max(turretSpeed, -4);
-      turretSpeed = Math.min(turretSpeed, 4);
+      turnSpeed = Math.toRadians(averageDx) * rotationKP; // + turret_rotate_kd*delta();
+      turnSpeed = Math.max(turnSpeed, -4);
+      turnSpeed = Math.min(turnSpeed, 4);
     }
     else if(lastAngle != 0){
-      turretSpeed = Math.toRadians(lastAngle) * rotationKP;
-      turretSpeed = Math.max(turretSpeed, -4);
-      turretSpeed = Math.min(turretSpeed, 4);
+      turnSpeed = Math.toRadians(lastAngle) * rotationKP;
+      turnSpeed = Math.max(turnSpeed, -4);
+      turnSpeed = Math.min(turnSpeed, 4);
     }
     else{
-      turretSpeed = 1;
+      turnSpeed = 1;
     }
     
     if (Math.abs(xError) < lockError) {               // Turret is pointing at target (or no target)
@@ -157,10 +191,26 @@ public class Vision {
     SmartDashboard.putNumber("Target Range", targetRange);
     SmartDashboard.putBoolean("Target Valid", targetValid);
     SmartDashboard.putBoolean("Target Locked", targetLocked);
-    SmartDashboard.putNumber("Turret Speed", turretSpeed);
+    SmartDashboard.putNumber("Turret Speed", turnSpeed);
     SmartDashboard.putNumber("Change in Angle Error", changeInAngleError);
+    SmartDashboard.putNumber("Average Y", averageDy);
+    SmartDashboard.putNumber("Average X", averageDx);
+    SmartDashboard.putNumber("Total Valid", totalBallValid);
 
-    return turretSpeed;
+
+    return turnSpeed;
   }
-  
+
+  private class LimelightData{ 
+    double dx;
+    double dy;
+    boolean ballValid;
+
+    public LimelightData(double xError, double yError, boolean ballValid){
+      dx = xError;
+      dy = yError;
+      this.ballValid = ballValid;
+    }
+
+  }
 }
