@@ -40,7 +40,9 @@ public class Vision {
    private double lastAngle = 0;
    private double changeInAngleError = 0;
 
-  private LinkedList<LimelightData> previousCoordinates;
+   private LinkedList<LimelightData> previousCoordinates;
+
+   private String limelightName;
 
   //pipeline constants
    private static int BLUE_PIPELINE = 1;
@@ -63,6 +65,8 @@ public class Vision {
     ta = table.getEntry("ta");
     tv = table.getEntry("tv");
 
+    previousCoordinates = new LinkedList<LimelightData>();
+
     // Establish initial values for variables we share
     targetValid   = false;
     targetLocked  = false;
@@ -70,6 +74,7 @@ public class Vision {
     timer = new Timer();
     timer.start();
 
+    this.limelightName = limelightName;
     this.lockError      = lockError;
     this.cameraHeight   = cameraHeight;
     this.cameraAngle    = cameraAngle;
@@ -139,7 +144,7 @@ public class Vision {
 
     double totalDx = 0.0;
     double totalDy = 0.0;
-    int totalBallValid = 0;
+    int totalValid = 0;
 
     previousCoordinates.add(new LimelightData(xError, yError, targetValid));
     if (previousCoordinates.size() > 5){
@@ -150,12 +155,13 @@ public class Vision {
       if (data.ballValid == true){
         totalDx = data.dx + totalDx;
         totalDy = data.dy + totalDy;
-        totalBallValid = totalBallValid +1;
+        totalValid = totalValid +1;
       }
     }
 
-    double averageDx = totalDx/totalBallValid;
-    double averageDy = totalDy/totalBallValid;
+    double averageDx = totalDx/totalValid;
+    double averageDy = totalDy/totalValid;
+    targetValid = totalValid >= 3;
 
     if (targetValid){
       targetRange = distanceToTarget(averageDy);
@@ -184,21 +190,30 @@ public class Vision {
     }
 
     //post driver data to smart dashboard periodically
-    SmartDashboard.putNumber("xerror in radians", Math.toRadians(xError));
-    SmartDashboard.putNumber("LimelightX", xError);
-    SmartDashboard.putNumber("LimelightY", yError);
-    SmartDashboard.putNumber("LimelightArea", area);
-    SmartDashboard.putNumber("Target Range", targetRange);
-    SmartDashboard.putBoolean("Target Valid", targetValid);
-    SmartDashboard.putBoolean("Target Locked", targetLocked);
-    SmartDashboard.putNumber("Turret Speed", turnSpeed);
-    SmartDashboard.putNumber("Change in Angle Error", changeInAngleError);
-    SmartDashboard.putNumber("Average Y", averageDy);
-    SmartDashboard.putNumber("Average X", averageDx);
-    SmartDashboard.putNumber("Total Valid", totalBallValid);
+    SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
+    SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
+    SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
+    SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
+    SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
+    SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
+    SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
+    SmartDashboard.putNumber(limelightName + "/Turret Speed", turnSpeed);
+    SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
+    SmartDashboard.putNumber(limelightName + "/Average Y", averageDy);
+    SmartDashboard.putNumber(limelightName + "/Average X", averageDx);
+    SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
 
 
     return turnSpeed;
+  }
+
+  public void setLimelightAllianceColor(ALLIANCE_COLOR color){
+    if (colorSensor.getCurrentBallColor() == ALLIANCE_COLOR.RED){
+      NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
+    }
+    else {
+      NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
+    }
   }
 
   private class LimelightData{ 

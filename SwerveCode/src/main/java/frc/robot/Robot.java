@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
 import frc.robot.Shooter;
 import frc.robot.Constants.ALLIANCE_COLOR;
-
+import edu.wpi.first.networktables.NetworkTableInstance;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -59,7 +59,6 @@ public class Robot extends TimedRobot {
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
-
     //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
   }
@@ -134,6 +133,7 @@ public class Robot extends TimedRobot {
 
     shooter.testshooter(shooterController);
 
+    NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(1);
     //visionBall.autoAim();
   
     if(driverController.getRightBumper() == true){
