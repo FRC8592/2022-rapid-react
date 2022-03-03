@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
     ball              = new ballTargeting();
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
-    color             = new ColorSensor();
+    cSensor             = new ColorSensor();
 
     ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
