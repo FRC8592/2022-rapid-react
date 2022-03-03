@@ -11,13 +11,14 @@ public class Collector {
     private DigitalInput lineSensorTop;
     private DigitalInput lineSensorBottom;
     WPI_TalonFX processing;
-    private int i;
     WPI_TalonFX staging;
+    WPI_TalonFX collectorArm;
     public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
     private CollectorState collectorState;
 
     //This class will contain all new collector specific methods
     public Collector(){
+        collectorArm = new WPI_TalonFX(Constants.newCollectorArm);
         processing = new WPI_TalonFX(Constants.newFlywheelCollector);
         staging = new WPI_TalonFX(Constants.newFlywheelStaging);
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
@@ -25,6 +26,14 @@ public class Collector {
         
         processing.setInverted(true);
         staging.setInverted(true);
+    }
+    
+    public void raiseCollectorArm(){
+        this.collectorArm.set(-0.2);
+    }
+
+    public void lowerCollectorArm(){
+        this.collectorArm.set(0.2);
     }
 
     //Drives the processing wheels for state machine
@@ -98,17 +107,19 @@ public class Collector {
         }
 
 
+
+
         return collectorState;
     }
 
     public void ballControl(){
-        i = 0;
 
         //this is a simple state machine controlling what ball wheels run and when
         switch(this.determineCollectorState()){
             case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
                 this.driveProcessingWheels();
                 this.driveStagingWheels(0.2);
+                this.lowerCollectorArm(); 
             break;
           
             case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to stop the wheels pushing it in and start driving the middle wheels
@@ -123,13 +134,19 @@ public class Collector {
 
             case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
                 this.intakeAllStop();
+                this.raiseCollectorArm();
             break;
-        }
+        }   
+
+
 
         SmartDashboard.putBoolean("LineSensorTop", lineSensorTop.get());
         SmartDashboard.putBoolean("LineSensorBottom", lineSensorBottom.get());
     }
 
+    public void manualControl(){
+            
+    }
 
 
 }

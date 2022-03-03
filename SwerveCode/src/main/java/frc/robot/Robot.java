@@ -133,8 +133,6 @@ public class Robot extends TimedRobot {
     translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
 
-    shooter.testshooter(shooterController);
-
     ball.ballAim();
   
     if(driverController.getRightBumper() == true){
@@ -149,7 +147,6 @@ public class Robot extends TimedRobot {
 
     //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
     if(shooterController.getAButton()){
-      shooter.testshooter(shooterController);
     }else{
       collector.ballControl();
     }
