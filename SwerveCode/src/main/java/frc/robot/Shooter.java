@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -35,15 +36,21 @@ public class Shooter{
     public enum ShooterState{TWO_BALL_MANUAL,AUTONOMOUS,MANUAL_OVERRIDE}
     private ShooterState shooterState;
 
+    double flywheelVelocity;
     public Shooter(){
         processing    = new WPI_TalonFX(Constants.newFlywheelCollector);
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
         staging       = new WPI_TalonFX(Constants.newFlywheelStaging);
-        flyWheel      = new MotorControllerGroup(flyWheelLeft, flyWheelRight);
 
-        flyWheelLeft.setInverted(true);
+        flyWheelLeft.follow(flyWheelRight);
+
+        flyWheelRight.setInverted(false);
+        flyWheelLeft.setInverted(InvertType.OpposeMaster);
         processing.setInverted(true);
+
+        flywheelVelocity = SmartDashboard.getNumber("enter velocity", 0);
+        SmartDashboard.putNumber("Flywheel Velocity", flywheelVelocity);
     }
 
     public ShooterState determineShooterState(XboxController shootController){
@@ -61,13 +68,34 @@ public class Shooter{
     }
 
     public void collectorDriverControl(XboxController shootController){
-        this.shooterState = determineShooterState(shootController);
 
+        switch (determineShooterState(shootController)) {
+            case MANUAL_OVERRIDE:
+                this.manualControl(shootController);
+                break;
+            
+            case TWO_BALL_MANUAL:
+                this.manualControl(shootController);
+                break;
+
+            case AUTONOMOUS:
+                collector.ballControl();
+                break;
+        
         }
-    
-    public void manualControl(){
+    }
 
 
+    public void manualControl(XboxController shootController){
+
+        if(shootController.getXButton()){
+            flyWheelRight.set(ControlMode.PercentOutput, shootController.getLeftTriggerAxis());
+        } else {
+            flyWheelRight.set(ControlMode.Velocity, flywheelVelocity);
+        }   
+
+        processing.set(shootController.getRightTriggerAxis());
+        staging.set(shootController.getRightTriggerAxis());
     }
 }
     
