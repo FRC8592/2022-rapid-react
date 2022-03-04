@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
     shooter           = new Shooter();
     cSensor             = new ColorSensor();
 
-    ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
+    //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
   }
 
@@ -132,8 +132,6 @@ public class Robot extends TimedRobot {
     translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
 
-    shooter.testshooter(shooterController);
-
     ball.ballAim();
   
     if(driverController.getRightBumper() == true){
@@ -146,12 +144,9 @@ public class Robot extends TimedRobot {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
-    //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
-    if(shooterController.getAButton()){
-      shooter.testshooter(shooterController);
-    }else{
-      collector.ballControl();
-    }
+
+    shooter.collectorDriverControl(shooterController);
+    
 
     SmartDashboard.putNumber("Rotate", rotate);
     cSensor.getColors();
