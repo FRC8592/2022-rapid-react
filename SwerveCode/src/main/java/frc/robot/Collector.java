@@ -29,16 +29,16 @@ public class Collector {
     }
     
     public void raiseCollectorArm(){
-        this.collectorArm.set(-0.2);
+        this.collectorArm.set(-0.);
     }
 
     public void lowerCollectorArm(){
-        this.collectorArm.set(0.2);
+        this.collectorArm.set(0.05);
     }
 
     //Drives the processing wheels for state machine
-    public void driveProcessingWheels(){
-        this.processing.set(0.2);
+    public void driveProcessingWheels(double speed){
+        this.processing.set(speed);
     }
 
     //Drives staging wheel for state machine
@@ -75,7 +75,7 @@ public class Collector {
 
     //This runs the intake system in its entirety if needed
     public void intakeAllRun(){
-        this.driveProcessingWheels();
+        this.driveProcessingWheels(0.2);
         this.driveStagingWheels(0.2);
     }
 
@@ -108,7 +108,7 @@ public class Collector {
 
 
 
-
+        SmartDashboard.putString("Collector State", collectorState.toString());
         return collectorState;
     }
 
@@ -117,25 +117,27 @@ public class Collector {
         //this is a simple state machine controlling what ball wheels run and when
         switch(this.determineCollectorState()){
             case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
-                this.driveProcessingWheels();
+                this.driveProcessingWheels(0.2);
                 this.driveStagingWheels(0.2);
                 this.lowerCollectorArm(); 
             break;
           
             case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to stop the wheels pushing it in and start driving the middle wheels
-                this.driveProcessingWheels();
+                this.driveProcessingWheels(0.2);
                 this.driveStagingWheels(0.2);
             break;
              
             case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball and run the bottom wheels to collect another
                 this.stopStagingWheels();
-                this.driveProcessingWheels();
+                this.driveProcessingWheels(0.2);
             break;
 
             case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
                 this.intakeAllStop();
                 this.raiseCollectorArm();
             break;
+
+    
         }   
 
 

@@ -62,7 +62,7 @@ public final class Constants {
     public static final int newFlywheelRight     = 20;
     public static final int newFlywheelStaging   = 22;
     public static final int newFlywheelCollector = 21;
-    public static final int newCollectorArm = -1; //Change this I don't know what the arm CAN is
+    public static final int newCollectorArm = 24; //Change this I don't know what the arm CAN is
 
     //IR sensor ports
     public static final int LINE_BREAK_TOP_SENSOR_PORT = 0;

@@ -29,53 +29,57 @@ public class Shooter{
     public WPI_TalonFX flyWheelLeft;
     public WPI_TalonFX flyWheelRight;
     public WPI_TalonFX staging;
-    
-    //motor groups
-    MotorControllerGroup flyWheel;
 
-    public enum ShooterState{TWO_BALL_MANUAL,AUTONOMOUS,MANUAL_OVERRIDE}
+    public enum ShooterState{AUTONOMOUS,SHOOT}
     private ShooterState shooterState;
 
     double flywheelVelocity;
+
+
     public Shooter(){
+        collector     = new Collector();
         processing    = new WPI_TalonFX(Constants.newFlywheelCollector);
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
         staging       = new WPI_TalonFX(Constants.newFlywheelStaging);
 
         flyWheelLeft.follow(flyWheelRight);
+        flyWheelLeft.setInverted(InvertType.OpposeMaster);
 
         flyWheelRight.setInverted(false);
-        flyWheelLeft.setInverted(InvertType.OpposeMaster);
         processing.setInverted(true);
+        staging.setInverted(true);
 
-        flywheelVelocity = SmartDashboard.getNumber("enter velocity", 0);
+        flywheelVelocity = SmartDashboard.getNumber("enter velocity", 10);
         SmartDashboard.putNumber("Flywheel Velocity", flywheelVelocity);
+
+        flywheelVelocity = -0.5;
+        flyWheelRight.set(ControlMode.PercentOutput, flywheelVelocity);
     }
 
-    public ShooterState determineShooterState(XboxController shootController){
+    public ShooterState determineShooterState(){
         CollectorState collectorState = collector.determineCollectorState();
 
-        if(shootController.getBButtonPressed()){
-            shooterState = ShooterState.MANUAL_OVERRIDE;
-        }else if(collectorState == CollectorState.TWO_BALLS){
-            shooterState = ShooterState.TWO_BALL_MANUAL;
+        if(collectorState != CollectorState.NO_BALLS_LOADED){
+            shooterState = ShooterState.SHOOT;
         }else{
             shooterState = ShooterState.AUTONOMOUS;
         }
 
+        SmartDashboard.putString("State", shooterState.toString());
         return shooterState;
     }
 
     public void collectorDriverControl(XboxController shootController){
 
-        switch (determineShooterState(shootController)) {
-            case MANUAL_OVERRIDE:
-                this.manualControl(shootController);
-                break;
-            
-            case TWO_BALL_MANUAL:
-                this.manualControl(shootController);
+        switch (determineShooterState()) {
+            case SHOOT:
+                if(shootController.getBButton()){
+                    manualControl();
+                    
+                }else{
+                    collector.ballControl();
+                }
                 break;
 
             case AUTONOMOUS:
@@ -86,16 +90,10 @@ public class Shooter{
     }
 
 
-    public void manualControl(XboxController shootController){
-
-        if(shootController.getXButton()){
-            flyWheelRight.set(ControlMode.PercentOutput, shootController.getLeftTriggerAxis());
-        } else {
-            flyWheelRight.set(ControlMode.Velocity, flywheelVelocity);
-        }   
-
-        processing.set(shootController.getRightTriggerAxis());
-        staging.set(shootController.getRightTriggerAxis());
+    public void manualControl(){
+        collector.driveStagingWheels(1);
+        collector.driveProcessingWheels(1);
+        SmartDashboard.putNumber("Running Manual", 1);
     }
 }
     
