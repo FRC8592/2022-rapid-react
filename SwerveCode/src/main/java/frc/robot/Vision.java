@@ -30,6 +30,8 @@ public class Vision {
   public boolean targetLocked;    // Indicate when the turret is centered on the target
   public double  targetRange;     // Range from robot to target (inches)
   public Timer timer;
+  private double processedDx = 0;
+  private double processedDy = 0;
   //Private autoaim variables
    private double turnSpeed;
    private double xError;
@@ -40,6 +42,10 @@ public class Vision {
    private double lastAngle = 0;
    private double changeInAngleError = 0;
 
+   //constants for averaging limelight averages
+   private int MIN_LOCKS = 3;
+   private int STAT_SIZE = 5; 
+
    private LinkedList<LimelightData> previousCoordinates;
 
    private String limelightName;
@@ -49,9 +55,14 @@ public class Vision {
    private static int RED_PIPELINE = 0;
 
    private final double DEG_TO_RAD = 0.0174533;
-  private final double IN_TO_METERS = 0.0254;
+   private final double IN_TO_METERS = 0.0254;
 
-  public ColorSensor colorSensor;
+   
+
+
+
+
+
   
   /**
    * This constructor will intialize internal variables for the robot turret
@@ -75,12 +86,67 @@ public class Vision {
     timer.start();
 
     this.limelightName = limelightName;
-    this.lockError      = lockError;
-    this.cameraHeight   = cameraHeight;
-    this.cameraAngle    = cameraAngle;
-    this.targetHeight   = targetHeight;
-    this.rotationKP     = rotationKP;
+    this.lockError     = lockError;
+    this.cameraHeight  = cameraHeight;
+    this.cameraAngle   = cameraAngle;
+    this.targetHeight  = targetHeight;
+    this.rotationKP    = rotationKP;
+  }
 
+
+  public void updateVision(){      //method should be called continuously during autonomous and teleop
+    double xError;
+    double yError;
+    double area;
+    double totalDx = 0;
+    double totalDy = 0;
+    int totalValid = 0;
+
+    // Read the Limelight data from the Network Tables
+    xError      = tx.getDouble(0.0);
+    yError      = ty.getDouble(0.0);
+    area        = ta.getDouble(0.0);
+    targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
+
+    //generates average of limelight parameters
+    previousCoordinates.add(new LimelightData(xError, yError, targetValid));
+    if (previousCoordinates.size() > STAT_SIZE){
+      previousCoordinates.removeFirst();
+    }
+
+    for(LimelightData data: previousCoordinates){
+      if (data.ballValid == true){
+        totalDx = data.dx + totalDx;
+        totalDy = data.dy + totalDy;
+        totalValid = totalValid +1;
+      }
+    }
+
+    processedDx = totalDx/totalValid;
+    processedDy = totalDy/totalValid;
+    targetValid = (totalValid >= MIN_LOCKS);
+
+    targetRange = distanceToTarget();
+
+    if (Math.abs(processedDx) < lockError){          // Turret is pointing at target (or no target)
+      targetLocked = targetValid;               // We are only locked when targetValid
+    }           
+    else{
+      targetLocked = false;
+    }
+
+    //post driver data to smart dashboard periodically
+    SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
+    SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
+    SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
+    SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
+    SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
+    SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
+    SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
+    SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
+    SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
+    SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
+    SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
   }
 
 
@@ -90,7 +156,6 @@ public class Vision {
     lastAngle = xError; // reset initial angle
     lastTime = xtime; // reset initial time
     return changeInAngleError;
-
   }
 
 
@@ -100,22 +165,9 @@ public class Vision {
    * Formula taken from https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
    * @return distance in meters
    */
-  public double distanceToTarget(double averageDy){
-    //targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
-    //double targetAngle = targetAngle.getDouble(0.0);
-    if (targetValid){
-      double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + averageDy) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
-      return distanceInches * IN_TO_METERS;
-    }
-    return -1;
-  }
-
-
   public double distanceToTarget(){
-    targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
-    double targetAngle = ty.getDouble(0.0);
     if (targetValid){
-      double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + targetAngle) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
+      double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + processedDy) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
       return distanceInches * IN_TO_METERS;
     }
     return -1;
@@ -128,92 +180,45 @@ public class Vision {
    * @return angle offset in radians 
    */
   public double offsetAngle(){
-    double offsetAngle = tx.getDouble(0.0);
-
-    return Math.toRadians(offsetAngle);
+    return Math.toRadians(processedDx);
   }
 
-
-  public double autoAim() {
-
-    // Read the Limelight data from the Network Tables
-    xError      = tx.getDouble(0.0);
-    yError      = ty.getDouble(0.0);
-    area        = ta.getDouble(0.0);
-    targetValid = (tv.getDouble(0.0) != 0); // Convert the double output to boolean
-
-    double totalDx = 0.0;
-    double totalDy = 0.0;
-    int totalValid = 0;
-
-    previousCoordinates.add(new LimelightData(xError, yError, targetValid));
-    if (previousCoordinates.size() > 5){
-      previousCoordinates.removeFirst();
-    }
-
-    for(LimelightData data: previousCoordinates){
-      if (data.ballValid == true){
-        totalDx = data.dx + totalDx;
-        totalDy = data.dy + totalDy;
-        totalValid = totalValid +1;
-      }
-    }
-
-    double averageDx = totalDx/totalValid;
-    double averageDy = totalDy/totalValid;
-    targetValid = totalValid >= 3;
-
+  public double turnRobot(){
     if (targetValid){
-      targetRange = distanceToTarget(averageDy);
-    
       // Setting power based on the xError causes the turret to slow down as the error approaches 0
       // This prevents the turret from overshooting 0 and oscillating back and forth
       // KP is a scaling factor that we tested
-      turnSpeed = Math.toRadians(averageDx) * rotationKP; // + turret_rotate_kd*delta();
+      turnSpeed = Math.toRadians(processedDx) * rotationKP; // + turret_rotate_kd*delta();
       turnSpeed = Math.max(turnSpeed, -4);
       turnSpeed = Math.min(turnSpeed, 4);
-    }
-    else if(lastAngle != 0){
-      turnSpeed = Math.toRadians(lastAngle) * rotationKP;
-      turnSpeed = Math.max(turnSpeed, -4);
-      turnSpeed = Math.min(turnSpeed, 4);
+      if (turnSpeed > 0){
+        turnSpeed = Math.max(turnSpeed, Constants.MIN_TURN_SPEED);
+      }
+      else{
+        turnSpeed = Math.min(turnSpeed, -Constants.MIN_TURN_SPEED);
+      }
     }
     else{
       turnSpeed = 1;
     }
     
-    if (Math.abs(xError) < lockError) {               // Turret is pointing at target (or no target)
-      targetLocked = targetValid;                     // We are only locked when targetValid
+    if (targetLocked){
+      turnSpeed = 0;
     }
-    else{
-      targetLocked = false;
-    }
-
-    //post driver data to smart dashboard periodically
-    SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
-    SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
-    SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
-    SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
-    SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
-    SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
-    SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     SmartDashboard.putNumber(limelightName + "/Turret Speed", turnSpeed);
-    SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
-    SmartDashboard.putNumber(limelightName + "/Average Y", averageDy);
-    SmartDashboard.putNumber(limelightName + "/Average X", averageDx);
-    SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
 
-
-    return turnSpeed;
+    return -turnSpeed;
   }
 
-  public void setLimelightAllianceColor(ALLIANCE_COLOR color){
-    if (colorSensor.getCurrentBallColor() == ALLIANCE_COLOR.RED){
-      NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(RED_PIPELINE);
+
+  public double moveTowardsTarget(){
+    double moveSpeed = 0.0;
+  
+    if (targetLocked == true){
+      moveSpeed = -.5;
     }
-    else {
-      NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(BLUE_PIPELINE);
-    }
+    SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
+    return moveSpeed;
   }
 
   private class LimelightData{ 

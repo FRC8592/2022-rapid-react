@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller s
 import frc.robot.Shooter;
 import frc.robot.Constants.ALLIANCE_COLOR;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.geometry.Rotation2d;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -60,7 +61,7 @@ public class Robot extends TimedRobot {
     shooter           = new Shooter();
     color             = new ColorSensor();
     //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
-
+    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
   }
 
   /**
@@ -124,6 +125,9 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
     
+    visionBall.updateVision();
+    visionRing.updateVision();
+
     locality.updatePosition(drive.getYaw(), visionRing);
 
     // Read gamepad controls
@@ -133,17 +137,19 @@ public class Robot extends TimedRobot {
 
     shooter.testshooter(shooterController);
 
-    NetworkTableInstance.getDefault().getTable("limelight ball").getEntry("pipeline").setNumber(1);
-    //visionBall.autoAim();
+   
   
     if(driverController.getRightBumper() == true){
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -visionRing.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
+      -joystickDeadband(translateY), -visionRing.turnRobot() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
     } 
     else if(driverController.getLeftBumper() == true) {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, -visionBall.autoAim() , drive.getGyroscopeRotation()));
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0, visionBall.turnRobot(),
+      Rotation2d.fromDegrees(0)));
     }
      else {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
+    -joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
     //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control

@@ -81,11 +81,13 @@ public final class Constants {
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     //ballVision constants
-    public static double BALL_LOCK_ERROR       = 1.0;
+    public static double BALL_LOCK_ERROR       = 2.0;
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 0.0;
     public static double BALL_CAMERA_ANGLE     = 0.0;
     public static double BALL_TARGET_HEIGHT    = 0.0;
-    public static double BALL_ROTATE_KP        = 10.0;   // Proportional constant for turret rotate speed
+    public static double BALL_ROTATE_KP        = 7.0;   // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
+    public static double MIN_TURN_SPEED        = 0.75;
+    public static double MAX_TURN_SPEED        = 0.5;
 }
