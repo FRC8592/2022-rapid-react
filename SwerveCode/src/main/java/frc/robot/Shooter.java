@@ -29,6 +29,9 @@ public class Shooter{
     public WPI_TalonFX flyWheelLeft;
     public WPI_TalonFX flyWheelRight;
     public WPI_TalonFX staging;
+    public ColorSensor cSensor;
+    //motor groups
+    MotorControllerGroup flyWheel;
 
     public enum ShooterState{AUTONOMOUS,SHOOT}
     private ShooterState shooterState;
@@ -95,9 +98,16 @@ public class Shooter{
         collector.driveProcessingWheels(1);
         SmartDashboard.putNumber("Running Manual", 1);
     }
-}
     
 
-
+    public void compareBallToAlliance(XboxController shooterController){
+        if(cSensor.compareBallToAlliance() == false){
+            flyWheel.set(shooterController.getRightTriggerAxis()*0.2);
+        }
+        if(cSensor.compareBallToAlliance() == true){
+            flyWheel.set(flyWheel);
+        }
+    }
+}
     
 
