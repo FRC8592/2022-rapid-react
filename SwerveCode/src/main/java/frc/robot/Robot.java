@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
     visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
-    color             = new ColorSensor();
+    cSensor             = new ColorSensor();
     //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
   }
@@ -163,12 +163,10 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putNumber("Rotate", rotate);
-    cSensor.getColors();
+    cSensor.updateCurrentBallColor();
     if(cSensor.getProximity() > 200){
       cSensor.updateCurrentBallColor();
     }
-
-    shooter.compareBallToAlliance();
 
   }
     /** This function is called once when the robot is disabled. */
