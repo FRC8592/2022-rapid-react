@@ -56,13 +56,6 @@ public class Vision {
 
    private final double DEG_TO_RAD = 0.0174533;
    private final double IN_TO_METERS = 0.0254;
-
-   
-
-
-
-
-
   
   /**
    * This constructor will intialize internal variables for the robot turret

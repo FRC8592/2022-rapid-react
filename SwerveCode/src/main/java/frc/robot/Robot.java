@@ -153,11 +153,11 @@ public class Robot extends TimedRobot {
     }
 
     //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
-    //if(shooterController.getAButton()){
-    //  shooter.testshooter(shooterController);
-    //}else{
-    //  collector.ballControl();
-    //}
+    if(shooterController.getAButton()){
+      shooter.testshooter(shooterController);
+    }else{
+      collector.ballControl();
+    }
 
     SmartDashboard.putNumber("Rotate", rotate);
     color.getColors();
