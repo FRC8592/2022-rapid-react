@@ -12,44 +12,42 @@ import com.revrobotics.ColorSensorV3;
 public class ColorSensor{
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
     private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
-    
 
     private ALLIANCE_COLOR alliance;
     private ALLIANCE_COLOR currentBallColor;
 
 
     public ColorSensor(){
-        alliance = updateCurrentBallColor();
+        alliance = updateCurrentBallColor(); 
         currentBallColor = alliance;
     }
-
-    public void getColors(){
-        Color detectedColor = m_colorSensor.getColor();
-        int proximity = m_colorSensor.getProximity();
-      
-        SmartDashboard.putNumber("Red", detectedColor.red); //output the seen overall red value to the smartdashboard
-        SmartDashboard.putNumber("Blue", detectedColor.blue); //output the seen overall blue value to the smartdashboard
-        SmartDashboard.putNumber("Proximity", proximity);  //distance from colorsensor to the nearest object (2047 to 0) output to the smartdashboard
-        SmartDashboard.putString("alliance", this.toString()); //current alliance value output the the smartdashboard
-        //System.out.println(detectedColor.red);
-    }
-
     public ALLIANCE_COLOR updateCurrentBallColor(){
         Color detectedColor = m_colorSensor.getColor();
+        SmartDashboard.putNumber("Red", detectedColor.red); //output the seen overall red value to the smartdashboard
+        SmartDashboard.putNumber("Blue", detectedColor.blue); //output the seen overall blue value to the smartdashboard
+        SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());  //distance from colorsensor to the nearest object (2047 to 0) output to the smartdashboard
+        SmartDashboard.putString("alliance", this.toString()); //current alliance value output the the smartdashboard
+        if(m_colorSensor.getProximity() >= 1500){
         if(detectedColor.blue > detectedColor.red){
           return ALLIANCE_COLOR.BLUE;
         }else if(detectedColor.red > detectedColor.blue){
           return ALLIANCE_COLOR.RED;
+           }
+           else{
+            return ALLIANCE_COLOR.NONE;
+        }
         }else{
-            return ALLIANCE_COLOR.NONE;}
+            return ALLIANCE_COLOR.NONE;
+        }
       }
 
     public boolean compareBallToAlliance(){
-        if(currentBallColor == alliance){
-            return true;
-        }else if(currentBallColor != alliance){
-            return false;
-        }else{return false;}
+        boolean aColor = true;
+        if (this.alliance != ALLIANCE_COLOR.NONE){
+            ALLIANCE_COLOR color = updateCurrentBallColor();
+             aColor = (color != ALLIANCE_COLOR.NONE && color != this.alliance);
+        }
+        return aColor;
     }
 
     public int getProximity(){

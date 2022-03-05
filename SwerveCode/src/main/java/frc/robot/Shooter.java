@@ -64,7 +64,7 @@ public class Shooter{
     }
 
     public void compareBallToAlliance(XboxController shooterController){
-        if(cSensor.compareBallToAlliance() == false){
+        if(cSensor.isAllianceColor() == false){
             flyWheel.set(shooterController.getRightTriggerAxis()*0.2);
         }
         if(cSensor.compareBallToAlliance() == true){

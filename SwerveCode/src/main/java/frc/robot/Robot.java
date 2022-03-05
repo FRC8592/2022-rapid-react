@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
     ball              = new ballTargeting();
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
-    cSensor             = new ColorSensor();
+  
 
     ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
 
@@ -96,7 +96,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-
+      cSensor   = new ColorSensor();
         m_autoSelected = m_chooser.getSelected();
         // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
         System.out.println("Auto selected: " + m_autoSelected);
@@ -108,6 +108,9 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    if (cSensor == null){
+      cSensor = new ColorSensor();
+    }
     drive.zeroGyroscope();
     //Create the primary controller object
   }
