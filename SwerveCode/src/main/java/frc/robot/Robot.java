@@ -58,8 +58,8 @@ public class Robot extends TimedRobot {
     visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR, Constants.RING_CAMERA_HEIGHT, Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT, Constants.TURRET_ROTATE_KP);
     visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
     locality          = new Locality(0, 0);
-    shooter           = new Shooter();
-    color             = new ColorSensor();
+    //shooter           = new Shooter();
+    //color             = new ColorSensor();
     //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
   }
@@ -137,7 +137,7 @@ public class Robot extends TimedRobot {
   
     if(driverController.getRightBumper() == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
-      -joystickDeadband(translateY), -visionRing.turnRobot() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
+      -joystickDeadband(translateY), visionRing.turnRobot() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
     } 
     else if(driverController.getLeftBumper() == true) {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0, visionBall.turnRobot(), //ball aiming
@@ -150,14 +150,14 @@ public class Robot extends TimedRobot {
     }
 
 
-    shooter.collectorDriverControl(shooterController);
+    //shooter.collectorDriverControl(shooterController);
     
 
     SmartDashboard.putNumber("Rotate", rotate);
-    color.getColors();
-    if(color.getProximity() > 200){
-      color.updateCurrentBallColor();
-    }
+  //  color.getColors();
+   // if(color.getProximity() > 200){
+    //  color.updateCurrentBallColor();
+    //}
   }
     /** This function is called once when the robot is disabled. */
     @Override

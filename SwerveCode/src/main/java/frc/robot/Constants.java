@@ -58,11 +58,11 @@ public final class Constants {
     //
     // CAN IDs for the ball collector and launching system
     //
-    public static final int newFlywheelLeft      = 23;
+    public static final int newFlywheelLeft      = 22;
     public static final int newFlywheelRight     = 20;
-    public static final int newFlywheelStaging   = 22;
-    public static final int newFlywheelCollector = 21;
-    public static final int newCollectorArm = 24; //Change this I don't know what the arm CAN is
+    public static final int newFlywheelStaging   = 21;
+    public static final int newFlywheelCollector = 23;
+    public static final int newCollectorArm      = 24; 
 
     //IR sensor ports
     public static final int LINE_BREAK_TOP_SENSOR_PORT = 0;
@@ -74,11 +74,11 @@ public final class Constants {
 
     //ringVision constants
     public static double RING_LOCK_ERROR       = 1.0;
-    public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
+    public static double TURRET_ERROR          = 2.0;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 36.0;            // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 0.0;           // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104;           // Center of target above ground (inches)
-    public static double TURRET_ROTATE_KP      = 1.0;          // 15.6 Proportional constant for turret rotate speed
+    public static double TURRET_ROTATE_KP      = 6.0;          // 15.6 Proportional constant for turret rotate speed
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     //ballVision constants
@@ -89,6 +89,6 @@ public final class Constants {
     public static double BALL_TARGET_HEIGHT    = 0.0;
     public static double BALL_ROTATE_KP        = 7.0;   // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
-    public static double MIN_TURN_SPEED        = 0.75;
+    public static double MIN_TURN_SPEED        = 0.35;
     public static double MAX_TURN_SPEED        = 0.5;
 }
