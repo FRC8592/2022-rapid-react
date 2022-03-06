@@ -19,12 +19,11 @@ public class Vision {
   private double cameraAngle;
   private double targetHeight;
   private double rotationKP;
-
   // Network Table entries
-  private NetworkTableEntry tx;                         // Angle error (x) from LimeLight camera
-  private NetworkTableEntry ty;                         // Angle error (y) from LimeLight camera
-  private NetworkTableEntry ta;                         // Target area measurement from LimeLight camera
-  private NetworkTableEntry tv;                         // Target valid indicator from Limelight camera
+  private NetworkTableEntry tx;   // Angle error (x) from LimeLight camera
+  private NetworkTableEntry ty;   // Angle error (y) from LimeLight camera
+  private NetworkTableEntry ta;   // Target area measurement from LimeLight camera
+  private NetworkTableEntry tv;   // Target valid indicator from Limelight camera
   // Shared variables
   public boolean targetValid;     // Indicate when the Limelight camera has found a target
   public boolean targetLocked;    // Indicate when the turret is centered on the target
@@ -34,11 +33,8 @@ public class Vision {
   private double processedDy = 0;
   //Private autoaim variables
    private double turnSpeed;
-   private double xError;
-   private double yError;
-   private double area;
-   private double lastTime = 0;
-   private double xtime = 0;
+   private double lastTime  = 0;
+   private double xtime     = 0;
    private double lastAngle = 0;
    private double changeInAngleError = 0;
 
@@ -50,19 +46,21 @@ public class Vision {
 
    private String limelightName;
 
-  //pipeline constants
+  // Pipeline constants
    private static int BLUE_PIPELINE = 1;
    private static int RED_PIPELINE = 0;
 
    private final double DEG_TO_RAD = 0.0174533;
    private final double IN_TO_METERS = 0.0254;
   
+
   /**
    * This constructor will intialize internal variables for the robot turret
    */
-  public Vision(String limelightName, double lockError, double cameraHeight, double cameraAngle, double targetHeight, double rotationKP) {
+  public Vision(String limelightName, double lockError, double cameraHeight,
+                double cameraAngle, double targetHeight, double rotationKP) {
 
-    //set up networktables for limelight
+    // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
@@ -145,9 +143,9 @@ public class Vision {
 
   public double delta(){ //gets the change in angle over time(seconds)
     xtime = timer.get(); 
-    changeInAngleError = (xError - lastAngle)/(xtime - lastTime);
-    lastAngle = xError; // reset initial angle
-    lastTime = xtime; // reset initial time
+    changeInAngleError = (processedDx - lastAngle)/(xtime - lastTime);
+    lastAngle = processedDx;  // reset initial angle
+    lastTime  = xtime;        // reset initial time
     return changeInAngleError;
   }
 
@@ -184,6 +182,10 @@ public class Vision {
       turnSpeed = Math.toRadians(processedDx) * rotationKP; // + turret_rotate_kd*delta();
       turnSpeed = Math.max(turnSpeed, -4);
       turnSpeed = Math.min(turnSpeed, 4);
+
+      //
+      // Set a minimum turnSpeed so that we don't get stuck when close to zero error
+      //
       if (turnSpeed > 0){
         turnSpeed = Math.max(turnSpeed, Constants.MIN_TURN_SPEED);
       }
@@ -192,9 +194,12 @@ public class Vision {
       }
     }
     else{
-      turnSpeed = 1;
+      turnSpeed = 1;    // Spin in a circle until a target is located
     }
     
+    //
+    // Stop turning immediately when target is locked (at center)
+    //
     if (targetLocked){
       turnSpeed = 0;
     }
@@ -203,7 +208,10 @@ public class Vision {
     return -turnSpeed;
   }
 
-
+  //
+  // Drive towards the target
+  // This should probably be updated to base speed on distance from the target
+  //
   public double moveTowardsTarget(){
     double moveSpeed = 0.0;
   
@@ -213,6 +221,7 @@ public class Vision {
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
     return moveSpeed;
   }
+
 
   private class LimelightData{ 
     double dx;
