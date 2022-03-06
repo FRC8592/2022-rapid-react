@@ -15,6 +15,7 @@ public class Collector {
     WPI_TalonFX collectorArm;
     public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
     private CollectorState collectorState;
+    public ColorSensor cSensor;
 
     //This class will contain all new collector specific methods
     public Collector(){
@@ -81,8 +82,12 @@ public class Collector {
 
     //reverses intake entirely in the event we need it
     public void intakeReverse(){
-        this.reverseProcessingWheels();
-        this.reverseStagingWheels();
+        long startTime = System.currentTimeMillis();
+        while(System.currentTimeMillis() - startTime <= 2000){
+            this.reverseProcessingWheels();
+            this.reverseStagingWheels();
+        }
+        
     }
 
     public CollectorState determineCollectorState(){
@@ -138,16 +143,11 @@ public class Collector {
             break;
 
     
-        }   
-
+        }
 
 
         SmartDashboard.putBoolean("LineSensorTop", lineSensorTop.get());
         SmartDashboard.putBoolean("LineSensorBottom", lineSensorBottom.get());
-    }
-
-    public void manualControl(){
-            
     }
 
 

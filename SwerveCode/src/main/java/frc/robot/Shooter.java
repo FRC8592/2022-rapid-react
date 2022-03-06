@@ -58,6 +58,7 @@ public class Shooter{
 
         flywheelVelocity = -0.5;
         flyWheelRight.set(ControlMode.PercentOutput, flywheelVelocity);
+        cSensor = new ColorSensor();
     }
 
     public ShooterState determineShooterState(){
@@ -100,14 +101,12 @@ public class Shooter{
     }
     
 
-    public void compareBallToAlliance(XboxController shooterController){
+    public void compareBallToAlliance(){
         if(cSensor.compareBallToAlliance() == false){
-            flyWheel.set(shooterController.getRightTriggerAxis()*0.2);
+            collector.intakeReverse();
         }
         if(cSensor.compareBallToAlliance() == true){
-            flyWheel.set(flyWheel);
+            //dont
         }
     }
 }
-    
-
