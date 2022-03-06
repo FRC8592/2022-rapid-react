@@ -144,7 +144,8 @@ public class Robot extends TimedRobot {
       -joystickDeadband(translateY), -visionRing.turnRobot() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
     } 
     else if(driverController.getLeftBumper() == true) {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0, visionBall.turnRobot(),
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0, visionBall.turnRobot(), //ball aiming
+  
       Rotation2d.fromDegrees(0)));
     }
      else {
