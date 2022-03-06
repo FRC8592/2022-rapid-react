@@ -90,7 +90,7 @@ public class Collector {
         SmartDashboard.getBoolean("LineSensorTop", topState);
         boolean bottomState = lineSensorBottom.get();
         SmartDashboard.getBoolean("LineSensorBottom", bottomState);
-
+        
         //this makes sure to tell which states are which
         if(!bottomState){
             if(!topState){
