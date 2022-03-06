@@ -86,7 +86,7 @@ public class Shooter{
 
 
     public void manualControl(){
-        collector.intakeAllRun();
+       //collector.intakeAllRun();
         SmartDashboard.putNumber("Running Manual", 1);
     }
 }
