@@ -21,7 +21,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class Shooter{ 
 
-    //constants\
+    //constants
     Collector collector;
 
     //motor controllors
