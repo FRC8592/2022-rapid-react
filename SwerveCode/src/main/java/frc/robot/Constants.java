@@ -58,10 +58,10 @@ public final class Constants {
     //
     // CAN IDs for the ball collector and launching system
     //
-    public static final int newFlywheelLeft      = 22;
+    public static final int newFlywheelLeft      = 23;
     public static final int newFlywheelRight     = 20;
-    public static final int newFlywheelStaging   = 21;
-    public static final int newFlywheelCollector = 23;
+    public static final int newFlywheelStaging   = 22;
+    public static final int newFlywheelCollector = 21;
     public static final int newCollectorArm      = 24; 
 
     //IR sensor ports
@@ -89,6 +89,6 @@ public final class Constants {
     public static double BALL_TARGET_HEIGHT    = 0.0;
     public static double BALL_ROTATE_KP        = 7.0;   // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
-    public static double MIN_TURN_SPEED        = 0.35;
+    public static double MIN_TURN_SPEED        = 0.75;
     public static double MAX_TURN_SPEED        = 0.5;
 }
