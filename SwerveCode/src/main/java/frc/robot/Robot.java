@@ -58,7 +58,7 @@ public class Robot extends TimedRobot {
     visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR, Constants.RING_CAMERA_HEIGHT, Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT, Constants.TURRET_ROTATE_KP);
     visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
     locality          = new Locality(0, 0);
-    //shooter           = new Shooter();
+    shooter           = new Shooter();
     //color             = new ColorSensor();
     //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
@@ -144,13 +144,13 @@ public class Robot extends TimedRobot {
   
       Rotation2d.fromDegrees(0)));
     }
-     else {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
+    else {
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
     -joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
 
-    //shooter.collectorDriverControl(shooterController);
+    shooter.collectorDriverControl(shooterController);
     
 
     SmartDashboard.putNumber("Rotate", rotate);
