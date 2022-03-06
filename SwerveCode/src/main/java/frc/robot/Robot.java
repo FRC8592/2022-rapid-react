@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
 import frc.robot.Shooter;
 import frc.robot.Constants.ALLIANCE_COLOR;
-
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.geometry.Rotation2d;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -34,8 +35,8 @@ public class Robot extends TimedRobot {
 
   public Drivetrain drive;
   public Autonomous autonomous;
-  public Vision vision;
-  public ballTargeting ball;
+  public Vision visionRing;
+  public Vision visionBall;
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
@@ -53,15 +54,13 @@ public class Robot extends TimedRobot {
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
     drive             = new Drivetrain();
-    vision            = new Vision();
-    ball              = new ballTargeting();
+    visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR, Constants.RING_CAMERA_HEIGHT, Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT, Constants.TURRET_ROTATE_KP);
+    visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
-    collector         = new Collector();
-
-    ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
-
+    //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
+    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
   }
 
   /**
@@ -125,52 +124,38 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
     
-    locality.updatePosition(drive.getYaw(), vision);
+    visionBall.updateVision();
+    visionRing.updateVision();
+
+    locality.updatePosition(drive.getYaw(), visionRing);
 
     // Read gamepad controls
     rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;            // Right joystick
     translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
-
-    shooter.testshooter(shooterController);
-
-    ball.ballAim();
   
     if(driverController.getRightBumper() == true){
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -vision.autoAim() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
+      -joystickDeadband(translateY), -visionRing.turnRobot() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
     } 
     else if(driverController.getLeftBumper() == true) {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0, -ball.ballAim() , drive.getGyroscopeRotation()));
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0, visionBall.turnRobot(),
+      Rotation2d.fromDegrees(0)));
     }
      else {
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),-joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
+    -joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
-    if(shooterController.getBButton()){
-      collector.startIntakeDown();  
 
-    }
-
-    if (shooterController.getXButton()){
-      collector.startIntakeUp();
-
-    }
-    collector.intakePosition();
-
-    //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
-    if(shooterController.getAButton()){
-      shooter.testshooter(shooterController);
-    }else{
-      collector.ballControl();
-    }
+    shooter.collectorDriverControl(shooterController);
+    
 
     SmartDashboard.putNumber("Rotate", rotate);
     color.getColors();
     if(color.getProximity() > 200){
       color.updateCurrentBallColor();
     }
-
-
   }
     /** This function is called once when the robot is disabled. */
     @Override
@@ -200,5 +185,4 @@ public class Robot extends TimedRobot {
             return inputJoystick;
         }
     }
-
 }
