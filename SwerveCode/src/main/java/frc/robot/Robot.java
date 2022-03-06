@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
-  public ColorSensor color;
+ // public ColorSensor color;
 
   
   /**
@@ -135,9 +135,8 @@ public class Robot extends TimedRobot {
     translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
 
+    ball.ballAim();
     shooter.testshooter(shooterController);
-
-   
   
     if(driverController.getRightBumper() == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
@@ -152,19 +151,16 @@ public class Robot extends TimedRobot {
     -joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
-    //this makes sure that when the driver pushes the A button they can control the shooter directly, if not this runs the ball control
-    if(shooterController.getAButton()){
-      shooter.testshooter(shooterController);
-    }else{
-      collector.ballControl();
-    }
+
+    shooter.collectorDriverControl(shooterController);
+    
 
     SmartDashboard.putNumber("Rotate", rotate);
-    color.getColors();
+    /*color.getColors();
     if(color.getProximity() > 200){
       color.updateCurrentBallColor();
-    }
-
+      { 
+        */
 
   }
     /** This function is called once when the robot is disabled. */
