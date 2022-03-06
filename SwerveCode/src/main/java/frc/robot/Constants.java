@@ -65,15 +65,14 @@ public final class Constants {
     public static final int intakePosition       = 24;
 
     //IR sensor ports
-    public static final int LINE_BREAK_TOP_SENSOR_PORT = -2;
-    public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = -1;
+    public static final int LINE_BREAK_TOP_SENSOR_PORT = 0;
+    public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = 1;
 
     public static enum ALLIANCE_COLOR {
         BLUE, RED, NONE
     }
     //limit switches
-    public static final int LIMIT_SWITCH_BOTTOM_PORT = -3;
-    public static final int LIMIT_SWITCH_TOP_PORT = -4; 
+    public static final int LIMIT_SWITCH_TOP_PORT = 3; 
 
 
 }
