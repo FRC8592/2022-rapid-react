@@ -54,6 +54,10 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 10;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
 
+    //
+    // CAN ID for Rev Power Distribution Hub
+    //
+    public static final int PDH_CAN_ID = 30;
 
     //
     // CAN IDs for the ball collector and launching system
@@ -62,6 +66,7 @@ public final class Constants {
     public static final int newFlywheelRight     = 20;
     public static final int newFlywheelStaging   = 21;
     public static final int newFlywheelCollector = 23;
+    public static final int ARM_MOTOR_CAN        = 24;
 
     //IR sensor ports
     public static final int LINE_BREAK_TOP_SENSOR_PORT = -2;

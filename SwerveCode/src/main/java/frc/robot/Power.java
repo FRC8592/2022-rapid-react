@@ -33,7 +33,7 @@ public class Power {
     // Periodically post power data to the dashboard
     //
     public void powerPeriodic() {
-        // Get parameters from the PDH\
+        // Get parameters from the PDH
         temp    = revPDH.getTemperature();
         voltage = revPDH.getVoltage();
         current = revPDH.getTotalCurrent();
