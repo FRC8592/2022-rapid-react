@@ -58,10 +58,10 @@ public final class Constants {
     //
     // CAN IDs for the ball collector and launching system
     //
-    public static final int newFlywheelLeft      = 23;
+    public static final int newFlywheelLeft      = 22;
     public static final int newFlywheelRight     = 20;
-    public static final int newFlywheelStaging   = 22;
-    public static final int newFlywheelCollector = 21;
+    public static final int newFlywheelStaging   = 21;
+    public static final int newFlywheelCollector = 23;
     public static final int newCollectorArm      = 24; 
 
     //IR sensor ports
