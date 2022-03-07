@@ -25,10 +25,9 @@ public class Shooter{
     Collector collector;
 
     //motor controllors
-    public WPI_TalonFX processing;
     public WPI_TalonFX flyWheelLeft;
     public WPI_TalonFX flyWheelRight;
-    public WPI_TalonFX staging;
+    
 
     public enum ShooterState{AUTONOMOUS,SHOOT}
     private ShooterState shooterState;
@@ -38,17 +37,13 @@ public class Shooter{
 
     public Shooter(){
         collector     = new Collector();
-        processing    = new WPI_TalonFX(Constants.newFlywheelCollector);
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
-        staging       = new WPI_TalonFX(Constants.newFlywheelStaging);
 
         flyWheelLeft.follow(flyWheelRight);
         flyWheelLeft.setInverted(InvertType.OpposeMaster);
 
         flyWheelRight.setInverted(false);
-        processing.setInverted(true);
-        staging.setInverted(true);
 
         flywheelVelocity = SmartDashboard.getNumber("enter velocity", 10);
         SmartDashboard.putNumber("Flywheel Velocity", flywheelVelocity);
@@ -91,8 +86,7 @@ public class Shooter{
 
 
     public void manualControl(){
-        collector.driveStagingWheels(1);
-        collector.driveProcessingWheels(1);
+       //collector.intakeAllRun();
         SmartDashboard.putNumber("Running Manual", 1);
     }
 }
