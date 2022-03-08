@@ -54,7 +54,6 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 10;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
 
-
     //
     // CAN IDs for the ball collector and launching system
     //
@@ -62,11 +61,27 @@ public final class Constants {
     public static final int newFlywheelRight     = 20;
     public static final int newFlywheelStaging   = 21;
     public static final int newFlywheelCollector = 23;
-    public static final int newCollectorArm = 24;
-    //IR sensor ports
-    public static final int LINE_BREAK_TOP_SENSOR_PORT = 0;
-    public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = 1;
+    public static final int newCollectorArm      = 24;
 
+    // Other CAN IDs
+    public static final int PDH_CAN = 30;
+
+    // DIO Ports
+    public static final int LINE_BREAK_TOP_SENSOR_PORT    = 0;
+    public static final int LINE_BREAK_BOTTOM_SENSOR_PORT = 1;
+    public static final int COLLECTOR_ARM_LIMIT_SWITCH    = 3;
+
+    // Constants for controlling the shooter flywheel
+    public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
+    public static double FLYWHEEL_P = 0.0;                     // Starting value.  Needs tuning
+    public static double FLYWHEEL_I = 0.0;                     // Starting value.  Needs tuning
+    public static double FLYWHEEL_D = 0.0;                     // Starting value.  Needs tuning
+    public static double FLYWHEEL_F = 0.05;                    // Starting value.  Needs tuning
+    public static double STARTING_FLYWHEEL_SPEED = 3000;
+    public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
+    public static double RPM_MAX_ERROR   = 20;                 // Allowed RPM error for flywheel
+
+    // Alliance color enumeration
     public static enum ALLIANCE_COLOR {
         BLUE, RED, NONE
     }
