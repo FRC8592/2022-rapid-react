@@ -1,5 +1,5 @@
 //code by Zolton
-/*package frc.robot;
+package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.I2C;
@@ -79,4 +79,3 @@ public class ColorSensor{
         return s;
     }
 }
-*/
