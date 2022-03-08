@@ -162,7 +162,7 @@ public class Shooter{
         switch (determineShooterState()) {
             case SHOOT:
                 if(shootController.getBButton()){
-                    manualControl(); // TODO: Check flywheel RPM and aiming status
+                    manualControl(); // TODO: Check flywheel RPM (flywheelReady) and aiming status
                     
                 }else{
                     collector.ballControl();
