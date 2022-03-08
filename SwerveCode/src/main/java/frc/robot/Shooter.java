@@ -79,8 +79,8 @@ public class Shooter{
      *               the controller
      * @return Rotational velocity in RPM
      */
-    private double falconToRpm(double falconTps) {
-        return falconTps / Constants.RPM_TO_TICKS_MS;
+    private double falconToRpm(double falconTpms) {
+        return falconTpms / Constants.RPM_TO_TICKS_MS;
     }
 
 
