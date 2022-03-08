@@ -119,7 +119,6 @@ public class Robot extends TimedRobot {
    * All done by driver
   */
   @Override
-  
   public void teleopPeriodic(){
     double translateX;
     double translateY;
@@ -131,19 +130,28 @@ public class Robot extends TimedRobot {
     locality.updatePosition(drive.getYaw(), visionRing);
     shooter.collectorDriverControl(shooterController);
 
-    // Read gamepad controls
-    rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;            // Right joystick
-    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;             //X is forward Direction, Forward on Joystick is Y
+    // Read gamepad controls and scale control values
+    rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
+    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;         // X is forward Direction, Forward on Joystick is Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
   
+    //
+    // Activate ring targetting by holding down the right bumper on the driver controller
+    //
     if(driverController.getRightBumper() == true){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
       -joystickDeadband(translateY), -visionRing.turnRobot() , drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions 
-    } 
+    }
+    //
+    // Activate ball (cargo) targetting and fetching by holding down the left bumper on the driver controller
+    //
     else if(driverController.getLeftBumper() == true) {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0, visionBall.turnRobot(),
       Rotation2d.fromDegrees(0)));
     }
+    //
+    // Drive normally
+    //
      else {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX),
     -joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
