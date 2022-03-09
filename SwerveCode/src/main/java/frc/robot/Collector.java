@@ -6,24 +6,28 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Collector {
-
-    
+    // Line break sensors
     private DigitalInput lineSensorTop;
     private DigitalInput lineSensorBottom;
-    WPI_TalonFX processing;
-    WPI_TalonFX staging;
-    WPI_TalonFX collectorArm;
+    // Collector motors
+    private WPI_TalonFX processing;
+    private WPI_TalonFX staging;
+    private WPI_TalonFX collectorArm;
+    // Internal state
     public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
-    private CollectorState collectorState;
+    public CollectorState collectorState;
 
-    //This class will contain all new collector specific methods
+    //
+    // Intialize hardware
+    //
     public Collector(){
         collectorArm = new WPI_TalonFX(Constants.newCollectorArm);
-        processing = new WPI_TalonFX(Constants.newFlywheelCollector);
-        staging = new WPI_TalonFX(Constants.newFlywheelStaging);
+        processing   = new WPI_TalonFX(Constants.newFlywheelCollector);
+        staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
-        lineSensorTop = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
+        lineSensorTop    = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
         
+        // Invert these motors so that positive power drives balls inward
         processing.setInverted(true);
         staging.setInverted(true);
     }
@@ -106,8 +110,6 @@ public class Collector {
             }
         }
 
-
-
         SmartDashboard.putString("Collector State", collectorState.toString());
         return collectorState;
     }
@@ -139,8 +141,6 @@ public class Collector {
 
     
         }   
-
-
 
         SmartDashboard.putBoolean("LineSensorTop", lineSensorTop.get());
         SmartDashboard.putBoolean("LineSensorBottom", lineSensorBottom.get());
