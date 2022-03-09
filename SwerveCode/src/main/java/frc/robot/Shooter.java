@@ -45,7 +45,7 @@ public class Shooter{
 
         flyWheelRight.setInverted(false);
 
-        flywheelVelocity = SmartDashboard.getNumber("enter velocity", 10);
+        flywheelVelocity = SmartDashboard.getNumber("enter velocity", 0.3);
         SmartDashboard.putNumber("Flywheel Velocity", flywheelVelocity);
 
         flywheelVelocity = -0.5;
