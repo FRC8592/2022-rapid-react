@@ -194,7 +194,7 @@ public class Vision {
       }
     }
     else{
-      turnSpeed = 1;    // Spin in a circle until a target is located
+      turnSpeed = 2;    // Spin in a circle until a target is located
     }
     
     //
