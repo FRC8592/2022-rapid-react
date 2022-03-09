@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.XboxController;
 
 
 public class CollectorArm {
@@ -29,6 +30,7 @@ public class CollectorArm {
     public CollectorArm () {
         // Create the arm motor object
         armMotor = new WPI_TalonFX(Constants.intakePosition);
+        armMotor.setInverted(true);
 
         // Select and reset the encoder for the arm
         armMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
@@ -45,20 +47,46 @@ public class CollectorArm {
 
     }
 
-    public void update(){
+    public void update(XboxController shootController){
         SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
+        SmartDashboard.putString("Arm State", armState.toString());
 
         switch (armState) {
             case ARM_UP:
-                if(limitSwitch.get())
+                if(limitSwitch.get() == false){
+                    armMotor.set(0.0);
+
+                }
+                else{
+                    armState = armStates.ARM_RAISING;
+
+                }
                 break;
             case ARM_RAISING:
+                if(limitSwitch.get()){
+                    armMotor.set(0.25);
 
+                }
+                else{
+                    armState = armStates.ARM_UP;
+                }
                 break;
             case ARM_DESCENDING:
+                if(shootController.getAButton()){
+                    armMotor.set(-0.25);
+
+                }
 
                 break;
             case ARM_COLLECTING:
+                if(armMotor.getSelectedSensorPosition() >= Constants.BALL_SET_POINT){
+                    armMotor.set(0.0);
+
+                }
+                else{
+                    armState = armStates.ARM_DESCENDING;
+
+                }
 
                 break;
 

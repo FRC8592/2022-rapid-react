@@ -58,10 +58,10 @@ public final class Constants {
     //
     // CAN IDs for the ball collector and launching system
     //
-    public static final int newFlywheelLeft      = 23;
+    public static final int newFlywheelLeft      = 22;
     public static final int newFlywheelRight     = 20;
-    public static final int newFlywheelStaging   = 22;
-    public static final int newFlywheelCollector = 21;
+    public static final int newFlywheelStaging   = 21;
+    public static final int newFlywheelCollector = 23;
     public static final int intakePosition       = 24;
 
     //IR sensor ports
@@ -74,7 +74,7 @@ public final class Constants {
     //limit switches
     public static final int LIMIT_SWITCH_TOP_PORT = 3; 
 
-
+    public static int BALL_SET_POINT = 0;
 
     //ringVision constants
     public static double RING_LOCK_ERROR       = 1.0;

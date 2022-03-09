@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
+  public CollectorArm collectorArm;
   public ColorSensor color;
   
   /**
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
+    collectorArm      = new CollectorArm(); 
     //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
   }
@@ -150,6 +152,7 @@ public class Robot extends TimedRobot {
 
     shooter.collectorDriverControl(shooterController);
     
+    collectorArm.update(shooterController);
 
     SmartDashboard.putNumber("Rotate", rotate);
     color.getColors();

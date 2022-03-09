@@ -53,7 +53,7 @@ public class Shooter{
         flywheelVelocity = SmartDashboard.getNumber("enter velocity", 10);
         SmartDashboard.putNumber("Flywheel Velocity", flywheelVelocity);
 
-        flywheelVelocity = -0.5;
+        flywheelVelocity = -0.2;
         flyWheelRight.set(ControlMode.PercentOutput, flywheelVelocity);
     }
 
