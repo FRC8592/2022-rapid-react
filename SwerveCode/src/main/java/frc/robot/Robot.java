@@ -9,9 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.XboxController; //this puts in the xbox contoller stuff
-import frc.robot.Shooter;
-import frc.robot.Constants.ALLIANCE_COLOR;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.geometry.Rotation2d;
 /**
@@ -40,6 +38,7 @@ public class Robot extends TimedRobot {
   public Shooter shooter;
   public Collector collector;
   public ColorSensor color;
+  public Power powerMonitor;
 
   
   /**
@@ -60,6 +59,7 @@ public class Robot extends TimedRobot {
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     color             = new ColorSensor();
+    powerMonitor      = new Power();
     //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
   }
@@ -129,6 +129,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     shooter.collectorDriverControl(shooterController);
+    powerMonitor.powerPeriodic();
 
     // Read gamepad controls and scale control values
     rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
