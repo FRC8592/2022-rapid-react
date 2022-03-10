@@ -7,8 +7,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 
-import frc.robot.Constants.ALLIANCE_COLOR;
-
 import java.util.LinkedList;
 
 public class Vision {

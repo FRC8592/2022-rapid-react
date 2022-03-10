@@ -1,81 +1,105 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// Identify the color of an ingested ball at start up (alliance color) and during collection
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //code by Zolton
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.DriverStation.Alliance; // idk what this is but im keeping it
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.Constants.ALLIANCE_COLOR;
 
 import com.revrobotics.ColorSensorV3;
 
 public class ColorSensor{
+    // Color sensor I2C interface
     private final I2C.Port i2cPort = I2C.Port.kOnboard;
     private final ColorSensorV3 m_colorSensor = new ColorSensorV3(i2cPort);
+
+    // Alliance color enumeration
+    public static enum BALL_COLOR {RED, BLUE, NONE} // DO NOT CHANGE ORDER.  Limelight configuration depends on red, blue, none order
     
+    // Internal ball color tracking
+    private BALL_COLOR allianceColor    = BALL_COLOR.NONE;
+    private BALL_COLOR currentBallColor = BALL_COLOR.NONE;
 
-    private ALLIANCE_COLOR alliance;
-    private ALLIANCE_COLOR currentBallColor;
 
+    /**
+     * Set the alliance color for the match based on the ball loaded into the robot
+     */
+    public ColorSensor() {
+        allianceColor = updateCurrentBallColor();      // Get the color and assign it to the alliance color
 
-    public ColorSensor(){
-        alliance = updateCurrentBallColor();
-        currentBallColor = alliance;
+        SmartDashboard.putString("Alliance", allianceColor.toString());
     }
 
-    public void getColors(){
-        Color detectedColor = m_colorSensor.getColor();
-        int proximity = m_colorSensor.getProximity();
-      
-        SmartDashboard.putNumber("Red", detectedColor.red); //output the seen overall red value to the smartdashboard
-        SmartDashboard.putNumber("Blue", detectedColor.blue); //output the seen overall blue value to the smartdashboard
-        SmartDashboard.putNumber("Proximity", proximity);  //distance from colorsensor to the nearest object (2047 to 0) output to the smartdashboard
-        SmartDashboard.putString("alliance", this.toString()); //current alliance value output the the smartdashboard
-        //System.out.println(detectedColor.red);
+
+    /**
+     * 
+     * @return Alliance color encoded as BALL_COLOR
+     */
+    public BALL_COLOR getAllianceColor() {
+        return allianceColor;
     }
 
-    public ALLIANCE_COLOR updateCurrentBallColor(){
-        Color detectedColor = m_colorSensor.getColor();
-        if(detectedColor.blue > detectedColor.red){
-          return ALLIANCE_COLOR.BLUE;
-        }else if(detectedColor.red > detectedColor.blue){
-          return ALLIANCE_COLOR.RED;
-        }else{
-            return ALLIANCE_COLOR.NONE;}
-      }
 
-    public boolean compareBallToAlliance(){
-        if(currentBallColor == alliance){
-            return true;
-        }else if(currentBallColor != alliance){
-            return false;
-        }else{return false;}
-    }
-
-    public int getProximity(){
-        //int proximity = m_colorSensor.getProximity();
-        return m_colorSensor.getProximity();
-    }
-
-    public ALLIANCE_COLOR getAlliance(){
-        return alliance;
-    }
-
-    public ALLIANCE_COLOR getCurrentBallColor(){
+     /**
+     * 
+     * @return Ball color encoded as BALL_COLOR
+     */
+    public BALL_COLOR getBallColor() {
         return currentBallColor;
     }
 
-    public String toString(){
-        String s = "None";
-        switch(alliance) {
-            case BLUE:
-                s = "BLUE";
-                break;
-            case RED:
-                s = "RED";
-            default:
-                s = "NONE";    
-        }
-        return s;
+
+    /**
+     * 
+     * @return Proximity reading from the color sensor
+     */
+    public int getProximity(){
+        return m_colorSensor.getProximity();
     }
+
+
+    /**
+     * 
+     * @return true if the ball in the upper position matches the alliance ball color
+     */
+    public boolean isAllianceBallColor() {
+        return (allianceColor == currentBallColor);
+    }
+
+
+    /**
+     * Read the color of the lower ball from the color sensor
+     * 
+     * @return Ball color encoded as BALL_COLOR
+     */
+    public BALL_COLOR updateCurrentBallColor(){
+
+        // Get raw color data from the color sensor
+        Color detectedColor = m_colorSensor.getColor();
+
+        //
+        // If we have a ball in position, select between a RED and BLUE ball
+        // If the color sensor values are indeterminate, force a BLUE result
+        // if no ball is in position, we return NONE
+        //
+        if (m_colorSensor.getProximity() >= Constants.MIN_BALL_PROXIMITY)   // Make sure a ball is in position
+            if (detectedColor.blue >= detectedColor.red)
+                currentBallColor =  BALL_COLOR.BLUE;
+            else
+                currentBallColor = BALL_COLOR.RED;
+        else
+            currentBallColor = BALL_COLOR.NONE;                             // Only return NONE if a ball is not in position
+
+        // Place raw color data on the dashboard for diagnostics
+        SmartDashboard.putNumber("Red", detectedColor.red);                     // Red component of ball color
+        SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
+        SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
+        SmartDashboard.putString("Color", currentBallColor.toString());          // Computed ball color
+
+        return currentBallColor;
+    }
+
 }

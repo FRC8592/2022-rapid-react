@@ -8,10 +8,15 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 import edu.wpi.first.wpilibj.XboxController;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Rotation2d;
+
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -37,10 +42,13 @@ public class Robot extends TimedRobot {
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
-  public ColorSensor color;
+  public ColorSensor colorSense;
   public Power powerMonitor;
 
+  // Our alliance color (read from color sensor)
+  private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
   
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -58,10 +66,9 @@ public class Robot extends TimedRobot {
     visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
-    color             = new ColorSensor();
     powerMonitor      = new Power();
-    //ball.setLimelightAllianceColor(ALLIANCE_COLOR.RED);
-    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(1);
+
+
   }
 
   /**
@@ -96,10 +103,23 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
+      int visionPipeline;
 
         m_autoSelected = m_chooser.getSelected();
         // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
         System.out.println("Auto selected: " + m_autoSelected);
+
+        //
+        // Create color sensor object here.  The color sensor will lock in the alliance color
+        // upon creation.  The starting ball may not be inside the robot when it is first powered
+        // up, so we do not want to instantiate the color sensor with other objects in robotInit()
+        //
+        // Once we have our alliance color, use it to activate the appropirate Limelight pipeline
+        //
+        colorSense     = new ColorSensor();
+        allianceColor  = colorSense.getAllianceColor();
+      
+        NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
 
         autonomous = new Autonomous(drive);
     }
@@ -108,9 +128,18 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
+    // Zero the gyroscope to set our field-relative heading
     drive.zeroGyroscope();
-    //Create the primary controller object
+
+    // If we didn't run autonomus, initialize the color sensor and Limelight pipeline here
+    if (colorSense == null) {
+      colorSense     = new ColorSensor();
+      allianceColor  = colorSense.getAllianceColor();
+    
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
+    }
   }
+
 
   /** This function is called periodically during operator control. 
    * Aim turret
@@ -123,13 +152,17 @@ public class Robot extends TimedRobot {
     double translateX;
     double translateY;
     double rotate;
+    //
+    ColorSensor.BALL_COLOR currentBallColor;
     
     // Call these methods on each update cycle to keep the robot running
+    currentBallColor = colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
-    shooter.collectorDriverControl(shooterController);
+    //shooter.collectorDriverControl(shooterController);
     powerMonitor.powerPeriodic();
+ 
 
     // Read gamepad controls and scale control values
     rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
@@ -158,19 +191,14 @@ public class Robot extends TimedRobot {
     -joystickDeadband(translateY), -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
 
-
-    
-
-    SmartDashboard.putNumber("Rotate", rotate);
-    color.getColors();
-    if(color.getProximity() > 200){
-      color.updateCurrentBallColor();
-    }
   }
+
+
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {
     }
+
 
     /** This function is called periodically when disabled. */
     @Override

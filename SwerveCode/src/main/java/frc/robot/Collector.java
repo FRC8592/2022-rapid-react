@@ -13,6 +13,8 @@ public class Collector {
     private WPI_TalonFX processing;
     private WPI_TalonFX staging;
     private WPI_TalonFX collectorArm;
+    // Collector mode
+    private boolean collectorMode = false;
     // Internal state
     public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
     public CollectorState collectorState;
@@ -87,6 +89,34 @@ public class Collector {
     public void intakeReverse(){
         this.reverseProcessingWheels();
         this.reverseStagingWheels();
+    }
+
+
+   /**
+     * Enable collector mode
+     * This will drop the collector into position and activate motors to collect
+     * 
+     * @return A boolean value indicating if collector mode was successfully activated
+     */
+    public boolean enableCollectorMode() {
+        if (collectorState != CollectorState.TWO_BALLS)
+            collectorMode = true;
+        else
+            collectorMode = false;
+            
+        return collectorMode;
+    }
+
+
+    /**
+     * Disable collector mode
+     * This will raise the collector and stop the collector motors
+     * 
+     * @return Always returns true
+     */
+    public boolean disableCollectorMode() {
+        collectorMode = false;
+        return true;
     }
 
     public CollectorState determineCollectorState(){

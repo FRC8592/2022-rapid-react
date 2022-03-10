@@ -29,8 +29,6 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.597;
 
-    //public static final int DRIVETRAIN_PIGEON_ID = 0; // FIXME Set Pigeon ID
-
     //
     // CAN IDs for the drivertrain motors and CANcoders
     //
@@ -77,25 +75,20 @@ public final class Constants {
     public static double FLYWHEEL_I = 0.0;                     // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.0;                     // Starting value.  Needs tuning
     public static double FLYWHEEL_F = 0.05;                    // Starting value.  Needs tuning
-    public static double STARTING_FLYWHEEL_SPEED = 3000;
+    public static double STARTING_FLYWHEEL_SPEED = 0;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
     public static double RPM_MAX_ERROR   = 20;                 // Allowed RPM error for flywheel
 
-    // Alliance color enumeration
-    public static enum ALLIANCE_COLOR {
-        BLUE, RED, NONE
-    }
-
-    //ringVision constants
+    // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 1.0;
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
-    public static double RING_CAMERA_HEIGHT    = 36.0;            // Limelight height above ground (inches)
+    public static double RING_CAMERA_HEIGHT    = 36.0;          // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 0.0;           // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104;           // Center of target above ground (inches)
-    public static double TURRET_ROTATE_KP      = 1.0;          // 15.6 Proportional constant for turret rotate speed
+    public static double TURRET_ROTATE_KP      = 1.0;           // Proportional constant for rotate speed
     public static String LIMELIGHT_RING        = "limelight-ring";
 
-    //ballVision constants
+    // Vision constants for the ball camera
     public static double BALL_LOCK_ERROR       = 2.0;
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 0.0;
@@ -103,6 +96,11 @@ public final class Constants {
     public static double BALL_TARGET_HEIGHT    = 0.0;
     public static double BALL_ROTATE_KP        = 7.0;   // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
-    public static double MIN_TURN_SPEED        = 0.75;
-    public static double MAX_TURN_SPEED        = 0.5;
+
+    // Common vision constants
+    public static double MIN_TURN_SPEED = 0.75;
+    public static double MAX_TURN_SPEED = 0.5;
+
+    // Color sensor
+    public static int MIN_BALL_PROXIMITY = 300;
 }
