@@ -35,8 +35,10 @@ public class Vision {
    private double turnSpeed;
    private double lastTime  = 0;
    private double xtime     = 0;
-   private double lastAngle = 0;
+   private double lastAngle = 0;   
    private double changeInAngleError = 0;
+
+   private double lastDirection = 0;   //find direction of last ball seen
 
    //constants for averaging limelight averages
    private int MIN_LOCKS = 3;
@@ -117,6 +119,14 @@ public class Vision {
     processedDy = totalDy/totalValid;
     targetValid = (totalValid >= MIN_LOCKS);
 
+    if (targetValid){
+      if (processedDx >= 0){
+        lastDirection = 1;
+      }else{
+        lastDirection = -1;
+      }
+    }
+
     targetRange = distanceToTarget();
 
     if (Math.abs(processedDx) < lockError){          // Turret is pointing at target (or no target)
@@ -125,6 +135,8 @@ public class Vision {
     else{
       targetLocked = false;
     }
+
+    delta();
 
     //post driver data to smart dashboard periodically
     SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
@@ -194,7 +206,8 @@ public class Vision {
       }
     }
     else{
-      turnSpeed = 2;    // Spin in a circle until a target is located
+      turnSpeed = lastDirection * Constants.TURN_SPEED;
+      //turnSpeed = 1;    // Spin in a circle until a target is located
     }
     
     //
@@ -203,7 +216,7 @@ public class Vision {
     if (targetLocked){
       turnSpeed = 0;
     }
-    SmartDashboard.putNumber(limelightName + "/Turret Speed", turnSpeed);
+    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
 
     return -turnSpeed;
   }
@@ -216,7 +229,7 @@ public class Vision {
     double moveSpeed = 0.0;
   
     if (targetLocked == true){
-      moveSpeed = -.5;
+      moveSpeed = -1;
     }
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
     return moveSpeed;
