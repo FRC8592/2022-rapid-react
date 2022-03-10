@@ -74,16 +74,22 @@ public class CollectorArm {
                 }
                 break;
             case ARM_RAISING:
-                if(limitSwitch.get()){
+                if(limitSwitch.get() == false){
+                    armState = armStates.ARM_UP;
+
+                }
+                else if(armMotor.getSelectedSensorPosition() > -500){
+                    armMotor.set(0.1);
+
+                }
+                else if(armMotor.getSelectedSensorPosition() <= -500){
                     armMotor.set(0.25);
 
                 }
-                else{
-                    armState = armStates.ARM_UP;
-                }
+                
                 break;
             case ARM_DESCENDING:
-                armMotor.set(armMotor.getSelectedSensorPosition()/100000);
+                armMotor.set(-0.07 - (armMotor.getSelectedSensorPosition()/100000));
 
 
                 break;
