@@ -74,7 +74,7 @@ public final class Constants {
     //limit switches
     public static final int LIMIT_SWITCH_TOP_PORT = 3; 
 
-    public static int BALL_SET_POINT = 0;
+    public static int BALL_SET_POINT = -3100; //-3200 is bottom
 
     //ringVision constants
     public static double RING_LOCK_ERROR       = 1.0;

@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
@@ -31,6 +32,7 @@ public class CollectorArm {
         // Create the arm motor object
         armMotor = new WPI_TalonFX(Constants.intakePosition);
         armMotor.setInverted(true);
+        armMotor.setNeutralMode(NeutralMode.Brake);
 
         // Select and reset the encoder for the arm
         armMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
@@ -50,6 +52,15 @@ public class CollectorArm {
     public void update(XboxController shootController){
         SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
         SmartDashboard.putString("Arm State", armState.toString());
+        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        
+        if (shootController.getAButton()){
+            armState = armStates.ARM_DESCENDING; //-3200
+
+        }
+        else if(shootController.getXButton()) {
+            armState = armStates.ARM_RAISING;
+        }
 
         switch (armState) {
             case ARM_UP:
@@ -72,10 +83,8 @@ public class CollectorArm {
                 }
                 break;
             case ARM_DESCENDING:
-                if(shootController.getAButton()){
-                    armMotor.set(-0.25);
+                armMotor.set(armMotor.getSelectedSensorPosition()/100000);
 
-                }
 
                 break;
             case ARM_COLLECTING:
@@ -92,18 +101,6 @@ public class CollectorArm {
 
         }
 
-    }
-
-    // Move arm up
-    public void startIntakeUp(){
-
-
-    }
-
-    // Move arm down
-    public void startIntakeDown(){
-
-        
     }
     
 }
