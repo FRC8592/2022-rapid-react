@@ -82,7 +82,6 @@ public class ColorSensor{
 
         // Get raw color data from the color sensor
         Color detectedColor = m_colorSensor.getColor();
-
         //
         // If we have a ball in position, select between a RED and BLUE ball
         // If the color sensor values are indeterminate, force a BLUE result
@@ -94,9 +93,11 @@ public class ColorSensor{
             else
                 currentBallColor = BALL_COLOR.RED;
         else
-            currentBallColor = BALL_COLOR.NONE;                             // Only return NONE if a ball is not in position
-
-        // Place raw color data on the dashboard for diagnostics
+            currentBallColor = BALL_COLOR.NONE;   
+        if (currentBallColor != BALL_COLOR.NONE)  {
+            this.allianceColor = currentBallColor;
+        }                        // Only return NONE if a ball is not in position
+                                // Place raw color data on the dashboard for diagnostics
         SmartDashboard.putNumber("Red", detectedColor.red);                     // Red component of ball color
         SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
         SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
