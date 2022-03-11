@@ -14,8 +14,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 
 public class Shooter{ 
-    // The collector is instantiated in this class
-    Collector collector;
 
     // Paired motor controllers to drive the launch wheel
     public WPI_TalonFX flyWheelRight;
@@ -33,9 +31,6 @@ public class Shooter{
     // Constructor to instantiate the Collector object and the flywheel motors
     //
     public Shooter(){
-        // Instantiate our collector object
-        collector = new Collector();
-
         // Instantiate the launch motors and configure them to factory default settings
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
@@ -43,18 +38,25 @@ public class Shooter{
         flyWheelRight.configFactoryDefault();
 
         // Configure the left flywheel motor to follow the right flywheel motor
+        flyWheelRight.setInverted((InvertType.InvertMotorOutput));
         flyWheelLeft.follow(flyWheelRight);
         flyWheelLeft.setInverted(InvertType.OpposeMaster);
 
-        // Settings for flywheel PID constant velocity mode
+        // Configure voltage compensation to help maintain stable speed as battery voltage changes
         flyWheelRight.configVoltageCompSaturation(Constants.FLYWHEEL_VOLTAGE);
+        flyWheelLeft.configVoltageCompSaturation(Constants.FLYWHEEL_VOLTAGE);
         flyWheelRight.enableVoltageCompensation(true);   // Enable voltage compensation
+        flyWheelLeft.enableVoltageCompensation(true);    // Enable voltage compensation
+
+        // Settings for flywheel PID constant velocity mode
+        // flywheelLeft is a follower and does not need PID configuration
         flyWheelRight.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
         flyWheelRight.config_kP(0, Constants.FLYWHEEL_P);
         flyWheelRight.config_kI(0, Constants.FLYWHEEL_I);
         flyWheelRight.config_kD(0, Constants.FLYWHEEL_D);
         flyWheelRight.config_kF(0, Constants.FLYWHEEL_F);
         flyWheelRight.configClosedloopRamp(1);
+
         flyWheelRight.set(ControlMode.Velocity, 0);
     }
 
@@ -115,15 +117,14 @@ public class Shooter{
      * This method will eventually compute the correct flywheel speed based on
      * range to target and update the flywheel controller with desired speed.
      * 
-     * It currently just reads a desired flywheel speed from the Smart
-     * Dashboard.
+     * It currently just reads a desired flywheel speed from the Smart Dashboard.
      * 
      * This method should be called on every robot update to keep flywheel
      * parameters updated.
      * 
      * @param range Range to target (units?)
      */
-    private void computeFlywheelRPM(double range) {
+    public void computeFlywheelRPM(double range) {
         double flywheelRpmSet;
 
         flywheelRpmSet = SmartDashboard.getNumber("Flywheel Set (RPM)", Constants.STARTING_FLYWHEEL_SPEED);
@@ -133,55 +134,55 @@ public class Shooter{
     }
 
 
-    /**
-     * 
-     * @return
-     */
-    public ShooterState determineShooterState(){
-        Collector.CollectorState collectorState = collector.determineCollectorState();
+    // /**
+    //  * 
+    //  * @return
+    //  */
+    // public ShooterState determineShooterState(){
+    //     Collector.CollectorState collectorState = collector.determineCollectorState();
 
-        if(collectorState != Collector.CollectorState.NO_BALLS_LOADED){
-            shooterState = ShooterState.SHOOT;
-        }else{
-            shooterState = ShooterState.AUTONOMOUS;
-        }
+    //     if(collectorState != Collector.CollectorState.NO_BALLS_LOADED){
+    //         shooterState = ShooterState.SHOOT;
+    //     }else{
+    //         shooterState = ShooterState.AUTONOMOUS;
+    //     }
 
-        SmartDashboard.putString("State", shooterState.toString());
-        return shooterState;
-    }
+    //     SmartDashboard.putString("State", shooterState.toString());
+    //     return shooterState;
+    // }
 
 
-    /**
-     * 
-     * @param shootController
-     */
-    public void collectorDriverControl(XboxController shootController){
-        // Update our flywheel velocity and status
-        computeFlywheelRPM(0);  // TODO: Send the range to target to this method
+    // /**
+    //  * 
+    //  * @param shootController
+    //  */
+    // public void collectorDriverControl(XboxController shootController){
+    //     // Update our flywheel velocity and status
+    //     computeFlywheelRPM(0);  // TODO: Send the range to target to this method
 
-        switch (determineShooterState()) {
-            case SHOOT:
-                if(shootController.getBButton()){
-                    manualControl(); // TODO: Check flywheel RPM (flywheelReady) and aiming status
+    //     switch (determineShooterState()) {
+    //         case SHOOT:
+    //             if(shootController.getBButton()){
+    //                 manualControl(); // TODO: Check flywheel RPM (flywheelReady) and aiming status
                     
-                }else{
-                    collector.ballControl();
-                }
-                break;
+    //             }else{
+    //                 collector.ballControl();
+    //             }
+    //             break;
 
-            case AUTONOMOUS:
-                collector.ballControl();
-                break;
+    //         case AUTONOMOUS:
+    //             collector.ballControl();
+    //             break;
         
-        }
-    }
+    //     }
+    // }
 
 
-    /**
-     * 
-     */
-    public void manualControl(){
-       //collector.intakeAllRun();
-        SmartDashboard.putNumber("Running Manual", 1);
-    }
+    // /**
+    //  * 
+    //  */
+    // public void manualControl(){
+    //    //collector.intakeAllRun();
+    //     SmartDashboard.putNumber("Running Manual", 1);
+    // }
 }

@@ -59,7 +59,7 @@ public final class Constants {
     public static final int newFlywheelRight     = 20;
     public static final int newFlywheelStaging   = 21;
     public static final int newFlywheelCollector = 23;
-    public static final int newCollectorArm      = 24;
+    public static final int COLLECTOR_ARM_CAN    = 24;
 
     // Other CAN IDs
     public static final int PDH_CAN = 30;
@@ -75,7 +75,8 @@ public final class Constants {
     public static double FLYWHEEL_I = 0.0;                     // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.0;                     // Starting value.  Needs tuning
     public static double FLYWHEEL_F = 0.05;                    // Starting value.  Needs tuning
-    public static double STARTING_FLYWHEEL_SPEED = 0;
+    public static double STARTING_FLYWHEEL_SPEED = 500;
+    public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
     public static double RPM_MAX_ERROR   = 20;                 // Allowed RPM error for flywheel
 
@@ -94,7 +95,7 @@ public final class Constants {
     public static double BALL_CAMERA_HEIGHT    = 0.0;
     public static double BALL_CAMERA_ANGLE     = 0.0;
     public static double BALL_TARGET_HEIGHT    = 0.0;
-    public static double BALL_ROTATE_KP        = 7.0;   // Proportional constant for turret rotate speed
+    public static double BALL_ROTATE_KP        = 7.0;           // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants
@@ -103,4 +104,16 @@ public final class Constants {
 
     // Color sensor
     public static int MIN_BALL_PROXIMITY = 300;
+
+    // Main collector
+    public static double COLLECT_PROCESSING_POWER =  0.2;
+    public static double COLLECT_STAGING_POWER    =  0.2;
+    public static double UNJAM_PROCESSING_POWER   = -0.2;
+    public static double UNJAM_STAGING_POWER      = -0.2;
+    public static double SHOOT_STAGING_POWER      =  1.0;
+
+
+    // Collector arm
+    public static int BALL_SET_POINT = -3100;       //-3200 is bottom
+
 }

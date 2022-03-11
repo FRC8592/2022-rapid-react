@@ -6,15 +6,19 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Collector {
+    // Control variables
+    private boolean unjamMode     = false;
+    private boolean shootMode     = false;
+    private boolean collectorMode = false;
+
     // Line break sensors
     private DigitalInput lineSensorTop;
     private DigitalInput lineSensorBottom;
+
     // Collector motors
     private WPI_TalonFX processing;
     private WPI_TalonFX staging;
-    private WPI_TalonFX collectorArm;
-    // Collector mode
-    private boolean collectorMode = false;
+
     // Internal state
     public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
     public CollectorState collectorState;
@@ -22,35 +26,29 @@ public class Collector {
     //
     // Intialize hardware
     //
-    public Collector(){
-        collectorArm = new WPI_TalonFX(Constants.newCollectorArm);
+    public Collector() {
         processing   = new WPI_TalonFX(Constants.newFlywheelCollector);
         staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
         lineSensorTop    = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
         
-        // Invert these motors so that positive power drives balls inward
+        // Invert collector motors so that positive power drives balls inward
         processing.setInverted(true);
         staging.setInverted(true);
     }
     
-    public void raiseCollectorArm(){
-        this.collectorArm.set(-0.);
-    }
-
-    public void lowerCollectorArm(){
-        this.collectorArm.set(0.05);
-    }
 
     //Drives the processing wheels for state machine
     public void driveProcessingWheels(double speed){
         this.processing.set(speed);
     }
 
+
     //Drives staging wheel for state machine
     public void driveStagingWheels(double speed){
         this.staging.set(speed);
     }
+
 
     //Stops processing wheels for state machine
     public void stopProcessingWheels(){
@@ -98,10 +96,12 @@ public class Collector {
      * 
      * @return A boolean value indicating if collector mode was successfully activated
      */
-    public boolean enableCollectorMode() {
-        if (collectorState != CollectorState.TWO_BALLS)
+    public boolean enableCollectMode(CollectorArm arm, Power powerMonitor) {
+        if (collectorState != CollectorState.TWO_BALLS) {
             collectorMode = true;
-        else
+            arm.lowerArm();
+            powerMonitor.relayOn(); // Turn on light
+        } else
             collectorMode = false;
             
         return collectorMode;
@@ -114,18 +114,43 @@ public class Collector {
      * 
      * @return Always returns true
      */
-    public boolean disableCollectorMode() {
+    public boolean disableCollectMode(CollectorArm arm, Power powerMonitor) {
         collectorMode = false;
+        arm.raiseArm();
+        powerMonitor.relayOff();    // Turn off light
+
         return true;
     }
 
-    public CollectorState determineCollectorState(){
-        boolean topState = lineSensorTop.get();
-        SmartDashboard.getBoolean("LineSensorTop", topState);
-        boolean bottomState = lineSensorBottom.get();
-        SmartDashboard.getBoolean("LineSensorBottom", bottomState);
 
-        //this makes sure to tell which states are which
+    /**
+     * TODO: Unjam operation
+     * @return
+     */
+    public void unjam(CollectorArm arm) {
+
+    }
+
+
+    /**
+     * Activate shooting mode, if a ball is available in the upper position
+     */
+    public void shoot() {
+        if (!lineSensorTop.get())   // False indcates that a ball is present
+            shootMode = true;
+    }
+
+
+    /**
+     * Control in which state the collector is operating
+     * 
+     * @return The state of the collector encoded as CollectorState
+     */
+    public CollectorState determineCollectorState(){
+        boolean topState    = lineSensorTop.get();
+        boolean bottomState = lineSensorBottom.get();
+
+        // Control which state we are in
         if(!bottomState){
             if(!topState){
                 collectorState = CollectorState.TWO_BALLS;
@@ -140,40 +165,84 @@ public class Collector {
             }
         }
 
+        SmartDashboard.getBoolean("LineSensorTop", topState);
+        SmartDashboard.getBoolean("LineSensorBottom", bottomState);
         SmartDashboard.putString("Collector State", collectorState.toString());
+
         return collectorState;
     }
 
-    public void ballControl(){
+    /**
+     * Control collector mechanisms based on operating state
+     */
+    public void ballControl(CollectorArm arm, Power powerMonitor) {
 
-        //this is a simple state machine controlling what ball wheels run and when
-        switch(this.determineCollectorState()){
-            case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
-                this.driveProcessingWheels(0.2);
-                this.driveStagingWheels(0.2);
-                this.lowerCollectorArm(); 
-            break;
-          
-            case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to stop the wheels pushing it in and start driving the middle wheels
-                this.driveProcessingWheels(0.2);
-                this.driveStagingWheels(0.2);
-            break;
-             
-            case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball and run the bottom wheels to collect another
-                this.stopStagingWheels();
-                this.driveProcessingWheels(0.2);
-            break;
+        //
+        // *** Unjam overrides any normal control ***
+        //
+        if (unjamMode) {
+            driveProcessingWheels(Constants.UNJAM_PROCESSING_POWER);
+            driveStagingWheels(Constants.UNJAM_STAGING_POWER);
+        }
+        //
+        // Shoot mode overrides normal loading operations
+        //
+        else if (shootMode) {
+            driveProcessingWheels(0);
+            driveStagingWheels(Constants.SHOOT_STAGING_POWER);
 
-            case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
-                this.intakeAllStop();
-                this.raiseCollectorArm();
-            break;
+            // Stop shoot mode once the top ball is gone (true means no ball is present)
+            if (lineSensorTop.get())
+                shootMode = false;
+        }
+        
+        //
+        // Process the normal state machine
+        //
+        else {
+            //this is a simple state machine controlling what ball wheels run and when
+            switch(determineCollectorState()) {
 
-    
+                case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
+                    if (collectorMode) {
+                        driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                        driveStagingWheels(Constants.COLLECT_STAGING_POWER);
+                    }
+                    else {
+                        driveProcessingWheels(0);
+                        driveStagingWheels(0);   
+                    }
+                break;
+            
+                case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to stop the wheels pushing it in and start driving the middle wheels
+                    //
+                    // We don't check for collectorMode here, because if we have one ball in the bottom, we always want to move it into the
+                    // the top position
+                    //
+                    driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                    driveStagingWheels(Constants.COLLECT_STAGING_POWER);
+                break;
+                
+                case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball and run the bottom wheels to collect another
+                    if (collectorMode) {
+                        driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                        driveStagingWheels(0);
+                    }
+                    else {
+                        driveProcessingWheels(0);
+                        driveStagingWheels(0);
+                    }
+                break;
+
+                case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
+                    driveProcessingWheels(0);
+                    driveStagingWheels(0);
+
+                    disableCollectMode(arm, powerMonitor);
+                break;
+            }
+
         }   
-
-        SmartDashboard.putBoolean("LineSensorTop", lineSensorTop.get());
-        SmartDashboard.putBoolean("LineSensorBottom", lineSensorBottom.get());
     }
 
     public void manualControl(){

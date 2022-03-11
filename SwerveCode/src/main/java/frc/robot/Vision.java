@@ -12,7 +12,8 @@ import java.util.LinkedList;
 public class Vision {
   
   //constants passed in during initilization 
-  private double lockError;  
+  private double lockError;
+  private double closeError;
   private double cameraHeight;
   private double cameraAngle;
   private double targetHeight;
@@ -25,6 +26,7 @@ public class Vision {
   // Shared variables
   public boolean targetValid;     // Indicate when the Limelight camera has found a target
   public boolean targetLocked;    // Indicate when the turret is centered on the target
+  public boolean targetClose;     // Indicate when the robot is close to centered on the target
   public double  targetRange;     // Range from robot to target (inches)
   public Timer timer;
   private double processedDx = 0;
@@ -55,8 +57,9 @@ public class Vision {
   /**
    * This constructor will intialize internal variables for the robot turret
    */
-  public Vision(String limelightName, double lockError, double cameraHeight,
-                double cameraAngle, double targetHeight, double rotationKP) {
+  public Vision(String limelightName, double lockError, double closeError,
+                double cameraHeight, double cameraAngle, double targetHeight,
+                double rotationKP) {
 
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
@@ -117,11 +120,18 @@ public class Vision {
 
     targetRange = distanceToTarget();
 
-    if (Math.abs(processedDx) < lockError){          // Turret is pointing at target (or no target)
+    if (Math.abs(processedDx) < lockError) {    // Turret is pointing at target (or no target)
       targetLocked = targetValid;               // We are only locked when targetValid
     }           
     else{
       targetLocked = false;
+    }
+
+    if (Math.abs(processedDx) < closeError) { // Turret is close to locking
+      targetClose = targetValid;              // We are only locked when targetValid
+    }           
+    else{
+      targetClose = false;
     }
 
     //post driver data to smart dashboard periodically
@@ -136,6 +146,7 @@ public class Vision {
     SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
+    SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
   }
 
 
@@ -207,13 +218,16 @@ public class Vision {
   }
 
   //
-  // Drive towards the target
+  // Drive towards the target.  We move forward before fully locked
   // This should probably be updated to base speed on distance from the target
+  //
+  // TODO: Do we need to prevent driving forward before being completely on target
+  //       (e.g. targetLocked == true) if the robot is too close to the target?
   //
   public double moveTowardsTarget(){
     double moveSpeed = 0.0;
   
-    if (targetLocked == true){
+    if (targetClose == true){
       moveSpeed = -.5;
     }
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);

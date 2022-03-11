@@ -41,8 +41,8 @@ public class Power {
         energy  = revPDH.getTotalEnergy();
 
         // Place all parameters onto Smart Dashboard
-        SmartDashboard.putNumber("Temperature", temp);
-        SmartDashboard.putNumber("Voltage", voltage);
+        SmartDashboard.putNumber("Power/Temperature", temp);
+        SmartDashboard.putNumber("Power/Voltage", voltage);
         SmartDashboard.putNumber("Current", current);
         SmartDashboard.putNumber("Power", power);
         SmartDashboard.putNumber("Energy", energy);
