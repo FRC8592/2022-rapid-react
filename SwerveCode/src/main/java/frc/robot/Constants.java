@@ -75,13 +75,14 @@ public final class Constants {
     public static double FLYWHEEL_I = 0.0;                     // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.0;                     // Starting value.  Needs tuning
     public static double FLYWHEEL_F = 0.05;                    // Starting value.  Needs tuning
-    public static double STARTING_FLYWHEEL_SPEED = 500;
+    public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
     public static double RPM_MAX_ERROR   = 20;                 // Allowed RPM error for flywheel
 
     // Vision constants for the ring camera
-    public static double RING_LOCK_ERROR       = 1.0;
+    public static double RING_LOCK_ERROR       = 1.0;           // Angular error allowed for targetting
+    public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 36.0;          // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 0.0;           // Limelight camera angle above horizontal (degrees)
@@ -91,6 +92,7 @@ public final class Constants {
 
     // Vision constants for the ball camera
     public static double BALL_LOCK_ERROR       = 2.0;
+    public static double BALL_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 0.0;
     public static double BALL_CAMERA_ANGLE     = 0.0;
@@ -114,6 +116,10 @@ public final class Constants {
 
 
     // Collector arm
-    public static int BALL_SET_POINT = -3100;       //-3200 is bottom
+    public static int BALL_SET_POINT = -3100;   // -3200 is bottom
+    public static double ARM_UP_P = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_I = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_F = 0.05;       // Starting value.  Needs tuning
 
 }

@@ -124,11 +124,13 @@ public class Collector {
 
 
     /**
-     * TODO: Unjam operation
+     * Raise the collector arm and run motors in reverse
+     * *
      * @return
      */
     public void unjam(CollectorArm arm) {
-
+        arm.raiseArm();
+        unjamMode = true;
     }
 
 
@@ -183,6 +185,7 @@ public class Collector {
         if (unjamMode) {
             driveProcessingWheels(Constants.UNJAM_PROCESSING_POWER);
             driveStagingWheels(Constants.UNJAM_STAGING_POWER);
+            unjamMode = false;  // Clear mode.  Will be overwritten if unjam button is held down
         }
         //
         // Shoot mode overrides normal loading operations
