@@ -107,7 +107,6 @@ public class CollectorArm {
                     armMotor.set(0.1);
 
                 }
-
                 // Apply normal power to raise the arm
                 else {
                     armMotor.set(0.25);

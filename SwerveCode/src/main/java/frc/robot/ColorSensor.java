@@ -66,7 +66,10 @@ public class ColorSensor{
      * @return true if the ball in the upper position matches the alliance ball color
      */
     public boolean isAllianceBallColor() {
-        return (allianceColor == currentBallColor);
+        if ((allianceColor == currentBallColor) || (allianceColor == BALL_COLOR.NONE))
+            return true;
+        else
+            return false;
     }
 
 

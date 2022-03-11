@@ -30,7 +30,7 @@ public class Shooter{
     //
     // Constructor to instantiate the Collector object and the flywheel motors
     //
-    public Shooter(){
+    public Shooter() {
         // Instantiate the launch motors and configure them to factory default settings
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
@@ -124,10 +124,20 @@ public class Shooter{
      * 
      * @param range Range to target (units?)
      */
-    public void computeFlywheelRPM(double range) {
+    public void computeFlywheelRPM(double range, boolean isAllianceColor) {
         double flywheelRpmSet;
 
         flywheelRpmSet = SmartDashboard.getNumber("Flywheel Set (RPM)", Constants.STARTING_FLYWHEEL_SPEED);
+     
+        //
+        // Check to see if we have a ball from the opposite alliance ready to shoot.  If so, slow the
+        // flywheel so we can eject it safely.  The top level robot code will trigger the actual
+        // shooting action
+        //
+        if (!isAllianceColor)
+            flywheelRpmSet = Constants.REJECT_FLYWHEEL_SPEED;
+        
+        // Command the flywheel
         updateFlywheel(flywheelRpmSet);     // Send desired RPM to flywheel controller
 
         return;

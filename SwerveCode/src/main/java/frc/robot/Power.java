@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 public class Power {
     // Object variables
@@ -43,9 +44,9 @@ public class Power {
         // Place all parameters onto Smart Dashboard
         SmartDashboard.putNumber("Power/Temperature", temp);
         SmartDashboard.putNumber("Power/Voltage", voltage);
-        SmartDashboard.putNumber("Current", current);
-        SmartDashboard.putNumber("Power", power);
-        SmartDashboard.putNumber("Energy", energy);
+        SmartDashboard.putNumber("Power/Current", current);
+        SmartDashboard.putNumber("Power/Power", power);
+        SmartDashboard.putNumber("Power/Energy", energy);
     }
 
 

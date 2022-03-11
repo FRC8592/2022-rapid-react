@@ -67,8 +67,14 @@ public class Robot extends TimedRobot {
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
     drive             = new Drivetrain();
-    visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR, Constants.RING_CAMERA_HEIGHT, Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT, Constants.TURRET_ROTATE_KP);
-    visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR, Constants.BALL_CAMERA_HEIGHT, Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT, Constants.BALL_ROTATE_KP);
+    visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR,
+                                   Constants.RING_CLOSE_ERROR, Constants.RING_CAMERA_HEIGHT,
+                                   Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT,
+                                   Constants.TURRET_ROTATE_KP);
+    visionBall        = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
+                                   Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT,
+                                   Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
+                                   Constants.BALL_ROTATE_KP);
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     collector         = new Collector();
