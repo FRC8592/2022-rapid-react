@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
-  public CollectorArm arm;
+  public CollectorArmPID arm;
   public ColorSensor colorSense;
   public Power powerMonitor;
 
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     collector         = new Collector();
-    arm               = new CollectorArm();
+    arm               = new CollectorArmPID();
     powerMonitor      = new Power();
 
   }
@@ -176,7 +176,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, powerMonitor);
+    collector.ballControl(arm, powerMonitor, shooter);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
  
@@ -226,7 +226,7 @@ public class Robot extends TimedRobot {
         // Shoot ball
         //
         if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ))
-          collector.shoot();
+            collector.shoot();
       }
     }
 
@@ -266,6 +266,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    colorSense = null;
   }
 
 
