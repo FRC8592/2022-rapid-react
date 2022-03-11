@@ -5,6 +5,7 @@ package frc.robot;
  * FRC Season 2022
  */
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Locality {
 
@@ -17,6 +18,15 @@ public class Locality {
     private double positionY;                    //position in y;
     private final double KP_velocity_X = 0.5;
     private final double KP_velocity_Y = 0.5;
+    private final double KD_velocity_X = 0;
+    private final double KD_velocity_Y = 0;
+    private double lastErrorX;
+    private double lastErrorY;
+    private double targetX;
+    private double targetY;
+    public Timer timer;
+    public double lastTime;
+
 
     /**
      * 
@@ -29,6 +39,13 @@ public class Locality {
         this.robotRotation = 0;
         Locality.hubRadius = .6;
         isGoodData = false;
+        targetX = 0;
+        targetY = 0;
+        lastErrorY = 0;
+        lastErrorX = 0;
+        timer = new Timer();
+        timer.start();
+        lastTime = timer.get();
     }
 
     // Needs to be called every update
@@ -43,6 +60,7 @@ public class Locality {
         double targetDistance = vision.distanceToTarget(); 
         double targetOffsetRotation = vision.offsetAngle(); 
         double robotRotationRad = Math.toRadians(robotRotation);
+
         if(vision.targetValid){
             double distance2 = (targetDistance + Locality.hubRadius)/Math.cos(targetOffsetRotation);
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
@@ -82,6 +100,14 @@ public class Locality {
         return this.isGoodData;
     }
     public double[] moveTo(double setPointX, double setPointY, Vision vision){
+    
+        if(targetX != setPointX || targetY != setPointY){
+            lastErrorX = 0;
+            lastErrorY = 0;
+
+        }
+
+
         double[] velocity = new double [2]; 
         velocity[0] = 0;
         velocity[1] = 0;
@@ -90,14 +116,24 @@ public class Locality {
         if(isGoodData){
             double errorX = setPointX - this.positionX;
             double errorY = setPointY - this.positionY;
-            velocity[0] = errorX * KP_velocity_X;
+
+            double xtime = timer.get(); 
+            double changeInErrorX = (errorX - lastErrorX)/(xtime - lastTime);
+            lastErrorX = errorX;  // reset initial angle
+
+            double changeInErrorY = (errorY - lastErrorY)/(xtime - lastTime);
+            lastErrorY = errorY;  // reset initial angle
+
+            velocity[0] = errorX * KP_velocity_X + KD_velocity_X*lastErrorX;
             velocity[0] = Math.min(velocity[0], -1.7);
             velocity[0] = Math.max(velocity[0], 1.7);
-            velocity[1] = errorY * KP_velocity_Y;
+            velocity[1] = errorY * KP_velocity_Y + KD_velocity_Y*lastErrorY;
             velocity[1] = Math.min(velocity[1], -1.7);
             velocity[1] = Math.max(velocity[1], 1.7);
+            lastTime  = xtime;        // reset initial time
 
         }
+
         return velocity;
     }
     
