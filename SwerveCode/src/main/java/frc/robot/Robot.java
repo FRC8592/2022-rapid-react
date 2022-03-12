@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   public Autonomous autonomous;
   public Vision visionRing;
   public Vision visionBall;
-  public Locality locality; 
+  public AutoDrive locality; 
   public Shooter shooter;
   public Collector collector;
   public CollectorArm arm;
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
                                    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT,
                                    Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
                                    Constants.BALL_ROTATE_KP);
-    locality          = new Locality(0, 0);
+    locality          = new AutoDrive(0, 0);
     shooter           = new Shooter();
     collector         = new Collector();
     arm               = new CollectorArm();
