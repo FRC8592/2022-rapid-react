@@ -81,7 +81,7 @@ public final class Constants {
     public static double RPM_MAX_ERROR   = 8;                 // Allowed RPM error for flywheel
 
     // Vision constants for the ring camera
-    public static double RING_LOCK_ERROR       = 1.0;           // Angular error allowed for targetting
+    public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
     public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 35.0;          // Limelight height above ground (inches)

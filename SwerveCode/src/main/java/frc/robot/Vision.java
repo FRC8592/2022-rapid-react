@@ -147,6 +147,7 @@ public class Vision {
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
+    SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
 
 
