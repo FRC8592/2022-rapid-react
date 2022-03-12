@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
   // Our alliance color (read from color sensor)
   private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
   
-  private enum AutoState{TURN, SHOOT, DRIVE, STOP};
+  private enum AutoState{TURN, SHOOT, DRIVE};
   AutoState autoState = AutoState.TURN;
   private double autoStateTime;
 
@@ -131,6 +131,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
 
     m_autoSelected = m_chooser.getSelected();
+    arm.lowerArm();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
@@ -167,17 +168,13 @@ public class Robot extends TimedRobot {
         }
         break;
       case SHOOT:
-        if(timer.get() > autoStateTime) {
-          autoState = AutoState.DRIVE;
-        }
+        
         break;
       case DRIVE:
-        if(visionRing.targetRange > 132) {
-          autoState = AutoState.STOP;
+        if(collector.determineCollectorState() == Collector.CollectorState.TWO_BALLS) {
+          autoState = AutoState.SHOOT;
+
         }
-        break;
-      case STOP:
-        // stopped
         break;
     }
     // execute current state
@@ -192,10 +189,7 @@ public class Robot extends TimedRobot {
             drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
             break;
         case DRIVE:
-            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(1.0, 0.0, 0, Rotation2d.fromDegrees(0)));
-            break;
-        case STOP:                  //autonomous finished
-            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
             break;
     }
   }
