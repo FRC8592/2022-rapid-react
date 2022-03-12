@@ -89,12 +89,10 @@ public class Locality {
     public boolean isGood(){
         return this.isGoodData;
     }
-    public double[] moveTo(double setPointX, double setPointY, Vision vision){
+    public double[] moveTo(double setPointX, double setPointY){
         double[] velocity = new double [2]; 
         velocity[0] = 0;
         velocity[1] = 0;
-        
-        updatePosition(robotRotation, vision);
         if(isGoodData){
             double errorX = setPointX - this.positionX;
             double errorY = setPointY - this.positionY;
@@ -106,6 +104,14 @@ public class Locality {
             velocity[1] = Math.max(velocity[1], 1.7);
         }
         return velocity;
+    }
+
+    public double getDistance(double x, double y){
+        return Math.sqrt(Math.pow((x - getX()),2) + Math.pow((y - getY()), 2));
+    }
+
+    public double getHeading(double x, double y){
+        return Math.toDegrees(Math.atan2(y - getY(), x - getX()));
     }
     
 }

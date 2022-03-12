@@ -135,6 +135,18 @@ public class Robot extends TimedRobot {
 
     autonomous = new Autonomous(drive);
   }
+
+  @Override
+  public void autonomousPeriodic(){
+    colorSense.updateCurrentBallColor();
+    visionBall.updateVision();
+    visionRing.updateVision();
+    locality.updatePosition(drive.getYaw(), visionRing);
+    arm.update();
+    collector.ballControl(arm, powerMonitor);
+    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
+    powerMonitor.powerPeriodic();
+  }
   
 
   /** This function is called once when teleop is enabled. */

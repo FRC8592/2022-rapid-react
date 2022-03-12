@@ -122,4 +122,6 @@ public final class Constants {
     public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
     public static double ARM_UP_F = 0.05;       // Starting value.  Needs tuning
 
+    public static final double AUTO_DRIVE_SPEED = 0.5;
+
 }
