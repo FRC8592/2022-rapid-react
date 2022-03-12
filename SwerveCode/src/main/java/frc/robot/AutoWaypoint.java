@@ -7,15 +7,19 @@ import frc.robot.Collector.CollectorState;
 public class AutoWaypoint {
     private ArrayList<Waypoint> waypoints;
     private Waypoint currentWaypoint;
-    private Locality locality;
+    private AutoDrive locality;
     private Drivetrain drivetrain;
     private Collector collector;
     private Shooter shooter;
     private Vision vision;
     private CollectorState collectorState;
 
-    public AutoWaypoint(Locality locality, Drivetrain drivetrain, Collector collector, Shooter shooter, Vision vision){
+    public AutoWaypoint(AutoDrive locality, Drivetrain drivetrain, Collector collector, Shooter shooter, Vision vision){
         waypoints = new ArrayList<Waypoint>();
+        this.drivetrain = drivetrain;
+        this.collector = collector;
+        this.shooter = shooter;
+        this.vision = vision;
     }
 
     public void addWaypoint(Waypoint waypoint){
@@ -52,7 +56,4 @@ public class AutoWaypoint {
                 return;
             }
         }
-        
-
     }
-}
