@@ -69,12 +69,12 @@ public class AutoDrive {
      */
     
     public void updatePosition(double robotRotation, Vision vision){     
-        double targetDistance = vision.distanceToTarget() + this.inchesToMeters(24); 
+        double targetDistance = vision.distanceToTarget();
         double targetOffsetRotation = vision.offsetAngle(); 
         double robotRotationRad = Math.toRadians(robotRotation);
 
         if(vision.targetValid){
-            double distance2 = (targetDistance + AutoDrive.hubRadius)/Math.cos(targetOffsetRotation);
+            double distance2 = (targetDistance + AutoDrive.hubRadius)/Math.cos(targetOffsetRotation) + this.inchesToMeters(24) ;
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
             this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
             this.isGoodData = true;
