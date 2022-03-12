@@ -168,7 +168,7 @@ public class Vision {
   public double distanceToTarget(){
     if (targetValid){
       double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + processedDy) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
-      return distanceInches * IN_TO_METERS;
+      return distanceInches;
     }
     return -1;
   }
@@ -217,6 +217,7 @@ public class Vision {
     return -turnSpeed;
   }
 
+
   //
   // Drive towards the target.  We move forward before fully locked
   // This should probably be updated to base speed on distance from the target
@@ -234,6 +235,9 @@ public class Vision {
     return moveSpeed;
   }
 
+  public boolean isTargetLocked() {
+    return targetLocked;
+  }
 
   private class LimelightData{ 
     double dx;

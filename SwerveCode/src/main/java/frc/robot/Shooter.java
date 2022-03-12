@@ -57,6 +57,10 @@ public class Shooter{
         flyWheelRight.configClosedloopRamp(1);
 
         flyWheelRight.set(ControlMode.Velocity, 0);
+
+        //private final double rpm[] = {};
+        //private final double distance[] = {};
+
     }
 
 

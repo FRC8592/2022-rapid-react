@@ -23,6 +23,9 @@ public class Collector {
     public enum CollectorState{NO_BALLS_LOADED, ONE_BALL_BOTTOM, BALL_XFER_TO_TOP, ONE_BALL_TOP, TWO_BALLS}
     public CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
 
+    public Vision vision;
+
+
     //
     // Intialize hardware
     //
@@ -198,7 +201,7 @@ public class Collector {
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            if (shooter.isFlywheelReady()) {
+            if (shooter.isFlywheelReady() & vision.isTargetLocked()) {
                 driveProcessingWheels(0);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
             }
