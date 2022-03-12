@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import frc.robot.Collector.CollectorState;
 
-public class AutoDrive {
+public class AutoWaypoint {
     private ArrayList<Waypoint> waypoints;
     private Waypoint currentWaypoint;
     private Locality locality;
@@ -14,7 +14,7 @@ public class AutoDrive {
     private Vision vision;
     private CollectorState collectorState;
 
-    public AutoDrive(Locality locality, Drivetrain drivetrain, Collector collector, Shooter shooter, Vision vision){
+    public AutoWaypoint(Locality locality, Drivetrain drivetrain, Collector collector, Shooter shooter, Vision vision){
         waypoints = new ArrayList<Waypoint>();
     }
 
@@ -34,8 +34,6 @@ public class AutoDrive {
             }else if(currentWaypoint.shoot){
                 if(locality.getDistance(0, 0) > 20){
                     locality.getHeading(currentWaypoint.x, currentWaypoint.y);
-                    locality.
-                    drivetrain.drive();
                 }else if(locality.getDistance(0, 0) < 7){
 
                 }
