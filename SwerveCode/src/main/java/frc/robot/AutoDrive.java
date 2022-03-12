@@ -69,7 +69,7 @@ public class AutoDrive {
      */
     
     public void updatePosition(double robotRotation, Vision vision){     
-        double targetDistance = vision.distanceToTarget(); 
+        double targetDistance = vision.distanceToTarget() + this.inchesToMeters(24); 
         double targetOffsetRotation = vision.offsetAngle(); 
         double robotRotationRad = Math.toRadians(robotRotation);
 
@@ -180,6 +180,10 @@ public class AutoDrive {
 
     public double getHeading(double x, double y){
         return Math.toDegrees(Math.atan2(y - getY(), x - getX()));
+    }
+
+    public double inchesToMeters(double inch){
+        return inch*0.0254;
     }
     
 }

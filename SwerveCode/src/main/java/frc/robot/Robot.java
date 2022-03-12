@@ -6,6 +6,7 @@ package frc.robot;
 
 //import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot {
   public CollectorArm arm;
   public ColorSensor colorSense;
   public Power powerMonitor;
+  public AutoWaypoint autoWaypoint;
 
   // Our alliance color (read from color sensor)
   private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
@@ -80,6 +82,7 @@ public class Robot extends TimedRobot {
     collector         = new Collector();
     arm               = new CollectorArm();
     powerMonitor      = new Power();
+    autoWaypoint      = new AutoWaypoint(locality, drive, collector, shooter, visionBall);
 
     
   }
@@ -117,6 +120,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
+    autoWaypoint.addWaypoint(new Waypoint(-1, 0, 0.15, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(-1, -1, 0.15, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(0, -1, 0.15, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.15, false, false, false, new Timer()));
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -146,6 +153,8 @@ public class Robot extends TimedRobot {
     collector.ballControl(arm, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
+
+    autoWaypoint.runWaypoint();
   }
   
 

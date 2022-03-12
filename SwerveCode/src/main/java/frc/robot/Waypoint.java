@@ -15,7 +15,7 @@ public class Waypoint {
     public boolean init;
     public Timer waypointTimer;
 
-    public Waypoint(double x, double y, double acceptRadius, boolean turnTo,boolean fetch, boolean shoot, boolean here, boolean init, Timer waypointTimer){
+    public Waypoint(double x, double y, double acceptRadius, boolean turnTo,boolean fetch, boolean shoot, Timer waypointTimer){
         this.x = x;
         this.y = y;
         this.acceptRadius = acceptRadius;

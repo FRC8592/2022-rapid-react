@@ -15,7 +15,8 @@ public class AutoWaypoint {
     private Vision vision;
     private CollectorState collectorState;
 
-    public AutoWaypoint(AutoDrive locality, Drivetrain drivetrain, Collector collector, Shooter shooter, Vision vision){
+    public AutoWaypoint(AutoDrive locality, Drivetrain drivetrain, Collector collector, Shooter shooter,
+            Vision vision) {
         waypoints = new ArrayList<Waypoint>();
         this.drivetrain = drivetrain;
         this.collector = collector;
@@ -23,37 +24,52 @@ public class AutoWaypoint {
         this.vision = vision;
     }
 
-    public void addWaypoint(Waypoint waypoint){
+    public void addWaypoint(Waypoint waypoint) {
         waypoints.add(waypoint);
     }
 
-    public void runWaypoint(){
-        if(currentWaypoint != null && !currentWaypoint.done){
-            if(!currentWaypoint.here){
-            double distance = autoDrive.getDistance(currentWaypoint.x, currentWaypoint.y);
-            currentWaypoint.here = distance <= currentWaypoint.acceptRadius;
-            collectorState = collector.determineCollectorState();
-            autoDrive.moveTo(currentWaypoint.x, currentWaypoint.y);
+    public void runWaypoint() {
+        if (currentWaypoint != null && !currentWaypoint.done) {
+            if (!currentWaypoint.here) {
+                double turnSpeed;
+                if (currentWaypoint.turnTo) {
+                    turnSpeed = autoDrive.turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y),
+                            drivetrain.getYaw());
+                } else {
+                    turnSpeed = 0;
+                }
+                double distance = autoDrive.getDistance(currentWaypoint.x, currentWaypoint.y);
+                currentWaypoint.here = distance <= currentWaypoint.acceptRadius;
+                collectorState = collector.determineCollectorState();
+                double[] velocity = autoDrive.moveTo(currentWaypoint.x, currentWaypoint.y);
+                drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(velocity[0], velocity[1], turnSpeed,
+                        drivetrain.getGyroscopeRotation()));
 
-            }else if(currentWaypoint.fetch){
+            } else if (currentWaypoint.fetch) {
                 vision.moveTowardsTarget();
                 currentWaypoint.fetch = collector.determineCollectorState() == collectorState;
 
-            }else if(currentWaypoint.shoot){
+            } else if (currentWaypoint.shoot) {
 
-                if(autoDrive.getDistance(0, 0) > 20){
-                    double angularVelocity = autoDrive.turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
-                    drivetrain.drive(new ChassisSpeeds(0.5, 0.0, angularVelocity));
+                if (autoDrive.getDistance(0, 0) > 20) {
+                    double angularVelocity = autoDrive
+                            .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
+                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.5, 0.0, angularVelocity,
+                            drivetrain.getGyroscopeRotation()));
 
-                }else if(autoDrive.getDistance(0, 0) < 7){
-                    double angularVelocity = autoDrive.turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
-                    drivetrain.drive(new ChassisSpeeds(-0.5, 0.0, angularVelocity));
+                } else if (autoDrive.getDistance(0, 0) < 7) {
+                    double angularVelocity = autoDrive
+                            .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
+                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.5, 0.0, angularVelocity,
+                            drivetrain.getGyroscopeRotation()));
 
-                }else{
-                    double angularVelocity = autoDrive.turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
-                    drivetrain.drive(new ChassisSpeeds(0,0,angularVelocity));
+                } else {
+                    double angularVelocity = autoDrive
+                            .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
+                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, angularVelocity,
+                            drivetrain.getGyroscopeRotation()));
 
-                    if(collectorState == CollectorState.NO_BALLS_LOADED){
+                    if (collectorState == CollectorState.NO_BALLS_LOADED) {
                         currentWaypoint.done = true;
                     }
                 }
@@ -62,21 +78,19 @@ public class AutoWaypoint {
                 currentWaypoint.done = true;
             }
 
+        } else if (!waypoints.isEmpty()) {
+            currentWaypoint = waypoints.get(0);
 
-        }
-        else if(!waypoints.isEmpty()){
-                currentWaypoint = waypoints.get(0);
-
-                if(currentWaypoint.turnTo){
-                   currentWaypoint.heading = autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y);
+            if (currentWaypoint.turnTo) {
+                currentWaypoint.heading = autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y);
                 collectorState = collector.determineCollectorState();
-                }
-                waypoints.remove(0);
-
-            }else{
-
-                drivetrain.drive(new ChassisSpeeds(0,0,0));
-                return;
             }
+            waypoints.remove(0);
+
+        } else {
+
+            drivetrain.drive(new ChassisSpeeds(0, 0, 0));
+            return;
         }
     }
+}
