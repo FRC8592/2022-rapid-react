@@ -52,11 +52,12 @@ public class Locality {
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
             this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
             this.isGoodData = true;
+            driveTrain.setPosition(new Pose2d(this.positionX, this.positionY, driveTrain.getGyroscopeRotation()));
         } else {
             Pose2d pose = this.driveTrain.updatePose();
             this.positionX = pose.getX();
             this.positionY = pose.getY();
-            this.isGoodData = false;
+            this.isGoodData = true;
         }
         SmartDashboard.putNumber("Yaw value", robotRotation);
         SmartDashboard.putNumber("Position Y", positionY);

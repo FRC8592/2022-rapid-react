@@ -157,8 +157,7 @@ public class Drivetrain {
     }
 
     public Pose2d updatePose(){
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(this.speeds);
-        return m_odometry.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);
+        return m_odometry.getPoseMeters();
     }
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
@@ -201,5 +200,9 @@ public class Drivetrain {
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
        
+    }
+
+    public void setPosition(Pose2d pose){
+        m_odometry.resetPosition(pose, new Rotation2d());
     }
 }
