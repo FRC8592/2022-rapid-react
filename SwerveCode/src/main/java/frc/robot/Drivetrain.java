@@ -3,7 +3,9 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.SPI;
 
@@ -16,6 +18,7 @@ import com.swervedrivespecialties.swervelib.SwerveModule;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.*;
 
@@ -28,7 +31,8 @@ public class Drivetrain {
     private final SwerveModule m_frontRightModule;
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
-
+    private SwerveDriveOdometry m_odometry;
+    private ChassisSpeeds speeds;
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -81,7 +85,7 @@ public class Drivetrain {
      */
     public Drivetrain() {
         Mk4ModuleConfiguration swerveMotorConfig;
-
+        
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
         // Create configuration object for motors.  We do this primarily for current limiting
@@ -112,7 +116,7 @@ public class Drivetrain {
             // This is how much the steer encoder is offset from true zero (In our case, zero is facing straight forward)
             FRONT_LEFT_MODULE_STEER_OFFSET
         );
-
+        this.speeds = new ChassisSpeeds(0,0,0);
         // We will do the same for the other modules
         m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
             tab.getLayout("Front Right Module", BuiltInLayouts.kList)
@@ -149,9 +153,13 @@ public class Drivetrain {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
+        this.m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), new Pose2d(0,0,new Rotation2d()));
     }
 
-
+    public Pose2d updatePose(){
+        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(this.speeds);
+        return m_odometry.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);
+    }
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
      * 'forwards' direction.
@@ -184,12 +192,14 @@ public class Drivetrain {
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
+        this.speeds = chassisSpeeds;
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
+        
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+       
     }
 }

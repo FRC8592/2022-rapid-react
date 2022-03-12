@@ -1,4 +1,5 @@
 package frc.robot;
+import edu.wpi.first.math.geometry.Pose2d;
 /**
  * @author gavin malzahn
  * @author audrey chiang
@@ -17,18 +18,20 @@ public class Locality {
     private double positionY;                    //position in y;
     private final double KP_velocity_X = 0.5;
     private final double KP_velocity_Y = 0.5;
+    private Drivetrain driveTrain;
 
     /**
      * 
      * @param hubCenterX
      * @param hubCenterY
      */
-    public Locality(double hubCenterX, double hubCenterY) { 
+    public Locality(double hubCenterX, double hubCenterY, Drivetrain drive) { 
         Locality.hubCenterX = hubCenterX;
         Locality.hubCenterY = hubCenterY;
         this.robotRotation = 0;
         Locality.hubRadius = .6;
         isGoodData = false;
+        this.driveTrain = drive;
     }
 
     // Needs to be called every update
@@ -39,6 +42,7 @@ public class Locality {
      * @param vision
      * @param SmartDashboard 
      */
+    
     public void updatePosition(double robotRotation, Vision vision){     
         double targetDistance = vision.distanceToTarget(); 
         double targetOffsetRotation = vision.offsetAngle(); 
@@ -49,6 +53,9 @@ public class Locality {
             this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
             this.isGoodData = true;
         } else {
+            Pose2d pose = this.driveTrain.updatePose();
+            this.positionX = pose.getX();
+            this.positionY = pose.getY();
             this.isGoodData = false;
         }
         SmartDashboard.putNumber("Yaw value", robotRotation);
@@ -96,7 +103,6 @@ public class Locality {
             velocity[1] = errorY * KP_velocity_Y;
             velocity[1] = Math.min(velocity[1], -1.7);
             velocity[1] = Math.max(velocity[1], 1.7);
-
         }
         return velocity;
     }
