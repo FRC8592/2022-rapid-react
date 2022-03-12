@@ -77,10 +77,10 @@ public class AutoDrive {
         } else {
             this.isGoodData = false;
         }
-        SmartDashboard.putNumber("Yaw value", robotRotation);
-        SmartDashboard.putNumber("Position Y", positionY);
-        SmartDashboard.putNumber("Position X", positionX);
-        SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
+        //SmartDashboard.putNumber("Yaw value", robotRotation);
+        //SmartDashboard.putNumber("Position Y", positionY);
+        //SmartDashboard.putNumber("Position X", positionX);
+        //SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
         
     }
 

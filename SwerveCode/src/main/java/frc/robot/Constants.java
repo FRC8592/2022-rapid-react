@@ -39,7 +39,7 @@ public final class Constants {
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR     = 3;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR     = 2;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 1;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 13;
     public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(79.5);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR     = 9;
@@ -62,7 +62,7 @@ public final class Constants {
     public static final int COLLECTOR_ARM_CAN    = 24;
 
     // Other CAN IDs
-    public static final int PDH_CAN = 30;
+    public static final int PDH_CAN = 1;
 
     // DIO Ports
     public static final int LINE_BREAK_TOP_SENSOR_PORT    = 0;
@@ -101,7 +101,8 @@ public final class Constants {
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants
-    public static double MIN_TURN_SPEED = 0.75;
+    public static double MIN_TURN_SPEED = 0.3
+    ;
     public static double MAX_TURN_SPEED = 0.5;
 
     // Color sensor

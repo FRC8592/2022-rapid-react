@@ -167,9 +167,9 @@ public class Collector {
             }
         }
 
-        SmartDashboard.getBoolean("LineSensorTop", topState);
-        SmartDashboard.getBoolean("LineSensorBottom", bottomState);
-        SmartDashboard.putString("Collector State", collectorState.toString());
+        //SmartDashboard.getBoolean("LineSensorTop", topState);
+        //SmartDashboard.getBoolean("LineSensorBottom", bottomState);
+        //SmartDashboard.putString("Collector State", collectorState.toString());
 
         return collectorState;
     }
