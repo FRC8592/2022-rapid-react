@@ -122,4 +122,7 @@ public final class Constants {
     public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
     public static double ARM_UP_F = 0.05;       // Starting value.  Needs tuning
 
+    //Table for flywheel speeds
+    public static double RANGE_TABLE[] = {2110, 2110, 2110, 2110, 2110, 2110, 2110, 2110, 2150, 2200, 2300, 2390, 2490, 2640, 2765, 2855, 3100, 3200, 3350, 3400};
+
 }
