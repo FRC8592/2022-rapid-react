@@ -80,6 +80,9 @@ public class Robot extends TimedRobot {
     collector         = new Collector();
     arm               = new CollectorArmPID();
     powerMonitor      = new Power();
+    
+    // Turn off ball light
+    powerMonitor.relayOff();
 
   }
 

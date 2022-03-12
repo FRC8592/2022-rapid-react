@@ -117,7 +117,7 @@ public class CollectorArmPID {
                 }
                 
                 armMotor.selectProfileSlot(RAISE_PID_SLOT, 0);
-                armMotor.set(ControlMode.Position, 0);
+                armMotor.set(ControlMode.Position, -10);
 
                 // // Slow the arm as it approaches the limit switch
                 // else if(armMotor.getSelectedSensorPosition() > -500){
