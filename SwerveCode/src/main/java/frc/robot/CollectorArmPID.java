@@ -97,6 +97,8 @@ public class CollectorArmPID {
         switch (armState) {
 
             case ARM_UP:
+                armMotor.setNeutralMode(NeutralMode.Brake);
+
                 // Disable power if the arm is pressed against the switch
                 if(limitSwitch.get() == false){
                     armMotor.set(ControlMode.PercentOutput, 0.0);
@@ -143,6 +145,8 @@ public class CollectorArmPID {
                 break;
 
             case ARM_COLLECTING:
+                armMotor.setNeutralMode(NeutralMode.Brake);
+                
                 //
                 // If we are below BALL_SET_POINT.  If we are above, apply a bit more power
                 // to push down on the ball we are probably collecting

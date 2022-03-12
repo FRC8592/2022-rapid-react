@@ -28,6 +28,9 @@ public class ColorSensor{
      * Set the alliance color for the match based on the ball loaded into the robot
      */
     public ColorSensor() {
+        updateCurrentBallColor(); // Read a few times when we first start up 
+        updateCurrentBallColor(); 
+        updateCurrentBallColor();
         allianceColor = updateCurrentBallColor();      // Get the color and assign it to the alliance color
 
         SmartDashboard.putString("Alliance", allianceColor.toString());

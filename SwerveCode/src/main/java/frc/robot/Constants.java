@@ -117,12 +117,12 @@ public final class Constants {
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
     public static double ARM_UP_P = 0.15;       // Starting value.  Needs tuning
-    public static double ARM_UP_I = 0.000;       // Starting value.  Needs tuning
-    public static double ARM_UP_D = 6.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_I = 0.0001;     // Starting value.  Needs tuning
+    public static double ARM_UP_D = 10.0;       // Starting value.  Needs tuning
     public static double ARM_UP_F = 11.0;       // Starting value.  Needs tuning
 
     public static double ARM_DOWN_P = 0.23;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_I = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_DOWN_I = 0.0;         // Starting value.  Needs tuning
     public static double ARM_DOWN_D = 11.0;        // Starting value.  Needs tuning
     public static double ARM_DOWN_F = -0.11;       // Starting value.  Needs tuning
 
