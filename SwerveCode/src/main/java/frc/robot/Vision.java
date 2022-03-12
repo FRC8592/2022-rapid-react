@@ -228,8 +228,10 @@ public class Vision {
   //
   public double moveTowardsTarget(){
     double moveSpeed = 0.0;
-  
-    if (targetClose == true){
+    if (targetLocked == true){
+      moveSpeed = -.5;
+    }
+    else if (targetClose == true){
       moveSpeed = -.5;
     }
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);

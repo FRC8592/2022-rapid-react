@@ -87,7 +87,7 @@ public final class Constants {
     public static double RING_CAMERA_HEIGHT    = 35.0;          // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 27.0;           // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104.0;         // Center of target above ground (inches)
-    public static double TURRET_ROTATE_KP      = 1.0;           // Proportional constant for rotate speed
+    public static double TURRET_ROTATE_KP      = 9.0;           // Proportional constant for rotate speed
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     // Vision constants for the ball camera
@@ -96,13 +96,12 @@ public final class Constants {
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 34.0;
     public static double BALL_CAMERA_ANGLE     = 27.0;
-    public static double BALL_TARGET_HEIGHT    = 0.0;
-    public static double BALL_ROTATE_KP        = 7.0;           // Proportional constant for turret rotate speed
+    public static double BALL_TARGET_HEIGHT    = 4.75;
+    public static double BALL_ROTATE_KP        = 9.0;           // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants
-    public static double MIN_TURN_SPEED = 0.3
-    ;
+    public static double MIN_TURN_SPEED = 0.4;
     public static double MAX_TURN_SPEED = 0.5;
 
     // Color sensor

@@ -176,7 +176,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, powerMonitor, shooter);
+    collector.ballControl(arm, powerMonitor, shooter, visionRing);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
  
@@ -200,7 +200,7 @@ public class Robot extends TimedRobot {
     //
     // Unjam the intake by reversing the staging and collector motors.  This function has top priority
     //
-    if (shooterController.getLeftStickButtonPressed() &&  shooterController.getRightStickButtonPressed())
+    if (shooterController.getLeftStickButton() &&  shooterController.getRightStickButton())
         collector.unjam(arm);
     else {
       //
@@ -231,6 +231,20 @@ public class Robot extends TimedRobot {
     }
 
     //
+    // force Blue alliance
+    //
+    if (shooterController.getXButtonPressed() && shooterController.getBackButton()){
+      colorSense.forceBlueAlliance();
+    }
+
+    //
+    // force Red alliance
+    //
+    if (shooterController.getBButtonPressed() && shooterController.getBackButton()){
+      colorSense.forceRedAlliance();
+    }
+
+    //
     // Read gamepad controls for drivetrain and scale control values
     //
     rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
@@ -242,13 +256,13 @@ public class Robot extends TimedRobot {
     //
     if ((driverController.getLeftTriggerAxis() > 0.1 ) || (shooterController.getLeftTriggerAxis() > 0.1 )) {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-                  -visionRing.turnRobot() , drive.getGyroscopeRotation()));
+                  visionRing.turnRobot() , drive.getGyroscopeRotation()));
     }
 
     //
     // Activate ball (cargo) targetting and fetching.  Robot motion controls are unavailable while targetting balls
     //
-    else if (driverController.getLeftBumperPressed() || shooterController.getLeftBumperPressed()) {
+    else if (driverController.getLeftBumper() || shooterController.getLeftBumper()) {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0,
                   visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
     }

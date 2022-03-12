@@ -23,7 +23,7 @@ public class Collector {
     public enum CollectorState{NO_BALLS_LOADED, ONE_BALL_BOTTOM, BALL_XFER_TO_TOP, ONE_BALL_TOP, TWO_BALLS}
     public CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
 
-    public Vision vision;
+   
 
 
     //
@@ -181,7 +181,7 @@ public class Collector {
     /**
      * Control collector mechanisms based on operating state
      */
-    public void ballControl(CollectorArmPID arm, Power powerMonitor, Shooter shooter) {
+    public void ballControl(CollectorArmPID arm, Power powerMonitor, Shooter shooter, Vision vision) {
         boolean topBall    = !lineSensorTop.get();
         boolean bottomBall = !lineSensorBottom.get();
 
@@ -201,7 +201,7 @@ public class Collector {
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            if (shooter.isFlywheelReady() & vision.isTargetLocked()) {
+            if ((shooter.isFlywheelReady()) && vision.isTargetLocked()) {
                 driveProcessingWheels(0);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
             }
