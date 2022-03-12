@@ -138,7 +138,7 @@ public class AutoDrive {
             return angularVelocity;
     }
 
-    public double[] moveTo(double setPointX, double setPointY, Vision vision){
+    public double[] moveTo(double setPointX, double setPointY){
     
         if(targetX != setPointX || targetY != setPointY){
             lastErrorX = 0;
