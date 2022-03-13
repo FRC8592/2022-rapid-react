@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
   public Locality locality; 
   public Shooter shooter;
   public Collector collector;
-  public CollectorArmPID arm;
+  public CollectorArmMM arm;
   public ColorSensor colorSense;
   public Power powerMonitor;
 
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     locality          = new Locality(0, 0);
     shooter           = new Shooter();
     collector         = new Collector();
-    arm               = new CollectorArmPID();
+    arm               = new CollectorArmMM();
     powerMonitor      = new Power();
     
     // Turn off ball light

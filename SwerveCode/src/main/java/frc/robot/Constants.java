@@ -116,14 +116,25 @@ public final class Constants {
 
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.15;       // Starting value.  Needs tuning
-    public static double ARM_UP_I = 0.00003;       // Starting value.  Needs tuning
-    public static double ARM_UP_D = 6.0;        // Starting value.  Needs tuning
-    public static double ARM_UP_F = 11.0;       // Starting value.  Needs tuning
+    public static double ARM_UP_P = 0.0;       // Starting value.  Needs tuning
+    public static double ARM_UP_I = 0.0;       // Starting value.  Needs tuning
+    public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_F = 0.0;       // Starting value.  Needs tuning
 
-    public static double ARM_DOWN_P = 0.23;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_I = 0.0001;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_D = 14.0;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_F = -0.11;       // Starting value.  Needs tuning
+    public static double ARM_DOWN_P = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_DOWN_I = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_DOWN_D = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_DOWN_F = 0.0;       // Starting value.  Needs tuning
+
+    public static int    MM_SMOOTHING     = 1;
+    public static double MM_NOMINAL_UP    =  0.0;
+    public static double MM_NOMINAL_DOWN  =  0.0;
+    public static double MM_PEAK_UP       =  0.2;
+    public static double MM_PEAK_DOWN     = -0.2;
+    public static double MM_CRUISE_VELO   = 100;
+    public static double MM_ACCEL         = 400;
+    public static double ARM_DEADBAND     = 0.001;  // Set very small.  Default is 0.04
+    public static double ARM_STEADY_POWER = 0.0;
+    public static int    ARM_TICKS_180    = 3200;
 
 }
