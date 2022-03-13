@@ -180,6 +180,7 @@ public class Robot extends TimedRobot {
             break;
         case TURN:
             drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+            arm.lowerArm();
             break;
         case DRIVE:
             drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
