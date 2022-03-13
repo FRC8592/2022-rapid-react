@@ -8,7 +8,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -50,8 +50,15 @@ public class Robot extends TimedRobot {
   public ColorSensor colorSense;
   public Power powerMonitor;
 
+  public Timer timer;
+
   // Our alliance color (read from color sensor)
   private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
+  
+  private enum AutoState{TURN, SHOOT, DRIVE};
+  AutoState autoState = AutoState.TURN;
+  private double autoStateTime;
+
   
 
   /**
@@ -80,6 +87,8 @@ public class Robot extends TimedRobot {
     collector         = new Collector();
     arm               = new CollectorArmPID();
     powerMonitor      = new Power();
+
+    timer = new Timer();
 
   }
 
@@ -134,7 +143,50 @@ public class Robot extends TimedRobot {
 
     autonomous = new Autonomous(drive);
   }
-  
+  public void autonomousPeriodic() {
+    colorSense.updateCurrentBallColor();
+    visionBall.updateVision();
+    visionRing.updateVision();
+    locality.updatePosition(drive.getYaw(), visionRing);
+    arm.update();
+    collector.ballControl(arm, powerMonitor, shooter, visionBall);
+    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
+    powerMonitor.powerPeriodic();
+    // turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
+    // decide state changes
+    switch(autoState) {
+      case TURN:
+        if(visionRing.targetLocked) {
+          autoState = AutoState.SHOOT;
+          autoStateTime = timer.get() + 1.0;
+        }
+        break;
+      case SHOOT:
+        
+        break;
+      case DRIVE:
+        if(collector.determineCollectorState() == Collector.CollectorState.TWO_BALLS) {
+          autoState = AutoState.SHOOT;
+
+        }
+        break;
+    }
+    // execute current state
+    switch(autoState) {
+        case SHOOT:
+            if(shooter.isFlywheelReady()) {
+                collector.shoot();
+            }
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+            break;
+        case TURN:
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+            break;
+        case DRIVE:
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
+            break;
+    }
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override
