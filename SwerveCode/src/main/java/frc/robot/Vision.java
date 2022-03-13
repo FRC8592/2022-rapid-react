@@ -190,8 +190,8 @@ public class Vision {
       // This prevents the turret from overshooting 0 and oscillating back and forth
       // KP is a scaling factor that we tested
       turnSpeed = Math.toRadians(processedDx) * rotationKP; // + turret_rotate_kd*delta();
-      turnSpeed = Math.max(turnSpeed, -4);
-      turnSpeed = Math.min(turnSpeed, 4);
+      turnSpeed = Math.max(turnSpeed, -8);
+      turnSpeed = Math.min(turnSpeed, 8);
 
       //
       // Set a minimum turnSpeed so that we don't get stuck when close to zero error
@@ -229,10 +229,10 @@ public class Vision {
   public double moveTowardsTarget(){
     double moveSpeed = 0.0;
     if (targetLocked == true){
-      moveSpeed = -.5;
+      moveSpeed = -2.0;
     }
     else if (targetClose == true){
-      moveSpeed = -.5;
+      moveSpeed = -1.5;
     }
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
     return moveSpeed;
