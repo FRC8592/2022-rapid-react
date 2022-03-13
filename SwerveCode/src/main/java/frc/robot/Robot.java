@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
     shooter           = new Shooter();
     collector         = new Collector();
     arm               = new CollectorArmPID();
-    powerMonitor      = new Power();
+    //powerMonitor      = new Power();
 
     timer = new Timer();
 
@@ -143,50 +143,50 @@ public class Robot extends TimedRobot {
   }
 
   public void autonomousPeriodic() {
-    colorSense.updateCurrentBallColor();
-    visionBall.updateVision();
-    visionRing.updateVision();
-    locality.updatePosition(drive.getYaw(), visionRing);
-    arm.update();
-    collector.ballControl(arm, powerMonitor, shooter, visionBall);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
-    powerMonitor.powerPeriodic();
+    // colorSense.updateCurrentBallColor();
+    // visionBall.updateVision();
+    // visionRing.updateVision();
+    // locality.updatePosition(drive.getYaw(), visionRing);
+    // arm.update();
+    // collector.ballControl(arm, shooter, visionBall, shooterController);
+    // shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
+    //powerMonitor.powerPeriodic();
     // turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
     // decide state changes
-    switch(autoState) {
-      case TURN:
-        if(visionRing.targetLocked) {
-          autoState = AutoState.SHOOT;
-          autoStateTime = timer.get() + 1.0;
-        }
-        break;
-      case SHOOT:
+    //switch(autoState) {
+    //  case TURN:
+    //   if(visionRing.targetLocked) {
+     //     autoState = AutoState.SHOOT;
+  //      //   autoStateTime = timer.get() + 1.0;
+  //     //  }
+  //       break;
+  //     case SHOOT:
         
-        break;
-      case DRIVE:
-        if(collector.determineCollectorState() == Collector.CollectorState.TWO_BALLS) {
-          autoState = AutoState.SHOOT;
+  //       break;
+  //     case DRIVE:
+  //       if(collector.determineCollectorState() == Collector.CollectorState.TWO_BALLS) {
+  //         autoState = AutoState.SHOOT;
 
-        }
-        break;
-    }
-    // execute current state
-    switch(autoState) {
-        case SHOOT:
-            if(shooter.isFlywheelReady()) {
-                collector.shoot();
-            }
-            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
-            break;
-        case TURN:
-            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-            arm.lowerArm();
-            break;
-        case DRIVE:
-            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
-            break;
-    }
-  }
+  //       }
+  //       break;
+  //   }
+  //   // execute current state
+  //   switch(autoState) {
+  //       case SHOOT:
+  //           if(shooter.isFlywheelReady()) {
+  //               collector.shoot();
+  //           }
+  //           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+  //           break;
+  //       case TURN:
+  //           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+  //           arm.lowerArm();
+  //           break;
+  //       case DRIVE:
+  //           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
+  //           break;
+  //   }
+   }
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -228,9 +228,9 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, powerMonitor, shooter, visionRing);
+    collector.ballControl(arm, shooter, visionRing, shooterController);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
-    powerMonitor.powerPeriodic();
+    //powerMonitor.powerPeriodic();
  
     //
     // Current control scheme
@@ -267,12 +267,12 @@ public class Robot extends TimedRobot {
         // Enter collect mode
         //
         if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
-          collector.enableCollectMode(arm, powerMonitor);
+          collector.enableCollectMode(arm);
         //
         // Exit collect mode
         //
         else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
-          collector.disableCollectMode(arm, powerMonitor);
+          collector.disableCollectMode(arm);
       
         //
         // Shoot ball

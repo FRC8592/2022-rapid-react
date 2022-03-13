@@ -26,7 +26,7 @@ public class Shooter{
     private ShooterState shooterState;
 
     // stores the last valid RPM 
-    private double lastRPM;
+    private double lastRPM = 2110;
 
     //
     // Constructor to instantiate the Collector object and the flywheel motors
@@ -163,7 +163,9 @@ public class Shooter{
         //
         if (!isAllianceColor)
             flyWheelCalculatedVelocity = Constants.REJECT_FLYWHEEL_SPEED;
-        
+
+        //flyWheelCalculatedVelocity = 500;
+
         // Command the flywheel
         updateFlywheel(flyWheelCalculatedVelocity);     // Send desired RPM to flywheel controller
 

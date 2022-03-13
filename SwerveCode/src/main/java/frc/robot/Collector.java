@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.XboxController;
 
 public class Collector {
     // Control variables
@@ -99,11 +100,11 @@ public class Collector {
      * 
      * @return A boolean value indicating if collector mode was successfully activated
      */
-    public boolean enableCollectMode(CollectorArmPID arm, Power powerMonitor) {
+    public boolean enableCollectMode(CollectorArmPID arm) {
         if (collectorState != CollectorState.TWO_BALLS) {
             collectorMode = true;
             arm.lowerArm();
-            powerMonitor.relayOn(); // Turn on light
+            //powerMonitor.relayOn(); // Turn on light
         } else
             collectorMode = false;
             
@@ -117,10 +118,10 @@ public class Collector {
      * 
      * @return Always returns true
      */
-    public boolean disableCollectMode(CollectorArmPID arm, Power powerMonitor) {
+    public boolean disableCollectMode(CollectorArmPID arm) {
         collectorMode = false;
         arm.raiseArm();
-        powerMonitor.relayOff();    // Turn off light
+        //powerMonitor.relayOff();    // Turn off light
 
         return true;
     }
@@ -170,9 +171,9 @@ public class Collector {
             }
         }
 
-        //SmartDashboard.getBoolean("LineSensorTop", topState);
-        //SmartDashboard.getBoolean("LineSensorBottom", bottomState);
-        //SmartDashboard.putString("Collector State", collectorState.toString());
+        SmartDashboard.getBoolean("LineSensorTop", topState);
+        SmartDashboard.getBoolean("LineSensorBottom", bottomState);
+        SmartDashboard.putString("Collector State", collectorState.toString());
 
         return collectorState;
     }
@@ -181,7 +182,7 @@ public class Collector {
     /**
      * Control collector mechanisms based on operating state
      */
-    public void ballControl(CollectorArmPID arm, Power powerMonitor, Shooter shooter, Vision vision) {
+    public void ballControl(CollectorArmPID arm, Shooter shooter, Vision vision, XboxController shooterController) {
         boolean topBall    = !lineSensorTop.get();
         boolean bottomBall = !lineSensorBottom.get();
 
@@ -201,8 +202,8 @@ public class Collector {
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            if ((shooter.isFlywheelReady()) && vision.isTargetLocked()) {
-                driveProcessingWheels(0);
+            if (((shooter.isFlywheelReady()) && vision.isTargetLocked()) || shooterController.getRightBumper()) {
+                driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
             }
 
@@ -281,7 +282,7 @@ public class Collector {
                         collectorState = CollectorState.NO_BALLS_LOADED;
 
                     if (collectorMode) {
-                        driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                        driveProcessingWheels(0);
                         driveStagingWheels(0);
                     }
                     else {
@@ -301,7 +302,7 @@ public class Collector {
                     driveProcessingWheels(0);
                     driveStagingWheels(0);
 
-                    disableCollectMode(arm, powerMonitor);
+                    disableCollectMode(arm);
                 break;
             }
 
