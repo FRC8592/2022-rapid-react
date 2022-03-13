@@ -51,13 +51,13 @@ public class AutoWaypoint {
 
             } else if (currentWaypoint.shoot) {
 
-                if (autoDrive.getDistance(0, 0) > 20) {
+                if (autoDrive.getDistance(0, 0) > autoDrive.inchesToMeters(240)) {
                     double angularVelocity = autoDrive
                             .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
                     drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.5, 0.0, angularVelocity,
                             drivetrain.getGyroscopeRotation()));
 
-                } else if (autoDrive.getDistance(0, 0) < 7) {
+                } else if (autoDrive.getDistance(0, 0) < autoDrive.inchesToMeters(84)) {
                     double angularVelocity = autoDrive
                             .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
                     drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.5, 0.0, angularVelocity,
@@ -89,7 +89,7 @@ public class AutoWaypoint {
 
         } else {
 
-            drivetrain.drive(new ChassisSpeeds(0, 0, 0));
+            drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drivetrain.getGyroscopeRotation()));
             return;
         }
     }

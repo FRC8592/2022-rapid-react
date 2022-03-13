@@ -193,6 +193,21 @@ public class Robot extends TimedRobot {
     //
     // Call these methods on each update cycle to keep the robot running
     //
+
+    if(shooterController.getLeftBumper()){
+      double[] vector = locality.moveTo(10, 0);
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(vector[0], vector[1], drive.getYaw(), drive.getGyroscopeRotation()));
+    }else{
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+    }
+
+    if(shooterController.getRightBumper()){
+      double angularVelocity = locality.turnTo(90, drive.getYaw());
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, angularVelocity, drive.getGyroscopeRotation()));
+    }else{
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+
+      
     colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
@@ -281,6 +296,7 @@ public class Robot extends TimedRobot {
     else {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
         -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+      }
     }
   }
 

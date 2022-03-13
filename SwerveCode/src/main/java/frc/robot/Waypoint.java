@@ -21,9 +21,8 @@ public class Waypoint {
         this.acceptRadius = acceptRadius;
         this.turnTo = turnTo;
         this.shoot = shoot;
-        this.here = here;
-        this.done = done;
-        this.init = init;
+        this.here = false;
+        this.done = false;
         this.waypointTimer = waypointTimer;
     }
 }
