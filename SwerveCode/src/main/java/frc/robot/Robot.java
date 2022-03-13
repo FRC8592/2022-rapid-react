@@ -138,6 +138,7 @@ public class Robot extends TimedRobot {
     //
     colorSense     = new ColorSensor();
     allianceColor  = colorSense.getAllianceColor();
+    timer.start();
   
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
   }
@@ -156,18 +157,19 @@ public class Robot extends TimedRobot {
     switch(autoState) {
       case TURN:
         if(visionRing.targetLocked) {
-          autoState = AutoState.SHOOT;
-          autoStateTime = timer.get() + 1.0;
+          autoState = AutoState.DRIVE;
         }
         break;
       case SHOOT:
         
         break;
       case DRIVE:
-        if(collector.determineCollectorState() == Collector.CollectorState.TWO_BALLS) {
+      /*
+        if(collector.determineCollectorState() == Collector.CollectorState.ONE_BALL_TOP  ) {
           autoState = AutoState.SHOOT;
 
         }
+      */
         break;
     }
     // execute current state
@@ -183,7 +185,12 @@ public class Robot extends TimedRobot {
             arm.lowerArm();
             break;
         case DRIVE:
-            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
+            if(timer.get() < 4){
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.2, 0.0, visionRing.turnRobot(), Rotation2d.fromDegrees(0)));
+            }else{
+              drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(), Rotation2d.fromDegrees(0)));
+              autoState = AutoState.SHOOT;
+            }
             break;
     }
   }
