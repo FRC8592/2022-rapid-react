@@ -140,9 +140,8 @@ public class Robot extends TimedRobot {
     allianceColor  = colorSense.getAllianceColor();
   
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
-
-    autonomous = new Autonomous(drive);
   }
+
   public void autonomousPeriodic() {
     colorSense.updateCurrentBallColor();
     visionBall.updateVision();
@@ -287,6 +286,8 @@ public class Robot extends TimedRobot {
     //
     if (shooterController.getXButtonPressed() && shooterController.getBackButton()){
       colorSense.forceBlueAlliance();
+      allianceColor  = colorSense.getAllianceColor();
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
     }
 
     //
@@ -294,6 +295,8 @@ public class Robot extends TimedRobot {
     //
     if (shooterController.getBButtonPressed() && shooterController.getBackButton()){
       colorSense.forceRedAlliance();
+      allianceColor  = colorSense.getAllianceColor();
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
     }
 
     //
