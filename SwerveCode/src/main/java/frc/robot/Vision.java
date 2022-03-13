@@ -79,6 +79,7 @@ public class Vision {
 
     this.limelightName = limelightName;
     this.lockError     = lockError;
+    this.closeError    = closeError;
     this.cameraHeight  = cameraHeight;
     this.cameraAngle   = cameraAngle;
     this.targetHeight  = targetHeight;
@@ -229,10 +230,10 @@ public class Vision {
   public double moveTowardsTarget(){
     double moveSpeed = 0.0;
     if (targetLocked == true){
-      moveSpeed = -2.0;
+      moveSpeed = -3.8;
     }
     else if (targetClose == true){
-      moveSpeed = -1.5;
+      moveSpeed = -2.0;
     }
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
     return moveSpeed;
