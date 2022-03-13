@@ -138,6 +138,7 @@ public class Robot extends TimedRobot {
     //
     colorSense     = new ColorSensor();
     allianceColor  = colorSense.getAllianceColor();
+    timer.start();
   
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
   }
@@ -153,6 +154,7 @@ public class Robot extends TimedRobot {
     //powerMonitor.powerPeriodic();
     // turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
     // decide state changes
+<<<<<<< HEAD
     //switch(autoState) {
     //  case TURN:
     //   if(visionRing.targetLocked) {
@@ -187,6 +189,48 @@ public class Robot extends TimedRobot {
   //           break;
   //   }
    }
+=======
+    switch(autoState) {
+      case TURN:
+        if(visionRing.targetLocked) {
+          autoState = AutoState.DRIVE;
+        }
+        break;
+      case SHOOT:
+        
+        break;
+      case DRIVE:
+      /*
+        if(collector.determineCollectorState() == Collector.CollectorState.ONE_BALL_TOP  ) {
+          autoState = AutoState.SHOOT;
+
+        }
+      */
+        break;
+    }
+    // execute current state
+    switch(autoState) {
+        case SHOOT:
+            if(shooter.isFlywheelReady()) {
+                collector.shoot();
+            }
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+            break;
+        case TURN:
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+            arm.lowerArm();
+            break;
+        case DRIVE:
+            if(timer.get() < 4){
+            drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.2, 0.0, visionRing.turnRobot(), Rotation2d.fromDegrees(0)));
+            }else{
+              drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(), Rotation2d.fromDegrees(0)));
+              autoState = AutoState.SHOOT;
+            }
+            break;
+    }
+  }
+>>>>>>> e84b0879cc8d25f940ef617837e8f56ba187fed7
 
   /** This function is called once when teleop is enabled. */
   @Override
