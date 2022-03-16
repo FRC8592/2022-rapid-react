@@ -34,7 +34,7 @@ public class Collector {
         staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
         lineSensorTop    = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
-        
+   
         // Invert collector motors so that positive power drives balls inward
         processing.setInverted(true);
         staging.setInverted(true);
