@@ -134,7 +134,7 @@ public final class Constants {
     public static double MM_CRUISE_VELO   = 100;
     public static double MM_ACCEL         = 400;
     public static double ARM_DEADBAND     = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER = 0.0;
-    public static int    ARM_TICKS_180    = 3200;
+    public static double ARM_STEADY_POWER = 0.15;
+    public static int    ARM_TICKS_180    = 4736;
 
 }
