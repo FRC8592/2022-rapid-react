@@ -6,7 +6,9 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+
 
 public class Power {
     // Object variables
@@ -21,12 +23,20 @@ public class Power {
     public double power;
     public double energy;
 
+    // Shuffleboard for power data
+    ShuffleboardTab powerTab;
+
+
     //
     // Constructor for power control
     //
     public Power() {
         // Create new Rev Power Distribution object
         revPDH = new PowerDistribution(Constants.PDH_CAN, PowerDistribution.ModuleType.kRev);
+        
+        // Create the shuffleboard tab for power data
+        powerTab = Shuffleboard.getTab("Power");
+
     }
 
 
@@ -34,19 +44,23 @@ public class Power {
     // Periodically post power data to the dashboard
     //
     public void powerPeriodic() {
-        // Get parameters from the PDH\
+        // Get parameters from the PDH
         temp    = revPDH.getTemperature();
         voltage = revPDH.getVoltage();
         current = revPDH.getTotalCurrent();
         power   = revPDH.getTotalPower();
         energy  = revPDH.getTotalEnergy();
 
-        // Place all parameters onto Smart Dashboard
+        // Place all parameters onto a dedicated Shuffleboard tab
+        Shuffleboard.selectTab("Power");
+
         SmartDashboard.putNumber("Power/Temperature", temp);
         SmartDashboard.putNumber("Power/Voltage", voltage);
         SmartDashboard.putNumber("Power/Current", current);
         SmartDashboard.putNumber("Power/Power", power);
         SmartDashboard.putNumber("Power/Energy", energy);
+
+        Shuffleboard.selectTab("SmartDashboard");   // Switch back to default
     }
 
 

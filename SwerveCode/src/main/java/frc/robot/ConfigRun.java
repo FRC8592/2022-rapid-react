@@ -20,8 +20,13 @@ public final class ConfigRun {
     //
     // Driving Configuration
     //
-    public static final double TRANSLATE_POWER = 0.7;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double TRANSLATE_POWER = 1.0;      // Scaling for teleop driving.  1.0 is maximum
     public static final double ROTATE_POWER    = 0.5;      // Scaling for teleop driving.  1.0 is maximum
+    //
+    // Maximum current provided to motors to help limit battery drain and harsh turning & acceleration
+    //
+    public static final double MAX_SWERVE_DRIVE_CURRENT = 20.0; // Lower values will reduce acceleration
+    public static final double MAX_SWERVE_STEER_CURRENT = 10.0; // Lower values will turn slower
     //
     public static final double JOYSTICK_DEADBAND = 0.01;    // Deadband for translate and rotate joysticks
 

@@ -21,12 +21,8 @@ public class Shooter{
     // Flywheel status
     private boolean flywheelReady = false;
 
-    // Internal state
-    public enum ShooterState{AUTONOMOUS,SHOOT}
-    private ShooterState shooterState;
-
     // stores the last valid RPM 
-    private double lastRPM = 2110;
+    private double lastRPM = 2490;
 
     //
     // Constructor to instantiate the Collector object and the flywheel motors
@@ -164,64 +160,11 @@ public class Shooter{
         if (!isAllianceColor)
             flyWheelCalculatedVelocity = Constants.REJECT_FLYWHEEL_SPEED;
 
-        //flyWheelCalculatedVelocity = 500;
-
         // Command the flywheel
         updateFlywheel(flyWheelCalculatedVelocity);     // Send desired RPM to flywheel controller
 
         return;
+
     }
 
-
-    // /**
-    //  * 
-    //  * @return
-    //  */
-    // public ShooterState determineShooterState(){
-    //     Collector.CollectorState collectorState = collector.determineCollectorState();
-
-    //     if(collectorState != Collector.CollectorState.NO_BALLS_LOADED){
-    //         shooterState = ShooterState.SHOOT;
-    //     }else{
-    //         shooterState = ShooterState.AUTONOMOUS;
-    //     }
-
-    //     SmartDashboard.putString("State", shooterState.toString());
-    //     return shooterState;
-    // }
-
-
-    // /**
-    //  * 
-    //  * @param shootController
-    //  */
-    // public void collectorDriverControl(XboxController shootController){
-    //     // Update our flywheel velocity and status
-    //     computeFlywheelRPM(0);  // TODO: Send the range to target to this method
-
-    //     switch (determineShooterState()) {
-    //         case SHOOT:
-    //             if(shootController.getBButton()){
-    //                 manualControl(); // TODO: Check flywheel RPM (flywheelReady) and aiming status
-                    
-    //             }else{
-    //                 collector.ballControl();
-    //             }
-    //             break;
-
-    //         case AUTONOMOUS:
-    //             collector.ballControl();
-    //             break;
-        
-    //     }
-    // }
-
-
-    // /**
-    //  * 
-    //  */
-    // public void manualControl(){
-    //    //collector.intakeAllRun();
-    //     SmartDashboard.putNumber("Running Manual", 1);
-    // }
 }

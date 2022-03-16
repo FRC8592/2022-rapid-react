@@ -72,10 +72,10 @@ public final class Constants {
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
     public static double FLYWHEEL_P = 0.15;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_I = 0.00;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_I = 0.00001;                 // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_F = 0.054;                   // Starting value.  Needs tuning
-    public static double STARTING_FLYWHEEL_SPEED = 2085;
+    public static double STARTING_FLYWHEEL_SPEED = 2490;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
     public static double RPM_MAX_ERROR   = 8;                 // Allowed RPM error for flywheel
@@ -106,6 +106,7 @@ public final class Constants {
 
     // Color sensor
     public static int MIN_BALL_PROXIMITY = 300;
+    public static int MAX_COLOR_CHECKS   = 10;
 
     // Main collector
     public static double COLLECT_PROCESSING_POWER =  0.2;
@@ -129,4 +130,6 @@ public final class Constants {
     //Table for flywheel speeds
     public static double RANGE_TABLE[] = {2110, 2110, 2110, 2110, 2110, 2110, 2110, 2110, 2150, 2200, 2300, 2390, 2490, 2640, 2765, 2855, 3100, 3200, 3350, 3400};
 
+    //Limelight LED modes
+    public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 }
