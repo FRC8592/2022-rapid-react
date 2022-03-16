@@ -23,7 +23,7 @@ public class Collector {
 
     // Internal state
     public enum CollectorState{NO_BALLS_LOADED, ONE_BALL_BOTTOM, BALL_XFER_TO_TOP, ONE_BALL_TOP, TWO_BALLS}
-    public CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
+    private CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
 
    
     //
@@ -151,6 +151,10 @@ public class Collector {
      */
     public void forceShoot() {
         forceShootMode = true;
+    }
+    public void resetShoot(){
+        forceShootMode = false;
+        shootMode = false;
     }
 
 
@@ -305,6 +309,8 @@ public class Collector {
     public void manualControl(){
             
     }
-
+    public CollectorState getCollectorState() {
+            return collectorState;
+    }
 
 }
