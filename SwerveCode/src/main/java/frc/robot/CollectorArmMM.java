@@ -150,7 +150,7 @@ public class CollectorArmMM {
             case ARM_DESCENDING:
                 // Apply power to lower arm.  Power is proportional to angle.
                 armMotor.selectProfileSlot(LOWER_PID_SLOT, 0);
-                armMotor.set(ControlMode.Position, Constants.BALL_SET_POINT, DemandType.ArbitraryFeedForward, feedForward);
+                armMotor.set(ControlMode.MotionMagic, Constants.BALL_SET_POINT, DemandType.ArbitraryFeedForward, feedForward);
 
                 if (armMotor.getSelectedSensorPosition() <= Constants.BALL_SET_POINT)
                     armState = armStates.ARM_COLLECTING;
