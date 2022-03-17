@@ -5,11 +5,13 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+
 public class Collector {
     // Control variables
-    private boolean unjamMode     = false;
-    private boolean shootMode     = false;
-    private boolean collectorMode = false;
+    private boolean unjamMode      = false;
+    private boolean shootMode      = false;
+    private boolean forceShootMode = false;
+    private boolean collectorMode  = false;
 
     // Line break sensors
     private DigitalInput lineSensorTop;
@@ -20,9 +22,10 @@ public class Collector {
     private WPI_TalonFX staging;
 
     // Internal state
-    public enum CollectorState{ONE_BALL_BOTTOM, ONE_BALL_TOP, TWO_BALLS, NO_BALLS_LOADED}
-    public CollectorState collectorState;
+    public enum CollectorState{NO_BALLS_LOADED, ONE_BALL_BOTTOM, BALL_XFER_TO_TOP, ONE_BALL_TOP, TWO_BALLS}
+    private CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
 
+   
     //
     // Intialize hardware
     //
@@ -31,7 +34,7 @@ public class Collector {
         staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
         lineSensorTop    = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
-        
+   
         // Invert collector motors so that positive power drives balls inward
         processing.setInverted(true);
         staging.setInverted(true);
@@ -96,7 +99,7 @@ public class Collector {
      * 
      * @return A boolean value indicating if collector mode was successfully activated
      */
-    public boolean enableCollectMode(CollectorArm arm, Power powerMonitor) {
+    public boolean enableCollectMode(CollectorArmPID arm, Power powerMonitor) {
         if (collectorState != CollectorState.TWO_BALLS) {
             collectorMode = true;
             arm.lowerArm();
@@ -114,7 +117,7 @@ public class Collector {
      * 
      * @return Always returns true
      */
-    public boolean disableCollectMode(CollectorArm arm, Power powerMonitor) {
+    public boolean disableCollectMode(CollectorArmPID arm, Power powerMonitor) {
         collectorMode = false;
         arm.raiseArm();
         powerMonitor.relayOff();    // Turn off light
@@ -128,7 +131,7 @@ public class Collector {
      * *
      * @return
      */
-    public void unjam(CollectorArm arm) {
+    public void unjam(CollectorArmPID arm) {
         arm.raiseArm();
         unjamMode = true;
     }
@@ -142,42 +145,32 @@ public class Collector {
             shootMode = true;
     }
 
-
+    
     /**
-     * Control in which state the collector is operating
-     * 
-     * @return The state of the collector encoded as CollectorState
+     * Force a shot without any of the normal aiming or flywheel checks
      */
-    public CollectorState determineCollectorState(){
-        boolean topState    = lineSensorTop.get();
-        boolean bottomState = lineSensorBottom.get();
-
-        // Control which state we are in
-        if(!bottomState){
-            if(!topState){
-                collectorState = CollectorState.TWO_BALLS;
-            }else{
-                collectorState = CollectorState.ONE_BALL_BOTTOM;
-            }
-        }else{
-            if(!topState){
-                collectorState = CollectorState.ONE_BALL_TOP;
-            }else{
-                collectorState = CollectorState.NO_BALLS_LOADED;
-            }
-        }
-
-        SmartDashboard.getBoolean("LineSensorTop", topState);
-        SmartDashboard.getBoolean("LineSensorBottom", bottomState);
-        SmartDashboard.putString("Collector State", collectorState.toString());
-
-        return collectorState;
+    public void forceShoot() {
+        forceShootMode = true;
     }
+    public void resetShoot(){
+        forceShootMode = false;
+        shootMode = false;
+    }
+
 
     /**
      * Control collector mechanisms based on operating state
      */
-    public void ballControl(CollectorArm arm, Power powerMonitor) {
+    public void ballControl(CollectorArmPID arm, Shooter shooter, Vision vision, Power powerMonitor) {
+        boolean topBall    = !lineSensorTop.get();
+        boolean bottomBall = !lineSensorBottom.get();
+
+        SmartDashboard.putBoolean("LineSensorTop", topBall);
+        SmartDashboard.putBoolean("LineSensorBottom", bottomBall);
+        SmartDashboard.putString("Collector State", collectorState.toString());
+        SmartDashboard.putBoolean("Shoot Mode", shootMode);
+        SmartDashboard.putBoolean("Force Mode", forceShootMode);
+
 
         //
         // *** Unjam overrides any normal control ***
@@ -187,15 +180,34 @@ public class Collector {
             driveStagingWheels(Constants.UNJAM_STAGING_POWER);
             unjamMode = false;  // Clear mode.  Will be overwritten if unjam button is held down
         }
+
+        //
+        // Force shoot does not check for aim lock before shooting
+        //
+        else if (forceShootMode) {
+            if (shooter.isFlywheelReady()) {
+                driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                driveStagingWheels(Constants.SHOOT_STAGING_POWER);
+            }
+
+            // Stop force shoot mode once the top ball is gone
+            if (!topBall) {
+                forceShootMode = false;
+                shootMode      = false;     // Clear out any pending shoot commands at the same time
+            }
+        }
+
         //
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            driveProcessingWheels(0);
-            driveStagingWheels(Constants.SHOOT_STAGING_POWER);
+            if ((shooter.isFlywheelReady()) && vision.isTargetLocked()) {
+                driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                driveStagingWheels(Constants.SHOOT_STAGING_POWER);
+            }
 
-            // Stop shoot mode once the top ball is gone (true means no ball is present)
-            if (lineSensorTop.get())
+            // Stop shoot mode once the top ball is gone
+            if (!topBall)
                 shootMode = false;
         }
         
@@ -204,9 +216,16 @@ public class Collector {
         //
         else {
             //this is a simple state machine controlling what ball wheels run and when
-            switch(determineCollectorState()) {
+            switch(collectorState) {
 
                 case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
+                    if (topBall && bottomBall)
+                        collectorState = CollectorState.TWO_BALLS;
+                    else if (topBall)
+                        collectorState = CollectorState.ONE_BALL_TOP;
+                    else if (bottomBall)
+                        collectorState = CollectorState.ONE_BALL_BOTTOM;
+
                     if (collectorMode) {
                         driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                         driveStagingWheels(Constants.COLLECT_STAGING_POWER);
@@ -217,7 +236,14 @@ public class Collector {
                     }
                 break;
             
-                case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to stop the wheels pushing it in and start driving the middle wheels
+                case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to move it to the top while we continue collecting
+                    if (!topBall & !bottomBall)
+                        collectorState = CollectorState.BALL_XFER_TO_TOP;
+                    else if (topBall & bottomBall)
+                        collectorState = CollectorState.TWO_BALLS;
+                    else if (topBall)
+                        collectorState = CollectorState.ONE_BALL_TOP;
+
                     //
                     // We don't check for collectorMode here, because if we have one ball in the bottom, we always want to move it into the
                     // the top position
@@ -225,8 +251,33 @@ public class Collector {
                     driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                     driveStagingWheels(Constants.COLLECT_STAGING_POWER);
                 break;
-                
-                case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball and run the bottom wheels to collect another
+
+                case BALL_XFER_TO_TOP:
+                    if (topBall && bottomBall)
+                        collectorState = CollectorState.TWO_BALLS;
+                    else if (topBall)
+                        collectorState = CollectorState.ONE_BALL_TOP;
+                    else if (bottomBall)
+                        collectorState = CollectorState.ONE_BALL_BOTTOM;
+
+                    //
+                    // We don't check for collectorMode here, because if we have one ball in the bottom, we always want to move it into the
+                    // the top position
+                    //
+                    driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                    driveStagingWheels(Constants.COLLECT_STAGING_POWER);
+                break;
+
+                case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball
+                    if (topBall && bottomBall)
+                        collectorState = CollectorState.TWO_BALLS;
+                    else if (topBall)
+                        collectorState = CollectorState.ONE_BALL_TOP;
+                    else if (bottomBall)
+                        collectorState = CollectorState.ONE_BALL_BOTTOM;
+                    else
+                        collectorState = CollectorState.NO_BALLS_LOADED;
+
                     if (collectorMode) {
                         driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                         driveStagingWheels(0);
@@ -238,6 +289,13 @@ public class Collector {
                 break;
 
                 case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
+                    if (!topBall && !bottomBall)    // We just shot and the bottom ball is on its way up (i.e. between sensors)
+                        collectorState = CollectorState.BALL_XFER_TO_TOP;
+                    else if (topBall && !bottomBall)
+                        collectorState = CollectorState.ONE_BALL_TOP;
+                    else if (bottomBall && !topBall)
+                        collectorState = CollectorState.ONE_BALL_BOTTOM;
+                    
                     driveProcessingWheels(0);
                     driveStagingWheels(0);
 
@@ -251,6 +309,8 @@ public class Collector {
     public void manualControl(){
             
     }
-
+    public CollectorState getCollectorState() {
+            return collectorState;
+    }
 
 }

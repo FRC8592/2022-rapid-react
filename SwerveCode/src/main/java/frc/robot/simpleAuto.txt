@@ -1,56 +1,36 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// Simple one or two ball autonomous routine
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the
- * name of this class or
- * the package after creating this project, you must also update the
- * build.gradle file in the
- * project.
- */
-public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
+public class simpleAuto {
   // Our robot objects
-  public XboxController driverController;
-  public XboxController shooterController;
-  public Drivetrain drive;
-  public Autonomous autonomous;
-  public Vision visionRing;
-  public Vision visionBall;
-  public AutoDrive locality; 
-  public Shooter shooter;
-  public Collector collector;
-  public CollectorArmPID arm;
-  public ColorSensor colorSense;
-  public Power powerMonitor;
-  public Timer timer;
+  private Drivetrain drive;
+  private Autonomous autonomous;
+  private Vision visionRing;
+  private Vision visionBall;
+  private AutoDrive locality; 
+  private Shooter shooter;
+  private Collector collector;
+  private CollectorArmPID arm;
+  private ColorSensor colorSense;
+  private Power powerMonitor;
+  private Timer timer;
 
   // Our alliance color (read from color sensor)
   private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
 
-  // Indicate if Autonmous has run.  If not, we have some things to initialize in teleopInit()
-  private boolean AutonomousHasRun = false;
+  // Count of balls for this autonomous routine
+  pr
 
   // Variables for simple autonomous
   private enum AutoState{TURN, SHOOT, DRIVE};
@@ -163,49 +143,49 @@ public class Robot extends TimedRobot {
    * Simple 2-ball autonomous routine
    */
   public void autonomousPeriodic() {
-    colorSense.updateCurrentBallColor();
-    visionBall.updateVision();
-    visionRing.updateVision();
-    locality.updatePosition(drive.getYaw(), visionRing);
-    arm.update();
-    collector.ballControl(arm, shooter, visionBall, powerMonitor);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
-    powerMonitor.powerPeriodic();
-    //turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
+    // colorSense.updateCurrentBallColor();
+    // visionBall.updateVision();
+    // visionRing.updateVision();
+    // locality.updatePosition(drive.getYaw(), visionRing);
+    // arm.update();
+    // collector.ballControl(arm, shooter, visionBall, shooterController);
+    // shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
+    //powerMonitor.powerPeriodic();
+    // turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
     // decide state changes
-    switch(autoState) {
-      case TURN:
-         if(visionRing.targetLocked) {
-          autoState = AutoState.SHOOT;
-         autoStateTime = timer.get() + 1.0;
-    }
-   break;
-   case SHOOT:
+    //switch(autoState) {
+    //  case TURN:
+    //   if(visionRing.targetLocked) {
+     //     autoState = AutoState.SHOOT;
+  //      //   autoStateTime = timer.get() + 1.0;
+  //     //  }
+  //       break;
+  //     case SHOOT:
         
-   break;
-   case DRIVE:
-   if(collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {
-    autoState = AutoState.SHOOT;
+  //       break;
+  //     case DRIVE:
+  //       if(collector.determineCollectorState() == Collector.CollectorState.TWO_BALLS) {
+  //         autoState = AutoState.SHOOT;
 
-  }
-   break;
-   }
- //execute current state
-   switch(autoState) {
-  case SHOOT:
-   if(shooter.isFlywheelReady()) {
-  collector.shoot();
-  }
-  drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
-  break;
-   case TURN:
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-      arm.lowerArm();
-     break;
-  case DRIVE:
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
-       break;
-     }
+  //       }
+  //       break;
+  //   }
+  //   // execute current state
+  //   switch(autoState) {
+  //       case SHOOT:
+  //           if(shooter.isFlywheelReady()) {
+  //               collector.shoot();
+  //           }
+  //           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+  //           break;
+  //       case TURN:
+  //           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+  //           arm.lowerArm();
+  //           break;
+  //       case DRIVE:
+  //           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
+  //           break;
+  //   }
    }
 
 
@@ -214,8 +194,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
-      collector.resetShoot();
-      
+
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
     //
@@ -279,8 +258,7 @@ public class Robot extends TimedRobot {
     //   shooterController (Y button)     : Exit collect mode
     //   shooterController (L + R stick)  : Unjam
     //   shooterController (BACK + blue)  : Force blue alliance
-    //   shooterController (BACK + red)   : Force red alliance
-    //   shooterController (Right bumper) : Shoot without lock on ring
+    //   shooterController (Right bumper) : Shoot immediately (No aiming or flywheel checks)
 
     //
     // Unjam the intake by reversing the staging and collector motors.  This function has top priority
@@ -294,7 +272,7 @@ public class Robot extends TimedRobot {
       // RPM in this condition, so here we only need to control the collector
       //
       if (!colorSense.isAllianceBallColor())
-        collector.forceShoot();
+        collector.shoot();
       else {
         //
         // Enter collect mode
@@ -310,13 +288,13 @@ public class Robot extends TimedRobot {
         //
         // Shoot ball with aiming automation disabled
         //
-        if (shooterController.getRightBumper())
+        else if (shooterController.getRightBumper())
           collector.forceShoot();
       
         //
         // Shoot ball
         //
-        else if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ))
+        if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ))
             collector.shoot();
       }
     }

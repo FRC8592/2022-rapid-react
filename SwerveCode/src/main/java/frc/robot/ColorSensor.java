@@ -28,9 +28,40 @@ public class ColorSensor{
      * Set the alliance color for the match based on the ball loaded into the robot
      */
     public ColorSensor() {
-        allianceColor = updateCurrentBallColor();      // Get the color and assign it to the alliance color
+        int i = 0;
+        
+        //
+        // Loop until we get a real color (e.g. RED or BLUE) or until we exhaust our maximum tries
+        //
+        // If we never get a real color, pick BLUE.  We have a 50% chance of being right for autonmous, and the 
+        // co-driver can override to RED, if necessary, for teleop.
+        //
+        while ((allianceColor == BALL_COLOR.NONE) && (i < Constants.MAX_COLOR_CHECKS)) {
+            allianceColor = updateCurrentBallColor();      // Get the color and assign it to the alliance color
+            i++;
+        }
+
+        // Force BLUE if the sensor failed to detect a color
+        if (allianceColor == BALL_COLOR.NONE)
+            allianceColor = BALL_COLOR.BLUE;
 
         SmartDashboard.putString("Alliance", allianceColor.toString());
+    }
+
+
+    /**
+     * In case we can't start with a ball near the sensor, allow drivers to force blue alliance color
+     */
+    public void forceBlueAlliance() {
+        allianceColor = BALL_COLOR.BLUE;
+    }
+
+
+    /**
+     * In case we can't start with a ball near the sensor, allow drivers to force red alliance color
+     */
+    public void forceRedAlliance() {
+        allianceColor = BALL_COLOR.RED;
     }
 
 
@@ -66,7 +97,7 @@ public class ColorSensor{
      * @return true if the ball in the upper position matches the alliance ball color
      */
     public boolean isAllianceBallColor() {
-        if ((allianceColor == currentBallColor) || (allianceColor == BALL_COLOR.NONE))
+        if ((currentBallColor == allianceColor) || (currentBallColor == BALL_COLOR.NONE))
             return true;
         else
             return false;
@@ -93,7 +124,8 @@ public class ColorSensor{
             else
                 currentBallColor = BALL_COLOR.RED;
         else
-            currentBallColor = BALL_COLOR.NONE;   
+            currentBallColor = BALL_COLOR.NONE;
+               
         if (currentBallColor != BALL_COLOR.NONE)  {
             this.allianceColor = currentBallColor;
         }                        // Only return NONE if a ball is not in position

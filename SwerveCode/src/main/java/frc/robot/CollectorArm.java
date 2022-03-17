@@ -77,8 +77,8 @@ public class CollectorArm {
      * Control the arm state machine
      */
     public void update(){
-        SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
-        SmartDashboard.putString("Arm State", armState.toString());
+        //SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
+        //SmartDashboard.putString("Arm State", armState.toString());
         SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
@@ -99,7 +99,6 @@ public class CollectorArm {
                 // Stop when the limit switch is hit
                 if(limitSwitch.get() == false){
                     armState = armStates.ARM_UP;
-
                 }
 
                 // Slow the arm as it approaches the limit switch
