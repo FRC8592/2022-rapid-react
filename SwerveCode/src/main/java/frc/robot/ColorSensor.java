@@ -125,8 +125,8 @@ public class ColorSensor{
                 currentBallColor = BALL_COLOR.RED;
         else
             currentBallColor = BALL_COLOR.NONE;
-               
-        if (currentBallColor != BALL_COLOR.NONE)  {
+
+        if (currentBallColor != BALL_COLOR.NONE && this.allianceColor == allianceColor.NONE)  {
             this.allianceColor = currentBallColor;
         }                        // Only return NONE if a ball is not in position
                                 // Place raw color data on the dashboard for diagnostics
