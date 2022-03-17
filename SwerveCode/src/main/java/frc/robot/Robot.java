@@ -193,7 +193,7 @@ public class Robot extends TimedRobot {
     //
     // Call these methods on each update cycle to keep the robot running
     //
-
+    locality.updatePosition(drive.getYaw(), visionRing);
     if(shooterController.getLeftBumper()){
       double[] vector = locality.moveTo(10, 0);
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(vector[0], vector[1], drive.getYaw(), drive.getGyroscopeRotation()));
@@ -211,7 +211,7 @@ public class Robot extends TimedRobot {
     colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
-    locality.updatePosition(drive.getYaw(), visionRing);
+    
     arm.update();
     collector.ballControl(arm, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());

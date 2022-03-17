@@ -62,7 +62,7 @@ public final class Constants {
     public static final int COLLECTOR_ARM_CAN    = 24;
 
     // Other CAN IDs
-    public static final int PDH_CAN = 30;
+    public static final int PDH_CAN = 1;
 
     // DIO Ports
     public static final int LINE_BREAK_TOP_SENSOR_PORT    = 0;
