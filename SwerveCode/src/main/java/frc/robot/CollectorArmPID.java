@@ -3,14 +3,11 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.*;
-import frc.robot.ColorSensor.BALL_COLOR;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-
-import javax.lang.model.util.ElementScanner6;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
@@ -19,12 +16,8 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class CollectorArmPID {
     // Configuration constants
-    private static final double ARM_RAISE_POWER       = 0.3;   // Power for raising arm
-    private static final double ARM_LOWER_POWER       = 0.3;   // Power for lowering arm
-    private static final double ARM_COLLECT_POWER     = 0.1;   // Power for pushing down on balls
-    private static final int    ARM_LOW_POS_THRESHOLD = 1000;  // TODO determine this value empirically
-    private static final int    RAISE_PID_SLOT = 0;
-    private static final int    LOWER_PID_SLOT = 1;
+    private static final int RAISE_PID_SLOT = 0;
+    private static final int LOWER_PID_SLOT = 1;
 
     // State values
     private static enum armStates {ARM_UP, ARM_RAISING, ARM_DESCENDING, ARM_COLLECTING}

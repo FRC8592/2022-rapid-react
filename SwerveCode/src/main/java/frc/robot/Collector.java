@@ -157,7 +157,7 @@ public class Collector {
     /**
      * Control collector mechanisms based on operating state
      */
-    public void ballControl(CollectorArmMM, Shooter shooter, Vision vision, Power powerMonitor) {
+    public void ballControl(CollectorArmMM arm, Shooter shooter, Vision vision, Power powerMonitor) {
         boolean topBall    = !lineSensorTop.get();
         boolean bottomBall = !lineSensorBottom.get();
 

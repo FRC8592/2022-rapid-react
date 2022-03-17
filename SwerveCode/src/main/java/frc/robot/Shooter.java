@@ -134,9 +134,7 @@ public class Shooter{
      * @param range Range to target (units?)
      */
     public void computeFlywheelRPM(double range, boolean isAllianceColor) {
-        double flyWheelSetVelocity;
         double flyWheelCalculatedVelocity;
-        double flyWheelVelocity;
         int arrayIndex;
         double slope;
 
