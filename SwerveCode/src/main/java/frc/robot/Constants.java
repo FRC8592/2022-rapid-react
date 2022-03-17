@@ -72,7 +72,7 @@ public final class Constants {
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
     public static double FLYWHEEL_P = 0.15;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_I = 0.00001;                 // Starting value.  Needs tuning
+    public static double FLYWHEEL_I = 0.000001;                 // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_F = 0.054;                   // Starting value.  Needs tuning
     public static double STARTING_FLYWHEEL_SPEED = 2490;

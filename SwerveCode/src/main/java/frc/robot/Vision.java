@@ -136,19 +136,19 @@ public class Vision {
     }
 
     //post driver data to smart dashboard periodically
-    SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
-    SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
-    SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
-    SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
+    //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
+    //SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
+    //SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
+    //SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
     SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
-    SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
-    SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
-    SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
-    SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
+    //SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
+    //SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
+    //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
+    //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
-    SmartDashboard.putNumber(limelightName + "/lockError", lockError);
+    //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
 
 

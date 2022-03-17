@@ -155,7 +155,7 @@ public class Robot extends TimedRobot {
 
     // Indicate to teleop that autonomous has run
     AutonomousHasRun = true;
-
+    autoState = AutoState.TURN;
   }
 
 
@@ -168,7 +168,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, shooter, visionBall, powerMonitor);
+    collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
     //turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
@@ -176,7 +176,7 @@ public class Robot extends TimedRobot {
     switch(autoState) {
       case TURN:
          if(visionRing.targetLocked) {
-          autoState = AutoState.SHOOT;
+          autoState = AutoState.DRIVE;
          autoStateTime = timer.get() + 1.0;
     }
    break;
@@ -186,21 +186,22 @@ public class Robot extends TimedRobot {
    case DRIVE:
    if(collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {
     autoState = AutoState.SHOOT;
-
+    
   }
    break;
    }
+
+   SmartDashboard.putString("autoState", autoState.name());
+
  //execute current state
    switch(autoState) {
   case SHOOT:
-   if(shooter.isFlywheelReady()) {
-  collector.shoot();
-  }
-  drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
-  break;
+    collector.shoot();
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+    break;
    case TURN:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-      arm.lowerArm();
+      collector.enableCollectMode(arm, powerMonitor);
      break;
   case DRIVE:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
