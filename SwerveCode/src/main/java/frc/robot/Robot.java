@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Joystick;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -34,6 +35,7 @@ public class Robot extends TimedRobot {
   // Our robot objects
   public XboxController driverController;
   public XboxController shooterController;
+  public Joystick flightStick;
   public Drivetrain drive;
   public Autonomous autonomous;
   public Vision visionRing;
@@ -71,6 +73,7 @@ public class Robot extends TimedRobot {
 
     driverController  = new XboxController(0); 
     shooterController = new XboxController(1);
+    flightStick       = new Joystick(2);
     drive             = new Drivetrain();
     visionRing        = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR,
                                    Constants.RING_CLOSE_ERROR, Constants.RING_CAMERA_HEIGHT,
@@ -317,7 +320,7 @@ public class Robot extends TimedRobot {
         //
         // Shoot ball
         //
-        else if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ))
+        else if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ) || (flightStick.getRawButton(1)))
             collector.shoot();
       }
     }
@@ -343,9 +346,9 @@ public class Robot extends TimedRobot {
     //
     // Read gamepad controls for drivetrain and scale control values
     //
-    rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
-    translateX = (driverController.getLeftY()  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;        // X is forward Direction, Forward on Joystick is Y
-    translateY = (driverController.getLeftX()  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
+    rotate     = (flightStick.getTwist() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
+    translateX = (flightStick.getX()  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;        // X is forward Direction, Forward on Joystick is Y
+    translateY = (flightStick.getY()  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
   
     //
     // Activate ring targetting.  Robot translate controls are functional while targetting
