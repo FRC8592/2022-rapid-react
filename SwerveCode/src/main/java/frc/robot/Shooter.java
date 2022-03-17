@@ -21,10 +21,8 @@ public class Shooter{
     // Flywheel status
     private boolean flywheelReady = false;
 
-    // Internal state
-    public enum ShooterState{AUTONOMOUS,SHOOT}
-    private ShooterState shooterState;
-
+    // stores the last valid RPM 
+    private double lastRPM = 2490;
 
     //
     // Constructor to instantiate the Collector object and the flywheel motors
@@ -57,6 +55,10 @@ public class Shooter{
         flyWheelRight.configClosedloopRamp(1);
 
         flyWheelRight.set(ControlMode.Velocity, 0);
+
+        //private final double rpm[] = {};
+        //private final double distance[] = {};
+
     }
 
 
@@ -132,74 +134,37 @@ public class Shooter{
      * @param range Range to target (units?)
      */
     public void computeFlywheelRPM(double range, boolean isAllianceColor) {
-        double flywheelRpmSet;
+        double flyWheelSetVelocity;
+        double flyWheelCalculatedVelocity;
+        double flyWheelVelocity;
+        int arrayIndex;
+        double slope;
 
-        flywheelRpmSet = SmartDashboard.getNumber("Flywheel Set (RPM)", Constants.STARTING_FLYWHEEL_SPEED);
-     
+        if (range > 0 && range <= 227.9){
+            arrayIndex = (int)((range) / 12);
+            slope = (Constants.RANGE_TABLE[arrayIndex+1] - Constants.RANGE_TABLE[arrayIndex]) / (((arrayIndex * 12) + 12) - (arrayIndex * 12));
+            flyWheelCalculatedVelocity = Constants.RANGE_TABLE[arrayIndex] + (slope * (range - (arrayIndex * 12)));
+            lastRPM = flyWheelCalculatedVelocity;
+
+        }
+        else {
+            flyWheelCalculatedVelocity = lastRPM;
+
+        }
+
         //
         // Check to see if we have a ball from the opposite alliance ready to shoot.  If so, slow the
         // flywheel so we can eject it safely.  The top level robot code will trigger the actual
         // shooting action
         //
         if (!isAllianceColor)
-            flywheelRpmSet = Constants.REJECT_FLYWHEEL_SPEED;
-        
+            flyWheelCalculatedVelocity = Constants.REJECT_FLYWHEEL_SPEED;
+
         // Command the flywheel
-        updateFlywheel(flywheelRpmSet);     // Send desired RPM to flywheel controller
+        updateFlywheel(flyWheelCalculatedVelocity);     // Send desired RPM to flywheel controller
 
         return;
+
     }
 
-
-    // /**
-    //  * 
-    //  * @return
-    //  */
-    // public ShooterState determineShooterState(){
-    //     Collector.CollectorState collectorState = collector.determineCollectorState();
-
-    //     if(collectorState != Collector.CollectorState.NO_BALLS_LOADED){
-    //         shooterState = ShooterState.SHOOT;
-    //     }else{
-    //         shooterState = ShooterState.AUTONOMOUS;
-    //     }
-
-    //     SmartDashboard.putString("State", shooterState.toString());
-    //     return shooterState;
-    // }
-
-
-    // /**
-    //  * 
-    //  * @param shootController
-    //  */
-    // public void collectorDriverControl(XboxController shootController){
-    //     // Update our flywheel velocity and status
-    //     computeFlywheelRPM(0);  // TODO: Send the range to target to this method
-
-    //     switch (determineShooterState()) {
-    //         case SHOOT:
-    //             if(shootController.getBButton()){
-    //                 manualControl(); // TODO: Check flywheel RPM (flywheelReady) and aiming status
-                    
-    //             }else{
-    //                 collector.ballControl();
-    //             }
-    //             break;
-
-    //         case AUTONOMOUS:
-    //             collector.ballControl();
-    //             break;
-        
-    //     }
-    // }
-
-
-    // /**
-    //  * 
-    //  */
-    // public void manualControl(){
-    //    //collector.intakeAllRun();
-    //     SmartDashboard.putNumber("Running Manual", 1);
-    // }
 }

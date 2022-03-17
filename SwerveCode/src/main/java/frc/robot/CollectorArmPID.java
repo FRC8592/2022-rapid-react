@@ -90,9 +90,9 @@ public class CollectorArmPID {
      * Control the arm state machine
      */
     public void update(){
-        SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
-        SmartDashboard.putString("Arm State", armState.toString());
-        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        //SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
+        //SmartDashboard.putString("Arm State", armState.toString());
+        //SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
