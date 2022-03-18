@@ -39,7 +39,7 @@ public final class Constants {
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR     = 3;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR     = 2;
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 1;
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 13;
     public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(79.5);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR     = 9;
@@ -71,10 +71,10 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_P = 0.0;                     // Starting value.  Needs tuning
-    public static double FLYWHEEL_I = 0.0;                     // Starting value.  Needs tuning
-    public static double FLYWHEEL_D = 0.0;                     // Starting value.  Needs tuning
-    public static double FLYWHEEL_F = 0.05;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_P = 0.15;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_I = 0.00;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_F = 0.054;                   // Starting value.  Needs tuning
     public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
@@ -114,13 +114,17 @@ public final class Constants {
     public static double UNJAM_STAGING_POWER      = -0.2;
     public static double SHOOT_STAGING_POWER      =  1.0;
 
-
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.0;        // Starting value.  Needs tuning
-    public static double ARM_UP_I = 0.0;        // Starting value.  Needs tuning
-    public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
-    public static double ARM_UP_F = 0.05;       // Starting value.  Needs tuning
+    public static double ARM_UP_P = 0.15;       // Starting value.  Needs tuning
+    public static double ARM_UP_I = 0.00003;       // Starting value.  Needs tuning
+    public static double ARM_UP_D = 6.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_F = 11.0;       // Starting value.  Needs tuning
+
+    public static double ARM_DOWN_P = 0.23;        // Starting value.  Needs tuning
+    public static double ARM_DOWN_I = 0.0001;        // Starting value.  Needs tuning
+    public static double ARM_DOWN_D = 14.0;        // Starting value.  Needs tuning
+    public static double ARM_DOWN_F = -0.11;       // Starting value.  Needs tuning
 
     public static final double AUTO_DRIVE_SPEED = 0.5;
     //Table for flywheel speeds

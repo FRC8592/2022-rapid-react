@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
   public AutoDrive locality; 
   public Shooter shooter;
   public Collector collector;
-  public CollectorArm arm;
+  public CollectorArmPID arm;
   public ColorSensor colorSense;
   public Power powerMonitor;
   public AutoWaypoint autoWaypoint;
@@ -80,9 +80,12 @@ public class Robot extends TimedRobot {
     locality          = new AutoDrive(0, 0,drive);
     shooter           = new Shooter();
     collector         = new Collector();
-    arm               = new CollectorArm();
+    arm               = new CollectorArmPID();
     powerMonitor      = new Power();
     autoWaypoint      = new AutoWaypoint(locality, drive, collector, shooter, visionBall);
+    
+    // Turn off ball light
+    powerMonitor.relayOff();
 
     
   }
@@ -150,7 +153,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, powerMonitor);
+    collector.ballControl(arm, powerMonitor, shooter);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
 
@@ -213,7 +216,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     
     arm.update();
-    collector.ballControl(arm, powerMonitor);
+    collector.ballControl(arm, powerMonitor, shooter);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
  
@@ -263,7 +266,7 @@ public class Robot extends TimedRobot {
         // Shoot ball
         //
         if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ))
-          collector.shoot();
+            collector.shoot();
       }
     }
 
@@ -304,6 +307,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    colorSense = null;
   }
 
 

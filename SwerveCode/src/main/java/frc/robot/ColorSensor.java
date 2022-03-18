@@ -35,6 +35,22 @@ public class ColorSensor{
 
 
     /**
+     * In case we can't start with a ball near the sensor, allow drivers to force blue alliance color
+     */
+    public void forceBlueAlliance() {
+        allianceColor = BALL_COLOR.BLUE;
+    }
+
+
+    /**
+     * In case we can't start with a ball near the sensor, allow drivers to force red alliance color
+     */
+    public void forceRedAlliance() {
+        allianceColor = BALL_COLOR.RED;
+    }
+
+
+    /**
      * 
      * @return Alliance color encoded as BALL_COLOR
      */
@@ -66,7 +82,7 @@ public class ColorSensor{
      * @return true if the ball in the upper position matches the alliance ball color
      */
     public boolean isAllianceBallColor() {
-        if ((allianceColor == currentBallColor) || (allianceColor == BALL_COLOR.NONE))
+        if ((currentBallColor == allianceColor) || (currentBallColor == BALL_COLOR.NONE))
             return true;
         else
             return false;
@@ -97,10 +113,11 @@ public class ColorSensor{
             currentBallColor = BALL_COLOR.NONE;                             // Only return NONE if a ball is not in position
 
         // Place raw color data on the dashboard for diagnostics
-        SmartDashboard.putNumber("Red", detectedColor.red);                     // Red component of ball color
-        SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
-        SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
-        SmartDashboard.putString("Color", currentBallColor.toString());          // Computed ball color
+        // SmartDashboard.putNumber("Red", detectedColor.red);                     // Red component of ball color
+        // SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
+        // SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
+        SmartDashboard.putString("Ball", currentBallColor.toString());          // Computed ball color
+        SmartDashboard.putString("Alliance", allianceColor.toString());
 
         return currentBallColor;
     }

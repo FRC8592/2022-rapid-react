@@ -4,9 +4,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.*;
+import frc.robot.ColorSensor.BALL_COLOR;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+
+import javax.lang.model.util.ElementScanner6;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -18,6 +23,8 @@ public class CollectorArmPID {
     private static final double ARM_LOWER_POWER       = 0.3;   // Power for lowering arm
     private static final double ARM_COLLECT_POWER     = 0.1;   // Power for pushing down on balls
     private static final int    ARM_LOW_POS_THRESHOLD = 1000;  // TODO determine this value empirically
+    private static final int    RAISE_PID_SLOT = 0;
+    private static final int    LOWER_PID_SLOT = 1;
 
     // State values
     private static enum armStates {ARM_UP, ARM_RAISING, ARM_DESCENDING, ARM_COLLECTING}
@@ -41,11 +48,17 @@ public class CollectorArmPID {
         armMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
         armMotor.setSelectedSensorPosition(0);
 
-        // PID values
-        armMotor.config_kP(0, Constants.ARM_UP_P);
-        armMotor.config_kI(0, Constants.ARM_UP_I);
-        armMotor.config_kD(0, Constants.ARM_UP_D);
-        armMotor.config_kF(0, Constants.ARM_UP_F);
+        // PID values for raising arm
+        armMotor.config_kP(RAISE_PID_SLOT, Constants.ARM_UP_P);
+        armMotor.config_kI(RAISE_PID_SLOT, Constants.ARM_UP_I);
+        armMotor.config_kD(RAISE_PID_SLOT, Constants.ARM_UP_D);
+        armMotor.config_kF(RAISE_PID_SLOT, Constants.ARM_UP_F);
+
+        // PID values for lowering arm
+        armMotor.config_kP(LOWER_PID_SLOT, Constants.ARM_DOWN_P);
+        armMotor.config_kI(LOWER_PID_SLOT, Constants.ARM_DOWN_I);
+        armMotor.config_kD(LOWER_PID_SLOT, Constants.ARM_DOWN_D);
+        armMotor.config_kF(LOWER_PID_SLOT, Constants.ARM_DOWN_F);
         //armMotor.configClosedloopRamp(0.5, 0);
 
         // Instantiate the limit switch
@@ -87,6 +100,7 @@ public class CollectorArmPID {
                 // Disable power if the arm is pressed against the switch
                 if(limitSwitch.get() == false){
                     armMotor.set(ControlMode.PercentOutput, 0.0);
+                    armMotor.setSelectedSensorPosition(0);
                 }
 
                 // If the arm moves away from the switch, go back to ARM_RAISING to recover
@@ -97,12 +111,13 @@ public class CollectorArmPID {
 
             case ARM_RAISING:
                 // Stop when the limit switch is hit
-                if(limitSwitch.get() == false){
+                if (limitSwitch.get() == false){
                     armState = armStates.ARM_UP;
 
                 }
-
-                armMotor.set(ControlMode.Position, 10);
+                
+                armMotor.selectProfileSlot(RAISE_PID_SLOT, 0);
+                armMotor.set(ControlMode.Position, -10);
 
                 // // Slow the arm as it approaches the limit switch
                 // else if(armMotor.getSelectedSensorPosition() > -500){
@@ -119,20 +134,23 @@ public class CollectorArmPID {
 
             case ARM_DESCENDING:
                 // Apply power to lower arm.  Power is proportional to angle.
-                armMotor.set(ControlMode.PercentOutput, -0.07 - (armMotor.getSelectedSensorPosition()/100000));
+                armMotor.selectProfileSlot(LOWER_PID_SLOT, 0);
+                armMotor.set(ControlMode.Position, Constants.BALL_SET_POINT);
+
+                if (armMotor.getSelectedSensorPosition() <= Constants.BALL_SET_POINT)
+                    armState = armStates.ARM_COLLECTING;
 
                 break;
 
             case ARM_COLLECTING:
-                // Disable power if the arm is at the lowest position
-                if(armMotor.getSelectedSensorPosition() >= Constants.BALL_SET_POINT){
+                //
+                // If we are below BALL_SET_POINT.  If we are above, apply a bit more power
+                // to push down on the ball we are probably collecting
+                //
+                if (armMotor.getSelectedSensorPosition() < Constants.BALL_SET_POINT)
                     armMotor.set(ControlMode.PercentOutput, 0.0);
-
-                }
-                else{
-                    armState = armStates.ARM_DESCENDING;
-
-                }
+                else
+                    armMotor.set(ControlMode.PercentOutput, -0.10);
 
                 break;
 

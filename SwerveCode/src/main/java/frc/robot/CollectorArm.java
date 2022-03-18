@@ -99,7 +99,6 @@ public class CollectorArm {
                 // Stop when the limit switch is hit
                 if(limitSwitch.get() == false){
                     armState = armStates.ARM_UP;
-
                 }
 
                 // Slow the arm as it approaches the limit switch

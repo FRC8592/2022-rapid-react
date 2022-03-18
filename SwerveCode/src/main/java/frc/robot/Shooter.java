@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.XboxController;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -109,9 +108,17 @@ public class Shooter{
             flywheelReady = false;
 
         // Post flywheel parameters to Smart Dashboard
-        SmartDashboard.putNumber("Flywheel Setpoint", flywheelRpmSet);
         SmartDashboard.putNumber("Flywheel Actual", flywheelRpmActual);
         SmartDashboard.putBoolean("Flywheel Ready", flywheelReady);
+    }
+
+
+    /**
+     * 
+     * @return True when the flywheel RPM is within RPM_MAX_ERROR of the set point
+     */
+    public boolean isFlywheelReady() {
+        return flywheelReady;
     }
     
     
