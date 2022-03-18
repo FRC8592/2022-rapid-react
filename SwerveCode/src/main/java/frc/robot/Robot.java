@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   public Collector collector;
   public CollectorArmMM arm;
   public ColorSensor colorSense;
-  public Power powerMonitor;
+  // public Power powerMonitor;
   public Timer timer;
 
   // Our alliance color (read from color sensor)
@@ -84,11 +84,11 @@ public class Robot extends TimedRobot {
     shooter           = new Shooter();
     collector         = new Collector();
     arm               = new CollectorArmMM();
-    powerMonitor      = new Power();
+    //powerMonitor      = new Power();
     timer             = new Timer();
 
     // Turn all of our blindingly bright lights off until neeeded.
-    powerMonitor.relayOff();
+    //powerMonitor.relayOff();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
@@ -257,9 +257,9 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, shooter, visionRing, powerMonitor);
+    collector.ballControl(arm, shooter, visionRing/*, powerMonitor */);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
-    powerMonitor.powerPeriodic();
+    //powerMonitor.powerPeriodic();
  
     //
     // Current control scheme
@@ -299,12 +299,12 @@ public class Robot extends TimedRobot {
         // Enter collect mode
         //
         if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
-          collector.enableCollectMode(arm, powerMonitor);
+          collector.enableCollectMode(arm/*, powerMonitor*/);
         //
         // Exit collect mode
         //
         else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
-          collector.disableCollectMode(arm, powerMonitor);
+          collector.disableCollectMode(arm/*, powerMonitor*/);
 
         //
         // Shoot ball with aiming automation disabled
@@ -366,7 +366,7 @@ public class Robot extends TimedRobot {
     //
     else {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-        -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+                  -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
   }
 

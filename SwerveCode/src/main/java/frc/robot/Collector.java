@@ -99,11 +99,11 @@ public class Collector {
      * 
      * @return A boolean value indicating if collector mode was successfully activated
      */
-    public boolean enableCollectMode(CollectorArmMM arm, Power powerMonitor) {
+    public boolean enableCollectMode(CollectorArmMM arm /*, Power powerMonitor */) {
         if (collectorState != CollectorState.TWO_BALLS) {
             collectorMode = true;
             arm.lowerArm();
-            powerMonitor.relayOn(); // Turn on light
+            //powerMonitor.relayOn(); // Turn on light
         } else
             collectorMode = false;
             
@@ -117,10 +117,10 @@ public class Collector {
      * 
      * @return Always returns true
      */
-    public boolean disableCollectMode(CollectorArmMM arm, Power powerMonitor) {
+    public boolean disableCollectMode(CollectorArmMM arm/*, Power powerMonitor */) {
         collectorMode = false;
         arm.raiseArm();
-        powerMonitor.relayOff();    // Turn off light
+        //powerMonitor.relayOff();    // Turn off light
 
         return true;
     }
@@ -157,7 +157,7 @@ public class Collector {
     /**
      * Control collector mechanisms based on operating state
      */
-    public void ballControl(CollectorArmMM arm, Shooter shooter, Vision vision, Power powerMonitor) {
+    public void ballControl(CollectorArmMM arm, Shooter shooter, Vision vision/*, Power powerMonitor*/) {
         boolean topBall    = !lineSensorTop.get();
         boolean bottomBall = !lineSensorBottom.get();
 
@@ -295,7 +295,7 @@ public class Collector {
                     driveProcessingWheels(0);
                     driveStagingWheels(0);
 
-                    disableCollectMode(arm, powerMonitor);
+                    disableCollectMode(arm/*, powerMonitor*/);
                 break;
             }
 

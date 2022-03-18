@@ -28,20 +28,30 @@ public class CollectorArmMM {
     private DigitalInput limitSwitch;
 
     // Internal global variables
-    private armStates armState = armStates.ARM_UP;  // Robot should start with arm in up position
+    private armStates armState;
 
 
     // Configure the arm motor and limit switch
     public CollectorArmMM () {
+
+        // Robot should start with arm in up position
+        armState = armStates.ARM_UP;  
+
         // Create the arm motor object
         armMotor = new WPI_TalonFX(Constants.COLLECTOR_ARM_CAN);
+        armMotor.configFactoryDefault();
         armMotor.setInverted(true);
         armMotor.setNeutralMode(NeutralMode.Brake);
+        armMotor.set(ControlMode.PercentOutput, 0.0);   // Clear any outstanding Motion Magic commands and park the motor
 
         // Select and reset the encoder for the arm
         armMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
         armMotor.setSelectedSensorPosition(0);
         armMotor.configNeutralDeadband(Constants.ARM_DEADBAND);
+
+        // Set current limits so we don't burn up if we get stalled
+        //
+        armMotor.configSupplyCurrentLimit(Constants.ARM_CURRENT_LIMIT);
 
         // PID values for raising arm
         armMotor.config_kP(RAISE_PID_SLOT, Constants.ARM_UP_P);
@@ -130,20 +140,11 @@ public class CollectorArmMM {
 
                 }
                 
+                // Raise arm to position 0
                 armMotor.selectProfileSlot(RAISE_PID_SLOT, 0);
-                armMotor.set(ControlMode.MotionMagic, -10, DemandType.ArbitraryFeedForward, feedForward);
+                armMotor.set(ControlMode.MotionMagic, 100, DemandType.ArbitraryFeedForward, feedForward);
 
-                // // Slow the arm as it approaches the limit switch
-                // else if(armMotor.getSelectedSensorPosition() > -500){
-                //     armMotor.set(0.1);
-
-                // }
-
-                // // Apply normal power to raise the arm
-                // else {
-                //     armMotor.set(0.25);
-                // }
-                
+               
                 break;
 
             case ARM_DESCENDING:

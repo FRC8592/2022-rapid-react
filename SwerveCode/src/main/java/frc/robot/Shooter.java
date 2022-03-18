@@ -22,12 +22,15 @@ public class Shooter{
     private boolean flywheelReady = false;
 
     // stores the last valid RPM 
-    private double lastRPM = 2490;
+    private double lastRPM = Constants.STARTING_FLYWHEEL_SPEED;
 
     //
     // Constructor to instantiate the Collector object and the flywheel motors
     //
     public Shooter() {
+        // Set out starting speed
+        lastRPM = Constants.STARTING_FLYWHEEL_SPEED;
+
         // Instantiate the launch motors and configure them to factory default settings
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
