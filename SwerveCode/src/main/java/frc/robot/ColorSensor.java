@@ -34,6 +34,12 @@ public class ColorSensor{
     }
 
 
+    public void resetAllianceColor(){
+        allianceColor = this.updateCurrentBallColor();
+
+        SmartDashboard.putString("Alliance", allianceColor.toString());
+    }
+
     /**
      * 
      * @return Alliance color encoded as BALL_COLOR

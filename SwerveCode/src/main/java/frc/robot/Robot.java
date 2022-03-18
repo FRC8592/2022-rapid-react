@@ -83,6 +83,8 @@ public class Robot extends TimedRobot {
     arm               = new CollectorArm();
     powerMonitor      = new Power();
     autoWaypoint      = new AutoWaypoint(locality, drive, collector, shooter, visionBall);
+    colorSense     = new ColorSensor();
+    
 
     
   }
@@ -135,9 +137,8 @@ public class Robot extends TimedRobot {
     //
     // Once we have our alliance color, use it to activate the appropirate Limelight pipeline
     //
-    colorSense     = new ColorSensor();
-    allianceColor  = colorSense.getAllianceColor();
-  
+    colorSense.resetAllianceColor();
+    
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
 
     autonomous = new Autonomous(drive);
@@ -170,8 +171,7 @@ public class Robot extends TimedRobot {
     // TODO: Initialization is not always run when enabling the robot.  We need to make sure we get the new color every time!
     //
     if (colorSense == null) {
-      colorSense     = new ColorSensor();
-      allianceColor  = colorSense.getAllianceColor();
+      colorSense.resetAllianceColor();
     
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
     }
