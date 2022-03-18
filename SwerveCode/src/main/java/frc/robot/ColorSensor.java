@@ -48,6 +48,12 @@ public class ColorSensor{
         SmartDashboard.putString("Alliance", allianceColor.toString());
     }
 
+    public void resetAllianceColor(){
+        allianceColor = this.updateCurrentBallColor();
+
+        SmartDashboard.putString("Alliance", allianceColor.toString());
+    }
+
 
     /**
      * In case we can't start with a ball near the sensor, allow drivers to force blue alliance color

@@ -86,6 +86,7 @@ public class Robot extends TimedRobot {
     arm               = new CollectorArmPID();
     powerMonitor      = new Power();
     timer             = new Timer();
+    colorSense     = new ColorSensor();
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -131,7 +132,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
-
+    colorSense.resetAllianceColor();
     //
     // Create color sensor object here.  The color sensor will lock in the alliance color
     // upon creation.  The starting ball may not be inside the robot when it is first powered
@@ -139,9 +140,7 @@ public class Robot extends TimedRobot {
     //
     // Once we have our alliance color, use it to activate the appropirate Limelight pipeline
     //
-    colorSense     = new ColorSensor();
-    allianceColor  = colorSense.getAllianceColor();   // Determine alliance color based on inserted ball
-    timer.start();
+    
   
     // Set up the proper ball-seeking pipeline for our alliance color
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
@@ -222,8 +221,8 @@ public class Robot extends TimedRobot {
     //
     if (!AutonomousHasRun) {
       // Create color sensor object here. 
-      colorSense     = new ColorSensor();
-      allianceColor  = colorSense.getAllianceColor();   // Determine alliance color based on inserted ball
+      colorSense.resetAllianceColor();
+      // Determine alliance color based on inserted ball
     
       // Set up the proper ball-seeking pipeline for our alliance color
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
