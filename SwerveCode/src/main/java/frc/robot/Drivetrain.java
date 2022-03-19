@@ -41,11 +41,6 @@ public class Drivetrain {
      */
     private static final double MAX_VOLTAGE = 12.0;
 
-
-    // Maximum current provided to motors to help limit battery drain
-    private static final double MAX_DRIVE_CURRENT = 20.0;
-    private static final double MAX_STEER_CURRENT = 20.0;
-
     // Measure the drivetrain's maximum velocity (m/s) or calculate the theoretical maximum.
     //
     // This formula is taken from the SDS swerve-template repository: https://github.com/SwerveDriveSpecialties/swerve-template
@@ -91,8 +86,8 @@ public class Drivetrain {
         // Create configuration object for motors.  We do this primarily for current limiting
         swerveMotorConfig = new Mk4ModuleConfiguration();
         swerveMotorConfig.setNominalVoltage(MAX_VOLTAGE);
-        swerveMotorConfig.setDriveCurrentLimit(MAX_DRIVE_CURRENT);
-        swerveMotorConfig.setSteerCurrentLimit(MAX_STEER_CURRENT);
+        swerveMotorConfig.setDriveCurrentLimit(ConfigRun.MAX_SWERVE_DRIVE_CURRENT);
+        swerveMotorConfig.setSteerCurrentLimit(ConfigRun.MAX_SWERVE_STEER_CURRENT);
 
         // Create motor objects
         //

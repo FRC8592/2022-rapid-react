@@ -40,14 +40,14 @@ public class AutoWaypoint {
                 }
                 double distance = autoDrive.getDistance(currentWaypoint.x, currentWaypoint.y);
                 currentWaypoint.here = distance <= currentWaypoint.acceptRadius;
-                collectorState = collector.determineCollectorState();
+                collectorState = collector.getCollectorState();
                 double[] velocity = autoDrive.moveTo(currentWaypoint.x, currentWaypoint.y);
                 drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(velocity[0], velocity[1], turnSpeed,
                         drivetrain.getGyroscopeRotation()));
 
             } else if (currentWaypoint.fetch) {
                 vision.moveTowardsTarget();
-                currentWaypoint.fetch = collector.determineCollectorState() == collectorState;
+                currentWaypoint.fetch = collector.getCollectorState() == collectorState;
 
             } else if (currentWaypoint.shoot) {
 
@@ -83,7 +83,7 @@ public class AutoWaypoint {
 
             if (currentWaypoint.turnTo) {
                 currentWaypoint.heading = autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y);
-                collectorState = collector.determineCollectorState();
+                collectorState = collector.getCollectorState();
             }
             waypoints.remove(0);
 

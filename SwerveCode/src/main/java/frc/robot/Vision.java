@@ -79,6 +79,7 @@ public class Vision {
 
     this.limelightName = limelightName;
     this.lockError     = lockError;
+    this.closeError    = closeError;
     this.cameraHeight  = cameraHeight;
     this.cameraAngle   = cameraAngle;
     this.targetHeight  = targetHeight;
@@ -135,18 +136,19 @@ public class Vision {
     }
 
     //post driver data to smart dashboard periodically
-    SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
-    SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
-    SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
-    SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
+    //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
+    //SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
+    //SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
+    //SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
     SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
-    SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
-    SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
-    SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
-    SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
+    //SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
+    //SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
+    //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
+    //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
+    //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
 
 
@@ -168,7 +170,7 @@ public class Vision {
   public double distanceToTarget(){
     if (targetValid){
       double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + processedDy) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
-      return distanceInches * IN_TO_METERS;
+      return distanceInches;
     }
     return -1;
   }
@@ -189,8 +191,8 @@ public class Vision {
       // This prevents the turret from overshooting 0 and oscillating back and forth
       // KP is a scaling factor that we tested
       turnSpeed = Math.toRadians(processedDx) * rotationKP; // + turret_rotate_kd*delta();
-      turnSpeed = Math.max(turnSpeed, -4);
-      turnSpeed = Math.min(turnSpeed, 4);
+      turnSpeed = Math.max(turnSpeed, -8);
+      turnSpeed = Math.min(turnSpeed, 8);
 
       //
       // Set a minimum turnSpeed so that we don't get stuck when close to zero error
@@ -217,6 +219,7 @@ public class Vision {
     return -turnSpeed;
   }
 
+
   //
   // Drive towards the target.  We move forward before fully locked
   // This should probably be updated to base speed on distance from the target
@@ -226,14 +229,19 @@ public class Vision {
   //
   public double moveTowardsTarget(){
     double moveSpeed = 0.0;
-  
-    if (targetClose == true){
-      moveSpeed = -.5;
+    if (targetLocked == true){
+      moveSpeed = -3.8;
+    }
+    else if (targetClose == true){
+      moveSpeed = -2.0;
     }
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
     return moveSpeed;
   }
 
+  public boolean isTargetLocked() {
+    return targetLocked;
+  }
 
   private class LimelightData{ 
     double dx;
