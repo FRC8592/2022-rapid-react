@@ -196,8 +196,8 @@ public class Robot extends TimedRobot {
  //execute current state
    switch(autoState) {
   case SHOOT:
-    collector.shoot();
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+    //collector.shoot();
+    //drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
     break;
    case TURN:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
@@ -205,7 +205,8 @@ public class Robot extends TimedRobot {
      break;
   case DRIVE:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
-       break;
+      collector.enableCollectMode(arm, powerMonitor); 
+      break;
      }
    }
 
