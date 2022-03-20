@@ -73,6 +73,7 @@ public class Drivetrain {
     // FIXME Remove if you are using a Pigeon
     // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
+    private ChassisSpeeds speeds;
     
 
     /**Initialize drivetrain
@@ -148,17 +149,10 @@ public class Drivetrain {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
-<<<<<<< HEAD
-        this.m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), new Pose2d(0,0,new Rotation2d()));
-=======
 
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d());
->>>>>>> main
     }
-
-    public Pose2d updatePose(){
-        return m_odometry.getPoseMeters();
-    }
+    
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
      * 'forwards' direction.
@@ -212,19 +206,11 @@ public class Drivetrain {
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
-<<<<<<< HEAD
-       
-    }
-
-    public void setPosition(Pose2d pose){
-        m_odometry.resetPosition(pose, new Rotation2d());
-=======
         this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
         getSMState(m_backRightModule));
 
     }
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
->>>>>>> main
     }
 }

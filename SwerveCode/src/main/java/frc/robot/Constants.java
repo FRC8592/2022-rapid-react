@@ -129,8 +129,6 @@ public final class Constants {
     public static double ARM_DOWN_D = 12.0;     // Starting value.  Needs tuning
     public static double ARM_DOWN_F = 0.0;      // Starting value.  Needs tuning
 
-    public static final double AUTO_DRIVE_SPEED = 0.5;
-    //Table for flywheel speeds
     public static int    MM_SMOOTHING     = 1;
     public static double MM_CRUISE_VELO   = 300;
     public static double MM_ACCEL         = 2400;

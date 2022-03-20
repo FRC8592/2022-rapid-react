@@ -37,6 +37,7 @@ public class Robot extends TimedRobot {
   public XboxController driverController;
   public XboxController shooterController;
   public Drivetrain drive;
+  public Power powerMonitor;
   public Autonomous autonomous;
   public Vision visionRing;
   public Vision visionBall;
@@ -87,7 +88,7 @@ public class Robot extends TimedRobot {
     shooter           = new Shooter();
     collector         = new Collector();
     arm               = new CollectorArmMM();
-    powerMonitor       = new Power();
+    powerMonitor      = new Power();
     timer             = new Timer();
 
     // Turn all of our blindingly bright lights off until neeeded.
@@ -178,7 +179,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, shooter, visionRing);
+    collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     //powerMonitor.powerPeriodic();
     autoWaypoint.runWaypoint();
@@ -212,7 +213,7 @@ public class Robot extends TimedRobot {
     break;
    case TURN:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-      collector.enableCollectMode(arm);
+      collector.enableCollectMode(arm, powerMonitor);
      break;
   case DRIVE:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
@@ -279,7 +280,7 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     
     arm.update();
-    collector.ballControl(arm, shooter, visionRing);
+    collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
  
     //
@@ -321,12 +322,12 @@ public class Robot extends TimedRobot {
         // Enter collect mode
         //
         if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
-          collector.enableCollectMode(arm);
+          collector.enableCollectMode(arm, powerMonitor);
         //
         // Exit collect mode
         //
         else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
-          collector.disableCollectMode(arm);
+          collector.disableCollectMode(arm, powerMonitor);
 
         //
         // Shoot ball with aiming automation disabled
@@ -399,9 +400,11 @@ public class Robot extends TimedRobot {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX * .25), -joystickDeadband(translateY* .25),
         -joystickDeadband(rotate * .25), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
       }
-    }
       drive.getCurrentPos();
   }
+  
+    
+  
 
 
   /** This function is called once when the robot is disabled. */
