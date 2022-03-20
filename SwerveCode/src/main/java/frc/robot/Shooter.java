@@ -22,7 +22,7 @@ public class Shooter{
     private boolean flywheelReady = false;
 
     // stores the last valid RPM 
-    private double lastRPM = 2490;
+    private double lastRPM = Constants.STARTING_FLYWHEEL_SPEED;
 
     //
     // Constructor to instantiate the Collector object and the flywheel motors
@@ -61,6 +61,15 @@ public class Shooter{
 
     }
 
+    //  
+    // Reset motors and internal variables to a benign state
+    //
+    public void reset() {
+        flywheelReady = false;
+        lastRPM       = Constants.STARTING_FLYWHEEL_SPEED;
+
+        flyWheelRight.set(ControlMode.Velocity, 0);
+    }
 
     /**
      * Converts an RPM value to the ticks/100ms velocity metric used by the

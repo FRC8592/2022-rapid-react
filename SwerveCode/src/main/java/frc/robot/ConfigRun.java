@@ -15,14 +15,17 @@ public final class ConfigRun {
     public enum AutoOptions {fiveBall, fourBall, threeBall, twoBall, oneBall, move, noAuto} 
     //
     public static final AutoOptions AUTONOMOUS_PROGRAM = AutoOptions.oneBall;
-
     
+
     //
     // Driving Configuration
     //
     public static final double TRANSLATE_POWER = 1.0;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER    = 0.5;      // Scaling for teleop driving.  1.0 is maximum
-    //
+    public static final double ROTATE_POWER    = 1.0;      // Scaling for teleop driving.  1.0 is maximum
+
+    
+    public static final double TARGET_LOCKED_SPEED = -4;
+    public static final double TARGET_CLOSE_SPEED  = -2.0;
     // Maximum current provided to motors to help limit battery drain and harsh turning & acceleration
     //
     public static final double MAX_SWERVE_DRIVE_CURRENT = 20.0; // Lower values will reduce acceleration

@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -71,21 +74,21 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_P = 0.15;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_I = 0.000001;                 // Starting value.  Needs tuning
+    public static double FLYWHEEL_P = 0.17;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_I = 0.0000001;               // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_F = 0.054;                   // Starting value.  Needs tuning
-    public static double STARTING_FLYWHEEL_SPEED = 2490;
+    public static double FLYWHEEL_F = 0.056;                   // Starting value.  Needs tuning
+    public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
-    public static double RPM_MAX_ERROR   = 8;                 // Allowed RPM error for flywheel
+    public static double RPM_MAX_ERROR   = 5;                 // Allowed RPM error for flywheel
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
     public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 35.0;          // Limelight height above ground (inches)
-    public static double RING_CAMERA_ANGLE     = 27.0;           // Limelight camera angle above horizontal (degrees)
+    public static double RING_CAMERA_ANGLE     = 27.0;          // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104.0;         // Center of target above ground (inches)
     public static double TURRET_ROTATE_KP      = 7.0;           // Proportional constant for rotate speed
     public static String LIMELIGHT_RING        = "limelight-ring";
@@ -97,40 +100,50 @@ public final class Constants {
     public static double BALL_CAMERA_HEIGHT    = 34.0;
     public static double BALL_CAMERA_ANGLE     = 27.0;
     public static double BALL_TARGET_HEIGHT    = 4.75;
-    public static double BALL_ROTATE_KP        = 8.0;           // Proportional constant for turret rotate speed
+    public static double BALL_ROTATE_KP        = 6.0;           // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants
-    public static double MIN_TURN_SPEED = 1.0;
-    public static double MAX_TURN_SPEED = 1.0;
+    public static double MIN_TURN_SPEED = 0.8;
 
     // Color sensor
     public static int MIN_BALL_PROXIMITY = 300;
     public static int MAX_COLOR_CHECKS   = 10;
 
     // Main collector
-    public static double COLLECT_PROCESSING_POWER =  0.2;
-    public static double COLLECT_STAGING_POWER    =  0.2;
+    public static double COLLECT_PROCESSING_POWER =  0.3;
+    public static double COLLECT_STAGING_POWER    =  0.3;
     public static double UNJAM_PROCESSING_POWER   = -0.2;
     public static double UNJAM_STAGING_POWER      = -0.2;
     public static double SHOOT_STAGING_POWER      =  1.0;
 
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.15;       // Starting value.  Needs tuning
-    public static double ARM_UP_I = 0.0001;       // Starting value.  Needs tuning
-    public static double ARM_UP_D = 5.0;        // Starting value.  Needs tuning
-    public static double ARM_UP_F = 11.0;       // Starting value.  Needs tuning
+    public static double ARM_UP_P = 0.12;       // Starting value.  Needs tuning
+    public static double ARM_UP_I = 0.0001;     // Starting value.  Needs tuning
+    public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_F = 0.0;        // Starting value.  Needs tuning
 
-    public static double ARM_DOWN_P = 0.23;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_I = 0.0001;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_D = 9.0;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_F = -0.11;       // Starting value.  Needs tuning
+    public static double ARM_DOWN_P = 0.096;    // Starting value.  Needs tuning
+    public static double ARM_DOWN_I = 0.0;      // Starting value.  Needs tuning
+    public static double ARM_DOWN_D = 12.0;     // Starting value.  Needs tuning
+    public static double ARM_DOWN_F = 0.0;      // Starting value.  Needs tuning
 
     public static final double AUTO_DRIVE_SPEED = 0.5;
     //Table for flywheel speeds
+    public static int    MM_SMOOTHING     = 1;
+    public static double MM_CRUISE_VELO   = 300;
+    public static double MM_ACCEL         = 2400;
+    public static double ARM_DEADBAND     = 0.001;  // Set very small.  Default is 0.04
+    public static double ARM_STEADY_POWER = 0.10;
+    public static int    ARM_TICKS_180    = 4736;
+
+    // Limit collector arm current to 5A continuous, 20A peak
+    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 5, 20, 0.5);
+
+    // Table for flywheel speeds.  Each entry represents 12" of distance from reflectors
     public static double RANGE_TABLE[] = {2110, 2110, 2110, 2110, 2110, 2110, 2110, 2110, 2150, 2200, 2300, 2390, 2490, 2640, 2765, 2855, 3100, 3200, 3350, 3400};
 
-    //Limelight LED modes
+    // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 }

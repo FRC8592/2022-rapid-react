@@ -31,8 +31,9 @@ public class Drivetrain {
     private final SwerveModule m_frontRightModule;
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
-    private SwerveDriveOdometry m_odometry;
-    private ChassisSpeeds speeds;
+    private SwerveModuleState[] states;   //possible hold the state of the swerve modules
+    private SwerveDriveOdometry odometry; //Odometry object for swerve drive
+
 
     /**
      * The maximum voltage that will be delivered to the drive motors.
@@ -71,7 +72,6 @@ public class Drivetrain {
     // cause the angle reading to increase until it wraps back over to zero.
     // FIXME Remove if you are using a Pigeon
     // private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
-    // FIXME Uncomment if you are using a NavX
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
     
 
@@ -148,7 +148,12 @@ public class Drivetrain {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
+<<<<<<< HEAD
         this.m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), new Pose2d(0,0,new Rotation2d()));
+=======
+
+        this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d());
+>>>>>>> main
     }
 
     public Pose2d updatePose(){
@@ -161,8 +166,7 @@ public class Drivetrain {
     public void zeroGyroscope() {
         // FIXME Remove if you are using a Pigeon
         // m_pigeon.setFusedHeading(0.0);
-        // FIXME Uncomment if you are using a NavX
-        m_navx.zeroYaw();
+        m_navx.zeroYaw();   // We're using a NavX
     }
 
 
@@ -180,10 +184,24 @@ public class Drivetrain {
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+
     public double getYaw(){
         return m_navx.getYaw();
 
     }
+
+
+    public Pose2d getCurrentPos(){
+        Pose2d pos = odometry.getPoseMeters();
+        SmartDashboard.putNumber("Drive X", pos.getX() * 39.3701 );
+        SmartDashboard.putNumber("Drive Y", pos.getY()  * 39.3701 );
+        SmartDashboard.putNumber("Drive Yaw", pos.getRotation().getDegrees());
+        return pos;
+    }
+    public void resetPose(Pose2d pose){
+        odometry.resetPosition(pose, new Rotation2d(0));
+    }
+
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         this.speeds = chassisSpeeds;
@@ -194,10 +212,19 @@ public class Drivetrain {
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+<<<<<<< HEAD
        
     }
 
     public void setPosition(Pose2d pose){
         m_odometry.resetPosition(pose, new Rotation2d());
+=======
+        this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
+        getSMState(m_backRightModule));
+
+    }
+    SwerveModuleState getSMState(SwerveModule mod){
+        return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
+>>>>>>> main
     }
 }
