@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -116,19 +119,29 @@ public final class Constants {
 
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.15;       // Starting value.  Needs tuning
-    public static double ARM_UP_I = 0.0001;       // Starting value.  Needs tuning
-    public static double ARM_UP_D = 5.0;        // Starting value.  Needs tuning
-    public static double ARM_UP_F = 11.0;       // Starting value.  Needs tuning
+    public static double ARM_UP_P = 0.12;       // Starting value.  Needs tuning
+    public static double ARM_UP_I = 0.0001;     // Starting value.  Needs tuning
+    public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_F = 0.0;        // Starting value.  Needs tuning
 
-    public static double ARM_DOWN_P = 0.23;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_I = 0.0001;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_D = 9.0;        // Starting value.  Needs tuning
-    public static double ARM_DOWN_F = -0.11;       // Starting value.  Needs tuning
+    public static double ARM_DOWN_P = 0.096;    // Starting value.  Needs tuning
+    public static double ARM_DOWN_I = 0.0;      // Starting value.  Needs tuning
+    public static double ARM_DOWN_D = 12.0;     // Starting value.  Needs tuning
+    public static double ARM_DOWN_F = 0.0;      // Starting value.  Needs tuning
 
-    //Table for flywheel speeds
+    public static int    MM_SMOOTHING     = 1;
+    public static double MM_CRUISE_VELO   = 300;
+    public static double MM_ACCEL         = 2400;
+    public static double ARM_DEADBAND     = 0.001;  // Set very small.  Default is 0.04
+    public static double ARM_STEADY_POWER = 0.10;
+    public static int    ARM_TICKS_180    = 4736;
+
+    // Limit collector arm current to 5A continuous, 20A peak
+    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 5, 20, 0.5);
+
+    // Table for flywheel speeds.  Each entry represents 12" of distance from reflectors
     public static double RANGE_TABLE[] = {2110, 2110, 2110, 2110, 2110, 2110, 2110, 2110, 2150, 2200, 2300, 2390, 2490, 2640, 2765, 2855, 3100, 3200, 3350, 3400};
 
-    //Limelight LED modes
+    // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 }

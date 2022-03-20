@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
   public AutoDrive locality; 
   public Shooter shooter;
   public Collector collector;
-  public CollectorArmPID arm;
+  public CollectorArmMM arm;
   public ColorSensor colorSense;
   public Power powerMonitor;
   public Timer timer;
@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     locality          = new AutoDrive(0, 0);
     shooter           = new Shooter();
     collector         = new Collector();
-    arm               = new CollectorArmPID();
+    arm               = new CollectorArmMM();
     powerMonitor      = new Power();
     timer             = new Timer();
 
