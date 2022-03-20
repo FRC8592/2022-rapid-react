@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 
@@ -338,11 +339,10 @@ public class Robot extends TimedRobot {
     if (driverController.getXButton() && driverController.getBackButton()){
       System.out.println("Override - zeroing gyroscope");
       drive.zeroGyroscope();
-      
     }
 
     //
-    // force Blue alliance
+    // Force Blue alliance
     //
     if (shooterController.getXButtonPressed() && shooterController.getBackButton()){
       colorSense.forceBlueAlliance();
@@ -351,7 +351,7 @@ public class Robot extends TimedRobot {
     }
 
     //
-    // force Red alliance
+    // Force Red alliance
     //
     if (shooterController.getBButtonPressed() && shooterController.getBackButton()){
       colorSense.forceRedAlliance();
@@ -389,6 +389,7 @@ public class Robot extends TimedRobot {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
         -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
+    drive.getCurrentPos();
   }
 
 
