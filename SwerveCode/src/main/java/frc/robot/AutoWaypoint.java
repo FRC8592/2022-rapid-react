@@ -54,13 +54,13 @@ public class AutoWaypoint {
                 if (autoDrive.getDistance(0, 0) > autoDrive.inchesToMeters(240)) {
                     double angularVelocity = autoDrive
                             .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
-                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.5, 0.0, angularVelocity,
+                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.2, 0.0, angularVelocity,
                             drivetrain.getGyroscopeRotation()));
 
                 } else if (autoDrive.getDistance(0, 0) < autoDrive.inchesToMeters(84)) {
                     double angularVelocity = autoDrive
                             .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
-                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.5, 0.0, angularVelocity,
+                    drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-0.2, 0.0, angularVelocity,
                             drivetrain.getGyroscopeRotation()));
 
                 } else {

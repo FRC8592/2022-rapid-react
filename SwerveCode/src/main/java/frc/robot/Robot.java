@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
   public Collector collector;
   public CollectorArmPID arm;
   public ColorSensor colorSense;
-  public Power powerMonitor;
+  //public Power powerMonitor;
   public AutoWaypoint autoWaypoint;
   public Timer timer;
 
@@ -86,14 +86,14 @@ public class Robot extends TimedRobot {
     shooter           = new Shooter();
     collector         = new Collector();
     arm               = new CollectorArmPID();
-    powerMonitor      = new Power();
+    //powerMonitor      = new Power();
     autoWaypoint      = new AutoWaypoint(locality, drive, collector, shooter, visionBall);
     
     // Turn off ball light
     timer             = new Timer();
 
     // Turn all of our blindingly bright lights off until neeeded.
-    powerMonitor.relayOff();
+    //powerMonitor.relayOff();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
@@ -170,9 +170,9 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, shooter, visionRing, powerMonitor);
+    collector.ballControl(arm, shooter, visionRing);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
-    powerMonitor.powerPeriodic();
+    //powerMonitor.powerPeriodic();
     autoWaypoint.runWaypoint();
     //turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
     // decide state changes
@@ -204,7 +204,7 @@ public class Robot extends TimedRobot {
     break;
    case TURN:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-      collector.enableCollectMode(arm, powerMonitor);
+      collector.enableCollectMode(arm);
      break;
   case DRIVE:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
@@ -258,28 +258,14 @@ public class Robot extends TimedRobot {
     // Call these methods on each update cycle to keep the robot running
     //
     locality.updatePosition(drive.getYaw(), visionRing);
-    if(shooterController.getLeftBumper()){
-      double[] vector = locality.moveTo(10, 0);
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(vector[0], vector[1], drive.getYaw(), drive.getGyroscopeRotation()));
-    }else{
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
-    }
-
-    if(shooterController.getRightBumper()){
-      double angularVelocity = locality.turnTo(90, drive.getYaw());
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, angularVelocity, drive.getGyroscopeRotation()));
-    }else{
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
-
-      
+    
     colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
     
     arm.update();
-    collector.ballControl(arm, shooter, visionRing, powerMonitor);
+    collector.ballControl(arm, shooter, visionRing);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
-    powerMonitor.powerPeriodic();
  
     //
     // Current control scheme
@@ -298,9 +284,9 @@ public class Robot extends TimedRobot {
     //   shooterController (Y button)     : Exit collect mode
     //   shooterController (L + R stick)  : Unjam
     //   shooterController (BACK + blue)  : Force blue alliance
+
     //   shooterController (BACK + red)   : Force red alliance
     //   shooterController (Right bumper) : Shoot without lock on ring
-
     //
     // Unjam the intake by reversing the staging and collector motors.  This function has top priority
     //
@@ -319,12 +305,12 @@ public class Robot extends TimedRobot {
         // Enter collect mode
         //
         if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
-          collector.enableCollectMode(arm, powerMonitor);
+          collector.enableCollectMode(arm);
         //
         // Exit collect mode
         //
         else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
-          collector.disableCollectMode(arm, powerMonitor);
+          collector.disableCollectMode(arm);
 
         //
         // Shoot ball with aiming automation disabled
@@ -369,7 +355,7 @@ public class Robot extends TimedRobot {
     // Activate ring targetting.  Robot translate controls are functional while targetting
     //
     if ((driverController.getLeftTriggerAxis() > 0.1 ) || (shooterController.getLeftTriggerAxis() > 0.1 )) {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX * 0.5), -joystickDeadband(translateY * 0.5),
                   visionRing.turnRobot() , drive.getGyroscopeRotation()));
     }
 
@@ -385,11 +371,11 @@ public class Robot extends TimedRobot {
     // Normal teleop drive
     //
     else {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-        -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX * .25), -joystickDeadband(translateY* .25),
+        -joystickDeadband(rotate * .25), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
       }
     }
-  }
+  
 
 
   /** This function is called once when the robot is disabled. */
