@@ -162,11 +162,11 @@ public class AutoDrive {
             lastErrorY = errorY;  // reset initial angle
 
             velocity[0] = errorX * KP_velocity_X + KD_velocity_X * changeInErrorX;
-            velocity[0] = Math.min(velocity[0], -1.7);
-            velocity[0] = Math.max(velocity[0], 1.7);
+            velocity[0] = Math.min(velocity[0], 0.2);
+            velocity[0] = Math.max(velocity[0], -0.2);
             velocity[1] = errorY * KP_velocity_Y + KD_velocity_Y * changeInErrorY;
-            velocity[1] = Math.min(velocity[1], -1.7);
-            velocity[1] = Math.max(velocity[1], 1.7);
+            velocity[1] = Math.min(velocity[1], 0.2);
+            velocity[1] = Math.max(velocity[1], -0.2);
             lastMoveTime  = xtime;        // reset initial time
 
         }
