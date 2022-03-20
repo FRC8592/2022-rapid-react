@@ -197,7 +197,7 @@ public class Robot extends TimedRobot {
    switch(autoState) {
   case SHOOT:
     collector.shoot();
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
     break;
    case TURN:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
@@ -236,6 +236,11 @@ public class Robot extends TimedRobot {
       // Zero the gyroscope for field-relative drive
       drive.zeroGyroscope();
     }
+
+    collector.reset();
+    shooter.reset();
+    visionRing.reset();
+    visionBall.reset();
   }
 
 
@@ -273,16 +278,17 @@ public class Robot extends TimedRobot {
     //   driverController (Left bumper)  : Auto ball fetch
     //   driverController (A button)     : Enter collect mode
     //   driverController (Y button)     : Exit collect mode
+    //   driverController (BACK + X)     : Reset current heading to 0
     //  
-    //   shooterController (Left trigger) : Auto aim at ring
-    //   shooterController (Right trigger): Shoot
-    //   shooterController (Left bumper)  : Auto ball fetch
-    //   shooterController (A button)     : Enter collect mode
-    //   shooterController (Y button)     : Exit collect mode
-    //   shooterController (L + R stick)  : Unjam
-    //   shooterController (BACK + blue)  : Force blue alliance
-    //   shooterController (BACK + red)   : Force red alliance
-    //   shooterController (Right bumper) : Shoot without lock on ring
+    //   shooterController (Left trigger)      : Auto aim at ring
+    //   shooterController (Right trigger)     : Shoot
+    //   shooterController (Left bumper)       : Auto ball fetch
+    //   shooterController (A button)          : Enter collect mode
+    //   shooterController (Y button)          : Exit collect mode
+    //   shooterController (L + R stick)       : Unjam
+    //   shooterController (BACK + blue)       : Force blue alliance
+    //   shooterController (BACK + red)        : Force red alliance
+    //   shooterController (BACK Right bumper) : Shoot without lock on ring
 
     //
     // Unjam the intake by reversing the staging and collector motors.  This function has top priority
@@ -312,7 +318,7 @@ public class Robot extends TimedRobot {
         //
         // Shoot ball with aiming automation disabled
         //
-        if (shooterController.getRightBumper())
+        if (shooterController.getRightBumper() && shooterController.getBackButton())
           collector.forceShoot();
       
         //
@@ -320,8 +326,15 @@ public class Robot extends TimedRobot {
         //
         else if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ))
             collector.shoot();
+
       }
     }
+
+    //
+    // Reset gyroscope zero for field-relative driving
+    //
+    if (driverController.getXButton() && driverController.getBackButton())
+      drive.zeroGyroscope();
 
     //
     // force Blue alliance
@@ -378,13 +391,23 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     colorSense = null;
+
+    // Turn off lights when not operating.  Make more friends and fewer enemies this way.
+    powerMonitor.relayOff();
+    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+    NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+
   }
 
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    // Prevent possible(?) timeouts from occuring by sending commands to the motor continuously
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+
   }
+
 
   /** This function is called once when test mode is enabled. */
   @Override

@@ -71,11 +71,11 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_P = 0.15;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_P = 0.16;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_I = 0.000001;                 // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_F = 0.054;                   // Starting value.  Needs tuning
-    public static double STARTING_FLYWHEEL_SPEED = 2490;
+    public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
     public static double RPM_MAX_ERROR   = 8;                 // Allowed RPM error for flywheel
@@ -97,20 +97,19 @@ public final class Constants {
     public static double BALL_CAMERA_HEIGHT    = 34.0;
     public static double BALL_CAMERA_ANGLE     = 27.0;
     public static double BALL_TARGET_HEIGHT    = 4.75;
-    public static double BALL_ROTATE_KP        = 8.0;           // Proportional constant for turret rotate speed
+    public static double BALL_ROTATE_KP        = 6.0;           // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants
-    public static double MIN_TURN_SPEED = 1.0;
-    public static double MAX_TURN_SPEED = 1.0;
+    public static double MIN_TURN_SPEED = 0.8;
 
     // Color sensor
     public static int MIN_BALL_PROXIMITY = 300;
     public static int MAX_COLOR_CHECKS   = 10;
 
     // Main collector
-    public static double COLLECT_PROCESSING_POWER =  0.2;
-    public static double COLLECT_STAGING_POWER    =  0.2;
+    public static double COLLECT_PROCESSING_POWER =  0.4;
+    public static double COLLECT_STAGING_POWER    =  0.3;
     public static double UNJAM_PROCESSING_POWER   = -0.2;
     public static double UNJAM_STAGING_POWER      = -0.2;
     public static double SHOOT_STAGING_POWER      =  1.0;

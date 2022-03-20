@@ -3,15 +3,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.*;
-import frc.robot.ColorSensor.BALL_COLOR;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-
-import javax.lang.model.util.ElementScanner6;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -19,10 +13,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 
 public class CollectorArmPID {
     // Configuration constants
-    private static final double ARM_RAISE_POWER       = 0.3;   // Power for raising arm
-    private static final double ARM_LOWER_POWER       = 0.3;   // Power for lowering arm
-    private static final double ARM_COLLECT_POWER     = 0.1;   // Power for pushing down on balls
-    private static final int    ARM_LOW_POS_THRESHOLD = 1000;  // TODO determine this value empirically
     private static final int    RAISE_PID_SLOT = 0;
     private static final int    LOWER_PID_SLOT = 1;
 
@@ -113,22 +103,10 @@ public class CollectorArmPID {
                 // Stop when the limit switch is hit
                 if (limitSwitch.get() == false){
                     armState = armStates.ARM_UP;
-
                 }
                 
                 armMotor.selectProfileSlot(RAISE_PID_SLOT, 0);
                 armMotor.set(ControlMode.Position, -10);
-
-                // // Slow the arm as it approaches the limit switch
-                // else if(armMotor.getSelectedSensorPosition() > -500){
-                //     armMotor.set(0.1);
-
-                // }
-
-                // // Apply normal power to raise the arm
-                // else {
-                //     armMotor.set(0.25);
-                // }
                 
                 break;
 
@@ -150,7 +128,7 @@ public class CollectorArmPID {
                 if (armMotor.getSelectedSensorPosition() < Constants.BALL_SET_POINT)
                     armMotor.set(ControlMode.PercentOutput, 0.0);
                 else
-                    armMotor.set(ControlMode.PercentOutput, -0.10);
+                    armMotor.set(ControlMode.PercentOutput, -0.05);
 
                 break;
 
