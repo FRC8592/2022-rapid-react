@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
     timer             = new Timer();
 
     // Turn all of our blindingly bright lights off until neeeded.
-    powerMonitor.relayOff();
+    // powerMonitor.relayOff();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
@@ -147,6 +147,7 @@ public class Robot extends TimedRobot {
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
 
     // Allow limelight lights to turn back on
+    powerMonitor.relayOn();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
 
@@ -230,6 +231,7 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
 
       // Allow limelight lights to turn back on
+      powerMonitor.relayOn();
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
       NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
 
@@ -333,8 +335,11 @@ public class Robot extends TimedRobot {
     //
     // Reset gyroscope zero for field-relative driving
     //
-    if (driverController.getXButton() && driverController.getBackButton())
+    if (driverController.getXButton() && driverController.getBackButton()){
+      System.out.println("Override - zeroing gyroscope");
       drive.zeroGyroscope();
+      
+    }
 
     //
     // force Blue alliance
@@ -393,9 +398,9 @@ public class Robot extends TimedRobot {
     colorSense = null;
 
     // Turn off lights when not operating.  Make more friends and fewer enemies this way.
-    powerMonitor.relayOff();
-    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
-    NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+    //powerMonitor.relayOff();
+    //NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+    //NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
   }
 

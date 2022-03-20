@@ -74,10 +74,10 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_P = 0.16;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_I = 0.000001;                 // Starting value.  Needs tuning
+    public static double FLYWHEEL_P = 0.17;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_I = 0.0000001;               // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_F = 0.054;                   // Starting value.  Needs tuning
+    public static double FLYWHEEL_F = 0.056;                   // Starting value.  Needs tuning
     public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
@@ -88,7 +88,7 @@ public final class Constants {
     public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 35.0;          // Limelight height above ground (inches)
-    public static double RING_CAMERA_ANGLE     = 27.0;           // Limelight camera angle above horizontal (degrees)
+    public static double RING_CAMERA_ANGLE     = 27.0;          // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104.0;         // Center of target above ground (inches)
     public static double TURRET_ROTATE_KP      = 7.0;           // Proportional constant for rotate speed
     public static String LIMELIGHT_RING        = "limelight-ring";
@@ -111,7 +111,7 @@ public final class Constants {
     public static int MAX_COLOR_CHECKS   = 10;
 
     // Main collector
-    public static double COLLECT_PROCESSING_POWER =  0.4;
+    public static double COLLECT_PROCESSING_POWER =  0.35;
     public static double COLLECT_STAGING_POWER    =  0.3;
     public static double UNJAM_PROCESSING_POWER   = -0.2;
     public static double UNJAM_STAGING_POWER      = -0.2;
