@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
                                    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT,
                                    Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
                                    Constants.BALL_ROTATE_KP);
-    locality          = new AutoDrive(0, 0);
+    locality          = new AutoDrive(0, 0, drive);
     shooter           = new Shooter();
     collector         = new Collector();
     arm               = new CollectorArmMM();

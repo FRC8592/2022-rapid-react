@@ -5,6 +5,8 @@ package frc.robot;
  * FRC Season 2022
  */
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 
 public class AutoDrive {
@@ -31,6 +33,7 @@ public class AutoDrive {
     public Timer turnTimer;
     public double lastMoveTime;
     public double lastTurnTime;
+    private Drivetrain drive;
 
 
     /**
@@ -38,7 +41,7 @@ public class AutoDrive {
      * @param hubCenterX
      * @param hubCenterY
      */
-    public AutoDrive(double hubCenterX, double hubCenterY) { 
+    public AutoDrive(double hubCenterX, double hubCenterY, Drivetrain drive) { 
         AutoDrive.hubCenterX = hubCenterX;
         AutoDrive.hubCenterY = hubCenterY;
         this.robotRotation = 0;
@@ -54,6 +57,7 @@ public class AutoDrive {
         turnTimer.start();
         lastMoveTime = moveTimer.get();
         lastTurnTime = turnTimer.get();
+        this.drive = drive;
     }
 
     // Needs to be called every update
@@ -74,8 +78,14 @@ public class AutoDrive {
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
             this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
             this.isGoodData = true;
+            Pose2d pose = new Pose2d(this.positionX, this.positionY, new Rotation2d());
+            drive.resetPose(pose);
+            
         } else {
-            this.isGoodData = false;
+            this.isGoodData = true;
+            Pose2d pose = drive.getCurrentPos();
+            this.positionX = pose.getX();
+            this.positionY = pose.getY();
         }
         //SmartDashboard.putNumber("Yaw value", robotRotation);
         //SmartDashboard.putNumber("Position Y", positionY);
@@ -162,9 +172,8 @@ public class AutoDrive {
             velocity[1] = Math.min(velocity[1], -1.7);
             velocity[1] = Math.max(velocity[1], 1.7);
             lastMoveTime  = xtime;        // reset initial time
-
+            
         }
-
         return velocity;
     }
 

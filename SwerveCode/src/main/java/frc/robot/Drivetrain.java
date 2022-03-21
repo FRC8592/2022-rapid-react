@@ -192,6 +192,9 @@ public class Drivetrain {
         SmartDashboard.putNumber("Drive Yaw", pos.getRotation().getDegrees());
         return pos;
     }
+    public void resetPose(Pose2d pose){
+        odometry.resetPosition(pose, new Rotation2d(0));
+    }
 
 
     public void drive(ChassisSpeeds chassisSpeeds) {
