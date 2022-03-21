@@ -66,9 +66,9 @@ public class CollectorArmMM {
         armMotor.config_kF(LOWER_PID_SLOT, Constants.ARM_DOWN_F);
   
         // Motion Magic parameters
-        armMotor.configMotionSCurveStrength(Constants.MM_SMOOTHING);
-        armMotor.configMotionCruiseVelocity(Constants.MM_CRUISE_VELO);
-        armMotor.configMotionAcceleration(Constants.MM_ACCEL);
+        armMotor.configMotionSCurveStrength(Constants.ARM_MM_SMOOTHING);
+        armMotor.configMotionCruiseVelocity(Constants.ARM_MM_CRUISE_VELO);
+        armMotor.configMotionAcceleration(Constants.ARM_MM_ACCEL);
 
         // Instantiate the limit switch
         limitSwitch = new DigitalInput(Constants.COLLECTOR_ARM_LIMIT_SWITCH);

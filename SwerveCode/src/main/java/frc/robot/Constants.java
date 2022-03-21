@@ -64,6 +64,10 @@ public final class Constants {
     public static final int newFlywheelCollector = 23;
     public static final int COLLECTOR_ARM_CAN    = 24;
 
+    // CAN IDs for the lift motors
+    public static final int LIFT_RIGHT_CAN = 25;
+    public static final int LIFT_LEFT_CAN  = 26;
+
     // Other CAN IDs
     public static final int PDH_CAN = 1;
 
@@ -87,8 +91,8 @@ public final class Constants {
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
     public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
-    public static double RING_CAMERA_HEIGHT    = 35.0;          // Limelight height above ground (inches)
-    public static double RING_CAMERA_ANGLE     = 27.0;          // Limelight camera angle above horizontal (degrees)
+    public static double RING_CAMERA_HEIGHT    = 36.75;          // Limelight height above ground (inches)
+    public static double RING_CAMERA_ANGLE     = 30.0;          // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104.0;         // Center of target above ground (inches)
     public static double TURRET_ROTATE_KP      = 7.0;           // Proportional constant for rotate speed
     public static String LIMELIGHT_RING        = "limelight-ring";
@@ -97,8 +101,8 @@ public final class Constants {
     public static double BALL_LOCK_ERROR       = 3.0;
     public static double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
-    public static double BALL_CAMERA_HEIGHT    = 34.0;
-    public static double BALL_CAMERA_ANGLE     = 27.0;
+    public static double BALL_CAMERA_HEIGHT    = 35.75;
+    public static double BALL_CAMERA_ANGLE     = 30.0;
     public static double BALL_TARGET_HEIGHT    = 4.75;
     public static double BALL_ROTATE_KP        = 6.0;           // Proportional constant for turret rotate speed
     public static String LIMELIGHT_BALL        = "limelight-ball";
@@ -129,12 +133,34 @@ public final class Constants {
     public static double ARM_DOWN_D = 12.0;     // Starting value.  Needs tuning
     public static double ARM_DOWN_F = 0.0;      // Starting value.  Needs tuning
 
-    public static int    MM_SMOOTHING     = 1;
-    public static double MM_CRUISE_VELO   = 300;
-    public static double MM_ACCEL         = 2400;
-    public static double ARM_DEADBAND     = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER = 0.10;
-    public static int    ARM_TICKS_180    = 4736;
+    public static int    ARM_MM_SMOOTHING   = 1;
+    public static double ARM_MM_CRUISE_VELO = 300;
+    public static double ARM_MM_ACCEL       = 2400;
+    public static double ARM_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
+    public static double ARM_STEADY_POWER   = 0.10;
+    public static int    ARM_TICKS_180      = 4736;
+
+    // Constants for the lift
+    public static double LIFT_VOLTAGE = 11;     // Maximum controller voltage for voltage compensationble 
+    public static SupplyCurrentLimitConfiguration LIFT_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 40, 60, 0.5);
+
+    public static int LIFT_TOP_POINT = 0;   // Need to measure top
+    public static double LIFT_UP_P = 0.0;   // Starting value.  Needs tuning
+    public static double LIFT_UP_I = 0.0;   // Starting value.  Needs tuning
+    public static double LIFT_UP_D = 0.0;   // Starting value.  Needs tuning
+    public static double LIFT_UP_F = 0.0;   // Starting value.  Needs tuning
+
+    public static double LIFT_DOWN_P = 0.0;     // Starting value.  Needs tuning
+    public static double LIFT_DOWN_I = 0.0;     // Starting value.  Needs tuning
+    public static double LIFT_DOWN_D = 0.0;     // Starting value.  Needs tuning
+    public static double LIFT_DOWN_F = 0.0;     // Starting value.  Needs tuning
+
+    public static int    LIFT_MM_SMOOTHING   = 1;
+    public static double LIFT_MM_CRUISE_VELO = 300;
+    public static double LIFT_MM_ACCEL       = 2400;
+    public static double LIFT_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
+    public static double LIFT_STEADY_POWER   = 0.10;
+    public static int    LIFT_TICKS_180      = 4736;
 
     // Limit collector arm current to 5A continuous, 20A peak
     public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 5, 20, 0.5);

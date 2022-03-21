@@ -29,9 +29,6 @@ public class simpleAuto {
   // Our alliance color (read from color sensor)
   private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
 
-  // Count of balls for this autonomous routine
-  pr
-
   // Variables for simple autonomous
   private enum AutoState{TURN, SHOOT, DRIVE};
   AutoState autoState = AutoState.TURN;

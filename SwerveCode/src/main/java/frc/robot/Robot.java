@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
   public Shooter shooter;
   public Collector collector;
   public CollectorArmMM arm;
+  public Climber climber;
   public ColorSensor colorSense;
   //public Power powerMonitor;
   public AutoWaypoint autoWaypoint;
@@ -62,7 +63,6 @@ public class Robot extends TimedRobot {
   private double autoStateTime;
 
   
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -88,11 +88,12 @@ public class Robot extends TimedRobot {
     shooter           = new Shooter();
     collector         = new Collector();
     arm               = new CollectorArmMM();
+//    climber           = new Climber();
     powerMonitor      = new Power();
     timer             = new Timer();
 
     // Turn all of our blindingly bright lights off until neeeded.
-    // powerMonitor.relayOff();
+    powerMonitor.relayOff();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
@@ -165,7 +166,7 @@ public class Robot extends TimedRobot {
 
     // Indicate to teleop that autonomous has run
     AutonomousHasRun = true;
-    autoState = AutoState.TURN;
+    autoState        = AutoState.TURN;
   }
 
   @Override
@@ -184,6 +185,8 @@ public class Robot extends TimedRobot {
     //powerMonitor.powerPeriodic();
     autoWaypoint.runWaypoint();
     //turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
+    powerMonitor.powerPeriodic();
+    // Turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
     // decide state changes
     switch(autoState) {
       case TURN:
@@ -228,7 +231,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
-      collector.resetShoot();
       
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
@@ -371,6 +373,11 @@ public class Robot extends TimedRobot {
     }
 
     //
+    // Temporary control for climber
+    //
+    //climber.moveLift(joystickDeadband(shooterController.getRightY()));
+
+    //
     // Read gamepad controls for drivetrain and scale control values
     //
     rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
@@ -413,9 +420,9 @@ public class Robot extends TimedRobot {
     colorSense = null;
 
     // Turn off lights when not operating.  Make more friends and fewer enemies this way.
-    //powerMonitor.relayOff();
-    //NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
-    //NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+    powerMonitor.relayOff();
+    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+    NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
   }
 
