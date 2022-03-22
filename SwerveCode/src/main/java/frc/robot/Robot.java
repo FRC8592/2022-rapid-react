@@ -368,8 +368,8 @@ public class Robot extends TimedRobot {
     // Read gamepad controls for drivetrain and scale control values
     //
     rotate     = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * ConfigRun.ROTATE_POWER;  // Right joystick
-    translateX = (driverController.getLeftY()  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;        // X is forward Direction, Forward on Joystick is Y
-    translateY = (driverController.getLeftX()  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
+    translateX = (Math.pow(driverController.getLeftY(),3)  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;        // X is forward Direction, Forward on Joystick is Y
+    translateY = (Math.pow(driverController.getLeftX(),3)  * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
   
     //
     // Activate ring targetting.  Robot translate controls are functional while targetting
