@@ -133,11 +133,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    colorSense     = new ColorSensor();
+    colorSense.forceRedAlliance();
 
-    autoWaypoint.addWaypoint(new Waypoint(-1, 0, 0.15, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(-1, -1, 0.15, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(0, -1, 0.15, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.15, false, false, false, new Timer()));
+    drive.resetPose(new Pose2d(0,0,new Rotation2d()));
+    
+    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
+    autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.1, false, true, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(-2, -2, 0.1, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, false, new Timer()));
+    collector.enableCollectMode(arm, powerMonitor);
     m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -149,8 +154,7 @@ public class Robot extends TimedRobot {
     //
     // Once we have our alliance color, use it to activate the appropirate Limelight pipeline
     //
-    colorSense     = new ColorSensor();
-    allianceColor  = colorSense.getAllianceColor();   // Determine alliance color based on inserted ball
+    // Determine alliance color based on inserted ball
     timer.start();
   
     // Set up the proper ball-seeking pipeline for our alliance color
@@ -185,10 +189,10 @@ public class Robot extends TimedRobot {
     //powerMonitor.powerPeriodic();
     autoWaypoint.runWaypoint();
     //turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
-    powerMonitor.powerPeriodic();
+   // powerMonitor.powerPeriodic();
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
     // decide state changes
-    switch(autoState) {
+   /* switch(autoState) {
       case TURN:
          if(visionRing.targetLocked) {
           autoState = AutoState.DRIVE;
@@ -223,6 +227,7 @@ public class Robot extends TimedRobot {
       collector.enableCollectMode(arm, powerMonitor); 
       break;
      }
+     */
    }
 
 
@@ -232,6 +237,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
       
+    drive.resetPose(new Pose2d(0,0,new Rotation2d()));
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
     //
@@ -404,8 +410,8 @@ public class Robot extends TimedRobot {
     // Normal teleop drive
     //
     else {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX * .25), -joystickDeadband(translateY* .25),
-        -joystickDeadband(rotate * .25), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX * .5), -joystickDeadband(translateY* .5),
+        -joystickDeadband(rotate * .5), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
       }
       drive.getCurrentPos();
   }

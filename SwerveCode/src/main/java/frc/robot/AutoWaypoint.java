@@ -12,16 +12,19 @@ public class AutoWaypoint {
     private Drivetrain drivetrain;
     private Collector collector;
     private Shooter shooter;
-    private Vision vision;
+    private Vision ringVision;
+    private Vision ballVision;
     private CollectorState collectorState;
 
     public AutoWaypoint(AutoDrive locality, Drivetrain drivetrain, Collector collector, Shooter shooter,
-            Vision vision) {
+            Vision ringVision, Vision ballVision) {
         waypoints = new ArrayList<Waypoint>();
         this.drivetrain = drivetrain;
         this.collector = collector;
         this.shooter = shooter;
-        this.vision = vision;
+        this.ringVision = ringVision;
+        this.autoDrive = locality;
+        this.ballVision = ballVision;
     }
 
     public void addWaypoint(Waypoint waypoint) {
@@ -46,7 +49,8 @@ public class AutoWaypoint {
                         drivetrain.getGyroscopeRotation()));
 
             } else if (currentWaypoint.fetch) {
-                vision.moveTowardsTarget();
+                System.out.println("fetch");
+                ballVision.moveTowardsTarget();
                 currentWaypoint.fetch = collector.getCollectorState() == collectorState;
 
             } else if (currentWaypoint.shoot) {
@@ -80,7 +84,7 @@ public class AutoWaypoint {
 
         } else if (!waypoints.isEmpty()) {
             currentWaypoint = waypoints.get(0);
-
+            System.out.println("AutoWaypoint New Waypoint");
             if (currentWaypoint.turnTo) {
                 currentWaypoint.heading = autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y);
                 collectorState = collector.getCollectorState();

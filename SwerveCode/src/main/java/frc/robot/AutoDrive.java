@@ -19,8 +19,8 @@ public class AutoDrive {
     private boolean isGoodData;                  //can this data be used
     private double positionX;                    //position in x;
     private double positionY;                    //position in y;
-    private final double KP_velocity_X = 0.5;
-    private final double KP_velocity_Y = 0.5;
+    private final double KP_velocity_X = 5;
+    private final double KP_velocity_Y = 5;
     private Drivetrain driveTrain;
     private final double KD_velocity_X = 0;
     private final double KD_velocity_Y = 0;
@@ -76,8 +76,9 @@ public class AutoDrive {
         double targetDistance = vision.distanceToTarget();
         double targetOffsetRotation = vision.offsetAngle(); 
         double robotRotationRad = Math.toRadians(robotRotation);
-
-        if(vision.targetValid){
+        targetDistance = this.inchesToMeters(targetDistance);
+        boolean testNone = false;
+        if(vision.targetValid && testNone ){
             double distance2 = (targetDistance + AutoDrive.hubRadius)/Math.cos(targetOffsetRotation) + this.inchesToMeters(24) ;
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
             this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
@@ -92,9 +93,9 @@ public class AutoDrive {
             this.positionY = pose.getY();
         }
         SmartDashboard.putNumber("Yaw value", robotRotation);
-        SmartDashboard.putNumber("Position Y", positionY);
-        SmartDashboard.putNumber("Position X", positionX);
-        SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
+        SmartDashboard.putNumber("Position Y", this.metersToInches(positionY));
+        SmartDashboard.putNumber("Position X", this.metersToInches(positionX));
+       // SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
         
     }
 
@@ -123,7 +124,7 @@ public class AutoDrive {
     }
 
     public double turnTo(double targetAngle, double currentAngle){
-        double angleError = currentAngle - targetAngle;
+        double angleError = targetAngle - currentAngle;
         double angularVelocity;
 
         if(angleError > 180){
@@ -138,10 +139,10 @@ public class AutoDrive {
         lastAngleError = angleError;  // reset initial angle
 
         angularVelocity = angleError * KP_angular_velocity + KD_angular_velocity * changeInAngleError;
-            angularVelocity = Math.min(angularVelocity, -1.7);
-            angularVelocity = Math.max(angularVelocity, 1.7);
+            angularVelocity = Math.min(angularVelocity, 1.7);
+            angularVelocity = Math.max(angularVelocity, -1.7);
 
-            return angularVelocity;
+            return -angularVelocity;
     }
 
     public double[] moveTo(double setPointX, double setPointY){
@@ -168,11 +169,11 @@ public class AutoDrive {
             lastErrorY = errorY;  // reset initial angle
 
             velocity[0] = errorX * KP_velocity_X + KD_velocity_X * changeInErrorX;
-            velocity[0] = Math.min(velocity[0], 0.2);
-            velocity[0] = Math.max(velocity[0], -0.2);
+            velocity[0] = Math.min(velocity[0], 0.5);
+            velocity[0] = Math.max(velocity[0], -0.5);
             velocity[1] = errorY * KP_velocity_Y + KD_velocity_Y * changeInErrorY;
-            velocity[1] = Math.min(velocity[1], 0.2);
-            velocity[1] = Math.max(velocity[1], -0.2);
+            velocity[1] = Math.min(velocity[1], 0.5);
+            velocity[1] = Math.max(velocity[1], -0.5);
             lastMoveTime  = xtime;        // reset initial time
             
         }
@@ -189,6 +190,10 @@ public class AutoDrive {
 
     public double inchesToMeters(double inch){
         return inch*0.0254;
+    }
+
+    public double metersToInches(double meters){
+        return meters*39.3701;
     }
     
 }
