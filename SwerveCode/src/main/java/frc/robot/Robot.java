@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 
@@ -41,7 +42,8 @@ public class Robot extends TimedRobot {
   public AutoDrive locality; 
   public Shooter shooter;
   public Collector collector;
-  public CollectorArmPID arm;
+  public CollectorArmMM arm;
+  public Climber climber;
   public ColorSensor colorSense;
   public Power powerMonitor;
   public Timer timer;
@@ -58,7 +60,6 @@ public class Robot extends TimedRobot {
   private double autoStateTime;
 
   
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -80,10 +81,11 @@ public class Robot extends TimedRobot {
                                    Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT,
                                    Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
                                    Constants.BALL_ROTATE_KP);
-    locality          = new AutoDrive(0, 0);
+    locality          = new AutoDrive(0, 0, drive);
     shooter           = new Shooter();
     collector         = new Collector();
-    arm               = new CollectorArmPID();
+    arm               = new CollectorArmMM();
+//    climber           = new Climber();
     powerMonitor      = new Power();
     timer             = new Timer();
 
@@ -147,6 +149,7 @@ public class Robot extends TimedRobot {
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
 
     // Allow limelight lights to turn back on
+    powerMonitor.relayOn();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
 
@@ -155,7 +158,7 @@ public class Robot extends TimedRobot {
 
     // Indicate to teleop that autonomous has run
     AutonomousHasRun = true;
-
+    autoState        = AutoState.TURN;
   }
 
 
@@ -168,15 +171,15 @@ public class Robot extends TimedRobot {
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
-    collector.ballControl(arm, shooter, visionBall, powerMonitor);
+    collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
-    //turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
+    // Turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
     // decide state changes
     switch(autoState) {
       case TURN:
          if(visionRing.targetLocked) {
-          autoState = AutoState.SHOOT;
+          autoState = AutoState.DRIVE;
          autoStateTime = timer.get() + 1.0;
     }
    break;
@@ -186,25 +189,27 @@ public class Robot extends TimedRobot {
    case DRIVE:
    if(collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {
     autoState = AutoState.SHOOT;
-
+    
   }
    break;
    }
+
+   SmartDashboard.putString("autoState", autoState.name());
+
  //execute current state
    switch(autoState) {
   case SHOOT:
-   if(shooter.isFlywheelReady()) {
-  collector.shoot();
-  }
-  drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, 0.0, drive.getGyroscopeRotation()));
-  break;
+    collector.shoot();
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+    break;
    case TURN:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-      arm.lowerArm();
+      collector.enableCollectMode(arm, powerMonitor);
      break;
   case DRIVE:
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
-       break;
+      collector.enableCollectMode(arm, powerMonitor); 
+      break;
      }
    }
 
@@ -214,7 +219,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
-      collector.resetShoot();
       
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
@@ -228,12 +232,18 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
 
       // Allow limelight lights to turn back on
+      powerMonitor.relayOn();
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
       NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
 
       // Zero the gyroscope for field-relative drive
       drive.zeroGyroscope();
     }
+
+    collector.reset();
+    shooter.reset();
+    visionRing.reset();
+    visionBall.reset();
   }
 
 
@@ -271,16 +281,17 @@ public class Robot extends TimedRobot {
     //   driverController (Left bumper)  : Auto ball fetch
     //   driverController (A button)     : Enter collect mode
     //   driverController (Y button)     : Exit collect mode
+    //   driverController (BACK + X)     : Reset current heading to 0
     //  
-    //   shooterController (Left trigger) : Auto aim at ring
-    //   shooterController (Right trigger): Shoot
-    //   shooterController (Left bumper)  : Auto ball fetch
-    //   shooterController (A button)     : Enter collect mode
-    //   shooterController (Y button)     : Exit collect mode
-    //   shooterController (L + R stick)  : Unjam
-    //   shooterController (BACK + blue)  : Force blue alliance
-    //   shooterController (BACK + red)   : Force red alliance
-    //   shooterController (Right bumper) : Shoot without lock on ring
+    //   shooterController (Left trigger)      : Auto aim at ring
+    //   shooterController (Right trigger)     : Shoot
+    //   shooterController (Left bumper)       : Auto ball fetch
+    //   shooterController (A button)          : Enter collect mode
+    //   shooterController (Y button)          : Exit collect mode
+    //   shooterController (L + R stick)       : Unjam
+    //   shooterController (BACK + blue)       : Force blue alliance
+    //   shooterController (BACK + red)        : Force red alliance
+    //   shooterController (BACK Right bumper) : Shoot without lock on ring
 
     //
     // Unjam the intake by reversing the staging and collector motors.  This function has top priority
@@ -310,7 +321,7 @@ public class Robot extends TimedRobot {
         //
         // Shoot ball with aiming automation disabled
         //
-        if (shooterController.getRightBumper())
+        if (shooterController.getRightBumper() && shooterController.getBackButton())
           collector.forceShoot();
       
         //
@@ -318,11 +329,20 @@ public class Robot extends TimedRobot {
         //
         else if ((driverController.getRightTriggerAxis() > 0.1 ) || (shooterController.getRightTriggerAxis() > 0.1 ))
             collector.shoot();
+
       }
     }
 
     //
-    // force Blue alliance
+    // Reset gyroscope zero for field-relative driving
+    //
+    if (driverController.getXButton() && driverController.getBackButton()){
+      System.out.println("Override - zeroing gyroscope");
+      drive.zeroGyroscope();
+    }
+
+    //
+    // Force Blue alliance
     //
     if (shooterController.getXButtonPressed() && shooterController.getBackButton()){
       colorSense.forceBlueAlliance();
@@ -331,13 +351,18 @@ public class Robot extends TimedRobot {
     }
 
     //
-    // force Red alliance
+    // Force Red alliance
     //
     if (shooterController.getBButtonPressed() && shooterController.getBackButton()){
       colorSense.forceRedAlliance();
       allianceColor  = colorSense.getAllianceColor();
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline").setNumber(allianceColor.ordinal());
     }
+
+    //
+    // Temporary control for climber
+    //
+    //climber.moveLift(joystickDeadband(shooterController.getRightY()));
 
     //
     // Read gamepad controls for drivetrain and scale control values
@@ -369,6 +394,7 @@ public class Robot extends TimedRobot {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
         -joystickDeadband(rotate), drive.getGyroscopeRotation()));     //Inverted due to Robot Directions being the opposite of controller directions
     }
+    drive.getCurrentPos();
   }
 
 
@@ -376,13 +402,23 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     colorSense = null;
+
+    // Turn off lights when not operating.  Make more friends and fewer enemies this way.
+    powerMonitor.relayOff();
+    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+    NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+
   }
 
 
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    // Prevent possible(?) timeouts from occuring by sending commands to the motor continuously
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+
   }
+
 
   /** This function is called once when test mode is enabled. */
   @Override

@@ -73,6 +73,7 @@ public class Vision {
     // Establish initial values for variables we share
     targetValid   = false;
     targetLocked  = false;
+    targetClose   = false;
     targetRange   = 0.0;
     timer = new Timer();
     timer.start();
@@ -84,6 +85,16 @@ public class Vision {
     this.cameraAngle   = cameraAngle;
     this.targetHeight  = targetHeight;
     this.rotationKP    = rotationKP;
+  }
+
+
+  //
+  // Reset internal variables to a benign state
+  //
+  public void reset() {
+    targetValid   = false;
+    targetLocked  = false;
+    targetClose   = false;
   }
 
 
@@ -135,20 +146,24 @@ public class Vision {
       targetClose = false;
     }
 
+    System.out.printf("%s: Target locked = %b\n", limelightName, targetLocked);
+    System.out.printf("%s: Target close = %b\n", limelightName, targetClose);
+
+
     //post driver data to smart dashboard periodically
-    SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
-    SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
-    SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
-    SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
+    //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
+    //SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
+    //SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
+    //SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
     SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
-    SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
-    SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
-    SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
-    SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
+    //SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
+    //SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
+    //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
+    //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
-    SmartDashboard.putNumber(limelightName + "/lockError", lockError);
+    //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
 
 
@@ -205,7 +220,7 @@ public class Vision {
       }
     }
     else{
-      turnSpeed = 1;    // Spin in a circle until a target is located
+      turnSpeed = 2;    // Spin in a circle until a target is located
     }
     
     //
@@ -227,13 +242,13 @@ public class Vision {
   // TODO: Do we need to prevent driving forward before being completely on target
   //       (e.g. targetLocked == true) if the robot is too close to the target?
   //
-  public double moveTowardsTarget(){
+  public double moveTowardsTarget() {
     double moveSpeed = 0.0;
     if (targetLocked == true){
-      moveSpeed = -3.8;
+      moveSpeed = ConfigRun.TARGET_LOCKED_SPEED;
     }
     else if (targetClose == true){
-      moveSpeed = -2.0;
+      moveSpeed = ConfigRun.TARGET_CLOSE_SPEED;
     }
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
     return moveSpeed;
