@@ -20,8 +20,8 @@ public final class ConfigRun {
     //
     // Driving Configuration
     //
-    public static final double TRANSLATE_POWER = 0.2;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER    = 0.2;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double TRANSLATE_POWER = 1.0;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double ROTATE_POWER    = 0.75;      // Scaling for teleop driving.  1.0 is maximum
 
     
     public static final double TARGET_LOCKED_SPEED = -4;

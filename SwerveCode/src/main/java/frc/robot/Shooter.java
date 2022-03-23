@@ -119,6 +119,7 @@ public class Shooter{
         // Post flywheel parameters to Smart Dashboard
         SmartDashboard.putNumber("Flywheel Actual", flywheelRpmActual);
         SmartDashboard.putBoolean("Flywheel Ready", flywheelReady);
+        SmartDashboard.putNumber("Flywheel Set", flywheelRpmSet);
     }
 
 

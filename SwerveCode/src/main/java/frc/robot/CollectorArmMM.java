@@ -114,9 +114,9 @@ public class CollectorArmMM {
         double feedForward = calcFeedForward(armMotor.getSelectedSensorPosition());
     
         SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
-        SmartDashboard.putString("Arm State", armState.toString());
-        SmartDashboard.putNumber("Feed Forward", feedForward);
-        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        //SmartDashboard.putString("Arm State", armState.toString());
+        //SmartDashboard.putNumber("Feed Forward", feedForward);
+        //SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
