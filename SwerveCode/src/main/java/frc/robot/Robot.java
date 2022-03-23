@@ -260,17 +260,14 @@ public class Robot extends TimedRobot {
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
           .setNumber(allianceColor.ordinal());
 
-      // Allow limelight lights to turn back on
-      powerMonitor.relayOn();
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode")
-          .setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
-      NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode")
-          .setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
-
       // Zero the gyroscope for field-relative drive
       drive.zeroGyroscope();
     }
 
+    powerMonitor.relayOn();
+    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
+    NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
+    
     collector.reset();
     shooter.reset();
     visionRing.reset();

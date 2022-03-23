@@ -126,7 +126,7 @@ public class Collector {
         if (collectorState != CollectorState.TWO_BALLS) {
             collectorMode = true;
             arm.lowerArm();
-            powerMonitor.relayOn(); // Turn on light
+            //powerMonitor.relayOn(); // Turn on light
         } else
             collectorMode = false;
             
@@ -143,7 +143,7 @@ public class Collector {
     public boolean disableCollectMode(CollectorArmMM arm, Power powerMonitor) {
         collectorMode = false;
         arm.raiseArm();
-        powerMonitor.relayOff();    // Turn off light
+        //powerMonitor.relayOff();    // Turn off light
 
         return true;
     }
