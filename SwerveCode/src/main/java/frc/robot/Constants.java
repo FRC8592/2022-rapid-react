@@ -81,7 +81,7 @@ public final class Constants {
     public static double FLYWHEEL_P = 0.155;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_I = 0.0000001;               // Starting value.  Needs tuning
     public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_F = 0.056;                   // Starting value.  Needs tuning
+    public static double FLYWHEEL_F = 0.055;                   // Starting value.  Needs tuning
     public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
