@@ -108,7 +108,7 @@ public final class Constants {
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants
-    public static double MIN_TURN_SPEED = 0.8;
+    public static double MIN_TURN_SPEED = 0.4;
 
     // Color sensor
     public static int MIN_BALL_PROXIMITY = 300;

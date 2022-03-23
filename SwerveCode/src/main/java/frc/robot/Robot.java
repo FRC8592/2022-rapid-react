@@ -139,9 +139,9 @@ public class Robot extends TimedRobot {
     drive.resetPose(new Pose2d(0,0,new Rotation2d()));
     
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
-    autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.1, false, true, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(-2, -2, 0.1, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.5, false, true, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
     collector.enableCollectMode(arm, powerMonitor);
     m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);

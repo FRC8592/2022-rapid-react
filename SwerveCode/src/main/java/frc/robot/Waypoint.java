@@ -24,5 +24,6 @@ public class Waypoint {
         this.here = false;
         this.done = false;
         this.waypointTimer = waypointTimer;
+        this.fetch = fetch;
     }
 }

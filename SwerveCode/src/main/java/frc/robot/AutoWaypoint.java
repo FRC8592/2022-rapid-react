@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Collector.CollectorState;
 
@@ -49,13 +50,15 @@ public class AutoWaypoint {
                         drivetrain.getGyroscopeRotation()));
 
             } else if (currentWaypoint.fetch) {
-                System.out.println("fetch");
-                ballVision.moveTowardsTarget();
+                System.out.println("ROBOT fetch!");
+                drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(ballVision.moveTowardsTarget(), 0,
+                ballVision.turnRobot(), Rotation2d.fromDegrees(0)));
                 currentWaypoint.fetch = collector.getCollectorState() == collectorState;
+                System.out.println("ROBOT fetch!: " + currentWaypoint.fetch);
 
             } else if (currentWaypoint.shoot) {
 
-                if (autoDrive.getDistance(0, 0) > autoDrive.inchesToMeters(240)) {
+             /*   if (autoDrive.getDistance(0, 0) > autoDrive.inchesToMeters(240)) {
                     double angularVelocity = autoDrive
                             .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
                     drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.2, 0.0, angularVelocity,
@@ -72,11 +75,16 @@ public class AutoWaypoint {
                             .turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y), drivetrain.getYaw());
                     drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, angularVelocity,
                             drivetrain.getGyroscopeRotation()));
+                    */
+
 
                     if (collectorState == CollectorState.NO_BALLS_LOADED) {
                         currentWaypoint.done = true;
                     }
-                }
+
+                    if(collector.getCollectorState() == Collector.CollectorState.TWO_BALLS){
+                        collector.shoot();
+                    }
 
             } else {
                 currentWaypoint.done = true;

@@ -231,7 +231,7 @@ public class Vision {
     }
     SmartDashboard.putNumber(limelightName + "/Turret Speed", turnSpeed);
 
-    return -turnSpeed;
+    return turnSpeed;
   }
 
 
