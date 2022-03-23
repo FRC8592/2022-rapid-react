@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
     shooter = new Shooter();
     collector = new Collector();
     arm = new CollectorArmMM();
-    // climber = new Climber();
+    climber = new Climber();
     powerMonitor = new Power();
     timer = new Timer();
 
@@ -392,7 +392,7 @@ public class Robot extends TimedRobot {
     //
     // Temporary control for climber
     //
-    // climber.moveLift(joystickDeadband(shooterController.getRightY()));
+    climber.moveLift(joystickDeadband(shooterController.getRightY()));
 
     //
     // Read gamepad controls for drivetrain and scale control values

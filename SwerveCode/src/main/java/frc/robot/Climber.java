@@ -23,17 +23,17 @@ public class Climber {
     private WPI_TalonFX liftMotorLeft;
 
     // State values
-    private static enum liftStates {LIFT_UP, LIFT_RAISING, LIFT_DESCENDING, LIFT_DOWN}
+    private static enum liftStates {LIFT_START, LIFT_UP, LIFT_RAISING, LIFT_DESCENDING, LIFT_DOWN}
     
     // Internal global variables
     private liftStates liftState;
 
 
-    // Configure the arm motor and limit switch
+    // Configure the lift motors
     public Climber () {
 
-        // Robot should start with the lift in the down position
-        liftState = liftStates.LIFT_DOWN;
+        // Robot should ensure that the lift is in the down position before doing anything else
+        liftState = liftStates.LIFT_START;
 
         // Create the lift motor objects and clear configuration to factory defaults
         liftMotorRight = new WPI_TalonFX(Constants.LIFT_RIGHT_CAN);
@@ -62,13 +62,10 @@ public class Climber {
 
         // Configure right motor for motion magic
         liftMotorRight.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
-        liftMotorRight.setSelectedSensorPosition(0);        // THIS COULD BE A DANGEROUS ASSUMPTION ABOUT OUR STARTING POINT!!!
+        liftMotorRight.setSelectedSensorPosition(0);
         liftMotorRight.configNeutralDeadband(Constants.LIFT_DEADBAND);
 
-        // Set current limits so we don't blow any fuses
-        liftMotorRight.configSupplyCurrentLimit(Constants.LIFT_CURRENT_LIMIT);
-
-        // PID values for raising arm
+         // PID values for raising arm
         liftMotorRight.config_kP(RAISE_PID_SLOT, Constants.LIFT_UP_P);
         liftMotorRight.config_kI(RAISE_PID_SLOT, Constants.LIFT_UP_I);
         liftMotorRight.config_kD(RAISE_PID_SLOT, Constants.LIFT_UP_D);
@@ -86,12 +83,28 @@ public class Climber {
         liftMotorRight.configMotionAcceleration(Constants.LIFT_MM_ACCEL);
     }
 
+    public void reset() {
+        // Robot should ensure that the lift is in the down position before doing anything else
+        liftState = liftStates.LIFT_START;
+
+        // Stop any motor activity
+        liftMotorRight.set(ControlMode.PercentOutput, 0.0); // Left motor follow right motor
+    }
+
 
     /**
      * Control the lift
      */
     public void moveLift(double liftPower) {
         liftMotorRight.set(ControlMode.PercentOutput, liftPower);
+
+        SmartDashboard.putNumber("Right cur", liftMotorRight.getStatorCurrent());
+        SmartDashboard.putNumber("Left cur", liftMotorLeft.getStatorCurrent());
+
+    }
+
+
+    public void liftPeriodic() {
 
     }
     
