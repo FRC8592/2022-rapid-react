@@ -32,5 +32,6 @@ public final class ConfigRun {
     public static final double MAX_SWERVE_STEER_CURRENT = 10.0; // Lower values will turn slower
     //
     public static final double JOYSTICK_DEADBAND = 0.01;    // Deadband for translate and rotate joysticks
+    public static final boolean WAYPOINT = true;
 
 }
