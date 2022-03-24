@@ -129,15 +129,15 @@ public final class Constants {
 
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.12;       // Starting value.  Needs tuning
-    public static double ARM_UP_I = 0.0001;     // Starting value.  Needs tuning
-    public static double ARM_UP_D = 0.0;        // Starting value.  Needs tuning
-    public static double ARM_UP_F = 0.0;        // Starting value.  Needs tuning
+    public static double ARM_UP_P = 0.12;
+    public static double ARM_UP_I = 0.0001;
+    public static double ARM_UP_D = 0.0;
+    public static double ARM_UP_F = 0.0;
 
-    public static double ARM_DOWN_P = 0.096;    // Starting value.  Needs tuning
-    public static double ARM_DOWN_I = 0.0;      // Starting value.  Needs tuning
-    public static double ARM_DOWN_D = 12.0;     // Starting value.  Needs tuning
-    public static double ARM_DOWN_F = 0.0;      // Starting value.  Needs tuning
+    public static double ARM_DOWN_P = 0.096;
+    public static double ARM_DOWN_I = 0.0;
+    public static double ARM_DOWN_D = 12.0;
+    public static double ARM_DOWN_F = 0.0;
 
     public static int    ARM_MM_SMOOTHING   = 1;
     public static double ARM_MM_CRUISE_VELO = 300;
@@ -165,8 +165,9 @@ public final class Constants {
     public static double LIFT_MM_CRUISE_VELO = 150000;
     public static double LIFT_MM_ACCEL       = 600000;
     public static double LIFT_DEADBAND       = 0.001;       // Set very small.  Default is 0.04
+    public static double LIFT_MAX_POWER      = 0.2;         // Absolute max power allowed for lift motors
     public static double LIFT_STEADY_POWER   = 0.10;  
-    public static double LIFT_PARKED_POWER   = -0.05;        // Power to drive arms to parked position
+    public static double LIFT_PARKED_POWER   = -0.02;       // Power to drive arms to parked position
     public static int    LIFT_TICKS_180      = 4736;
     public static double LIFT_PARKED_CURRENT = 5;           // amount of current to check if arms in parked position
     public static double LIFT_MAX_POSITION   = 331776.0;   //max number of ticks, 27(gear) * 2048() * 6 (3 in per rotation, 18 in fully extended)
