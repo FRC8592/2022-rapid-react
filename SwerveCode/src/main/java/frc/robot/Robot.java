@@ -391,7 +391,8 @@ public class Robot extends TimedRobot {
 
     //
     // Temporary control for climber
-    //
+    //  moves arm up and down, checks that arm doesn't overextend
+    //climber.liftPeriodic(joystickDeadband(shooterController.getRightY()));
     climber.moveLift(joystickDeadband(shooterController.getRightY()));
 
     //
@@ -460,6 +461,8 @@ public class Robot extends TimedRobot {
     // Prevent possible(?) timeouts from occuring by sending commands to the motor
     // continuously
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+    // Pulls arm down until motor current peaks, current peaks = arm is parked
+    
 
   }
 
@@ -471,6 +474,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    climber.pullArmDown();
   }
 
   //

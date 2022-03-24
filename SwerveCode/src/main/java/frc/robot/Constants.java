@@ -78,10 +78,16 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_P = 0.17;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_I = 0.0000001;               // Starting value.  Needs tuning
-    public static double FLYWHEEL_D = 0.00;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_F = 0.056;                   // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_P = 0.17;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_I = 0.0000001;               // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_D = 0.00;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_F = 0.056;                   // Starting value.  Needs tuning
+   
+    public static double FLYWHEEL_SLOW_P = 0.17;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_SLOW_I = 0.0000001;               // Starting value.  Needs tuning
+    public static double FLYWHEEL_SLOW_D = 0.00;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_SLOW_F = 0.056;                   // Starting value.  Needs tuning
+    
     public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
@@ -156,11 +162,18 @@ public final class Constants {
     public static double LIFT_DOWN_F = 0.0;     // Starting value.  Needs tuning
 
     public static int    LIFT_MM_SMOOTHING   = 1;
-    public static double LIFT_MM_CRUISE_VELO = 300;
-    public static double LIFT_MM_ACCEL       = 2400;
-    public static double LIFT_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
-    public static double LIFT_STEADY_POWER   = 0.10;
+    public static double LIFT_MM_CRUISE_VELO = 150000;
+    public static double LIFT_MM_ACCEL       = 600000;
+    public static double LIFT_DEADBAND       = 0.001;       // Set very small.  Default is 0.04
+    public static double LIFT_STEADY_POWER   = 0.10;  
+    public static double LIFT_PARKED_POWER   = -0.05;        // Power to drive arms to parked position
     public static int    LIFT_TICKS_180      = 4736;
+    public static double LIFT_PARKED_CURRENT = 5;           // amount of current to check if arms in parked position
+    public static double LIFT_MAX_POSITION   = 331776.0;   //max number of ticks, 27(gear) * 2048() * 6 (3 in per rotation, 18 in fully extended)
+    public static double LIFT_MIN_POSITION   = 0;
+    public static double LIFT_CHANGE_POSITION= 3500;         // add or subtract # of ticks to move arms
+    public static double LIFT_FEED_FORWARD   = 0.1;   
+
 
     // Limit collector arm current to 5A continuous, 20A peak
     public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 5, 20, 0.5);

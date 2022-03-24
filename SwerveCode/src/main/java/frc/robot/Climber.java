@@ -28,6 +28,8 @@ public class Climber {
     // Internal global variables
     private liftStates liftState;
 
+    private boolean armsParked = false;
+
 
     // Configure the lift motors
     public Climber () {
@@ -100,12 +102,43 @@ public class Climber {
 
         SmartDashboard.putNumber("Right cur", liftMotorRight.getStatorCurrent());
         SmartDashboard.putNumber("Left cur", liftMotorLeft.getStatorCurrent());
+        SmartDashboard.putNumber("Lift Power", liftPower);
 
     }
 
 
-    public void liftPeriodic() {
+    public void liftPeriodic(double liftPower) {
+        double climberPosition = liftMotorRight.getSelectedSensorPosition();
+        double nextClimbPosition = climberPosition + (liftPower * Constants.LIFT_CHANGE_POSITION);
 
+        if (nextClimbPosition > Constants.LIFT_MAX_POSITION){
+            nextClimbPosition = Constants.LIFT_MAX_POSITION;
+        }
+        if (nextClimbPosition < Constants.LIFT_MIN_POSITION){
+            nextClimbPosition = Constants.LIFT_MIN_POSITION;
+        }
+
+        liftMotorRight.set(ControlMode.MotionMagic, nextClimbPosition, DemandType.ArbitraryFeedForward, Constants.LIFT_FEED_FORWARD);
     }
     
+
+    public void pullArmDown() {
+        if (!armsParked){
+            liftMotorRight.set(ControlMode.PercentOutput, Constants.LIFT_PARKED_POWER);
+        }
+        
+        if ((Math.abs(liftMotorRight.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT) && (Math.abs(liftMotorLeft.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT)){
+            liftMotorRight.set(ControlMode.PercentOutput, 0.0);
+            armsParked = true;
+        }
+
+        if (armsParked){
+            liftMotorRight.setSelectedSensorPosition(0);
+            liftMotorLeft.setSelectedSensorPosition(0);
+        }
+        SmartDashboard.putBoolean("Arm Parked", armsParked);
+        SmartDashboard.putNumber("Right cur", liftMotorRight.getStatorCurrent());
+        SmartDashboard.putNumber("Left cur", liftMotorLeft.getStatorCurrent());
+    }
+
 }
