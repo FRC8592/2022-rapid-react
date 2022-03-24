@@ -91,9 +91,6 @@ public class Climber {
     }
 
     public void reset() {
-        // Don't 
-        liftState = liftStates.LIFT_START;
-
         // Stop any motor activity
         liftMotorRight.set(ControlMode.PercentOutput, 0.0); // Left motor follow right motor
     }
