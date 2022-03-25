@@ -87,13 +87,13 @@ public class Robot extends TimedRobot {
         Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
         Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
         Constants.BALL_ROTATE_KD);
-    locality  = new AutoDrive(0, 0, drive);
-    shooter   = new Shooter();
+    locality = new AutoDrive(0, 0, drive);
+    shooter = new Shooter();
     collector = new Collector();
-    arm       = new CollectorArmMM();
-    climber   = new Climber();
+    arm = new CollectorArmMM();
+    climber = new Climber();
     powerMonitor = new Power();
-    timer     = new Timer();
+    timer = new Timer();
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -274,6 +274,7 @@ public class Robot extends TimedRobot {
     shooter.reset();
     visionRing.reset();
     visionBall.reset();
+    climber.reset();
   }
 
   /**
@@ -393,7 +394,8 @@ public class Robot extends TimedRobot {
 
     //
     // Temporary control for climber
-    //
+    //  moves arm up and down, checks that arm doesn't overextend
+    //climber.liftPeriodic(joystickDeadband(shooterController.getRightY()));
     climber.moveLift(joystickDeadband(shooterController.getRightY()));
 
     //
@@ -462,6 +464,8 @@ public class Robot extends TimedRobot {
     // Prevent possible(?) timeouts from occuring by sending commands to the motor
     // continuously
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+    // Pulls arm down until motor current peaks, current peaks = arm is parked
+    
 
   }
 

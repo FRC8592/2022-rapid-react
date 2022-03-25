@@ -157,10 +157,6 @@ public class Vision {
       targetClose = false;
     }
 
-    System.out.printf("%s: Target locked = %b\n", limelightName, targetLocked);
-    System.out.printf("%s: Target close = %b\n", limelightName, targetClose);
-
-
     //post driver data to smart dashboard periodically
     //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
     //SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
@@ -233,7 +229,7 @@ public class Vision {
     }
     SmartDashboard.putNumber(limelightName + "/Turret Speed", turnSpeed);
 
-    return -turnSpeed;
+    return turnSpeed;
   }
 
 
