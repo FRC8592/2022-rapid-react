@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 
 import java.util.LinkedList;
@@ -18,6 +19,8 @@ public class Vision {
   private double cameraAngle;
   private double targetHeight;
   private double rotationKP;
+  private double rotationKI;
+  private double rotationKD;
   // Network Table entries
   private NetworkTableEntry tx;   // Angle error (x) from LimeLight camera
   private NetworkTableEntry ty;   // Angle error (y) from LimeLight camera
@@ -32,26 +35,29 @@ public class Vision {
   private double processedDx = 0;
   private double processedDy = 0;
   //Private autoaim variables
-   private double turnSpeed;
-   private double lastTime  = 0;
-   private double xtime     = 0;
-   private double lastAngle = 0;
-   private double changeInAngleError = 0;
+  private double turnSpeed;
+  private double lastTime  = 0;
+  private double xtime     = 0;
+  private double lastAngle = 0;
+  private double changeInAngleError = 0;
 
-   //constants for averaging limelight averages
-   private int MIN_LOCKS = 3;
-   private int STAT_SIZE = 5; 
+  // PID controller for turning;
+  private PIDController turnPID;
 
-   private LinkedList<LimelightData> previousCoordinates;
+  //constants for averaging limelight averages
+  private int MIN_LOCKS = 3;
+  private int STAT_SIZE = 5; 
 
-   private String limelightName;
+  private LinkedList<LimelightData> previousCoordinates;
+
+  private String limelightName;
 
   // Pipeline constants
-   private static int BLUE_PIPELINE = 1;
-   private static int RED_PIPELINE = 0;
+  private static int BLUE_PIPELINE = 1;
+  private static int RED_PIPELINE = 0;
 
-   private final double DEG_TO_RAD = 0.0174533;
-   private final double IN_TO_METERS = 0.0254;
+  private final double DEG_TO_RAD = 0.0174533;
+  private final double IN_TO_METERS = 0.0254;
   
 
   /**
@@ -59,7 +65,7 @@ public class Vision {
    */
   public Vision(String limelightName, double lockError, double closeError,
                 double cameraHeight, double cameraAngle, double targetHeight,
-                double rotationKP) {
+                double rotationKP, double rotationKI, double rotationKD) {
 
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
@@ -85,6 +91,11 @@ public class Vision {
     this.cameraAngle   = cameraAngle;
     this.targetHeight  = targetHeight;
     this.rotationKP    = rotationKP;
+    this.rotationKI    = rotationKI;
+    this.rotationKD    = rotationKD;
+
+    // Creat the PID controller for turning
+    turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
   }
 
 
@@ -205,21 +216,12 @@ public class Vision {
       // Setting power based on the xError causes the turret to slow down as the error approaches 0
       // This prevents the turret from overshooting 0 and oscillating back and forth
       // KP is a scaling factor that we tested
-      turnSpeed = Math.toRadians(processedDx) * rotationKP; // + turret_rotate_kd*delta();
+      turnSpeed = turnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
       turnSpeed = Math.max(turnSpeed, -8);
       turnSpeed = Math.min(turnSpeed, 8);
 
-      //
-      // Set a minimum turnSpeed so that we don't get stuck when close to zero error
-      //
-      if (turnSpeed > 0){
-        turnSpeed = Math.max(turnSpeed, Constants.MIN_TURN_SPEED);
-      }
-      else{
-        turnSpeed = Math.min(turnSpeed, -Constants.MIN_TURN_SPEED);
-      }
     }
-    else{
+    else {
       turnSpeed = 2;    // Spin in a circle until a target is located
     }
     

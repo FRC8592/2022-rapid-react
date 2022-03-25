@@ -80,18 +80,20 @@ public class Robot extends TimedRobot {
     visionRing = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR,
         Constants.RING_CLOSE_ERROR, Constants.RING_CAMERA_HEIGHT,
         Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT,
-        Constants.TURRET_ROTATE_KP);
+        Constants.TURRET_ROTATE_KP, Constants.TURRET_ROTATE_KI,
+        Constants.TURRET_ROTATE_KD);
     visionBall = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
         Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT,
         Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
-        Constants.BALL_ROTATE_KP);
-    locality = new AutoDrive(0, 0, drive);
-    shooter = new Shooter();
+        Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
+        Constants.BALL_ROTATE_KD);
+    locality  = new AutoDrive(0, 0, drive);
+    shooter   = new Shooter();
     collector = new Collector();
-    arm = new CollectorArmMM();
-    climber = new Climber();
+    arm       = new CollectorArmMM();
+    climber   = new Climber();
     powerMonitor = new Power();
-    timer = new Timer();
+    timer     = new Timer();
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();

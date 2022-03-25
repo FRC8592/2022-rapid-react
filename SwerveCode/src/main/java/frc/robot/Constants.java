@@ -91,10 +91,12 @@ public final class Constants {
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
     public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
-    public static double RING_CAMERA_HEIGHT    = 36.75;          // Limelight height above ground (inches)
+    public static double RING_CAMERA_HEIGHT    = 36.75;         // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 30.0;          // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104.0;         // Center of target above ground (inches)
-    public static double TURRET_ROTATE_KP      = 7.0;           // Proportional constant for rotate speed
+    public static double TURRET_ROTATE_KP      = 0.12;          // Proportional constant for rotate speed
+    public static double TURRET_ROTATE_KI      = 0.000001;
+    public static double TURRET_ROTATE_KD      = 1.2; 
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     // Vision constants for the ball camera
@@ -104,7 +106,9 @@ public final class Constants {
     public static double BALL_CAMERA_HEIGHT    = 35.75;
     public static double BALL_CAMERA_ANGLE     = 30.0;
     public static double BALL_TARGET_HEIGHT    = 4.75;
-    public static double BALL_ROTATE_KP        = 6.0;           // Proportional constant for turret rotate speed
+    public static double BALL_ROTATE_KP        = 0.1;           // Proportional constant for turret rotate speed
+    public static double BALL_ROTATE_KI        = 0.00001;
+    public static double BALL_ROTATE_KD        = 1.0;
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants
