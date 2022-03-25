@@ -50,19 +50,21 @@ public class Climber {
         liftMotorLeft.setNeutralMode(NeutralMode.Brake);
         liftMotorRight.setNeutralMode(NeutralMode.Brake);
 
-        // Put a hard limit on motor power to limit potential damage
-        liftMotorRight.configNominalOutputForward(0);
-        liftMotorRight.configNominalOutputReverse(0);
-        liftMotorRight.configPeakOutputForward(Constants.LIFT_MAX_POWER);
-        liftMotorRight.configPeakOutputReverse(Constants.LIFT_MAX_POWER);
-        liftMotorLeft.configNominalOutputForward(0);
-        liftMotorLeft.configNominalOutputReverse(0);
-        liftMotorLeft.configPeakOutputForward(Constants.LIFT_MAX_POWER);
-        liftMotorLeft.configPeakOutputReverse(Constants.LIFT_MAX_POWER);
+
+        // liftMotorLeft.configNominalOutputForward(0);
+        // liftMotorLeft.configNominalOutputReverse(0);
+        // liftMotorLeft.configPeakOutputForward(Constants.LIFT_MAX_POWER);
+        // liftMotorLeft.configPeakOutputReverse(Constants.LIFT_MAX_POWER);
 
         // Configure left motor as a follower to right motor
         liftMotorLeft.follow(liftMotorRight);
         liftMotorLeft.setInverted(InvertType.OpposeMaster);
+
+        // Put a hard limit on motor power to limit potential damage
+        // liftMotorRight.configNominalOutputForward(0);
+        // liftMotorRight.configNominalOutputReverse(0);
+        // liftMotorRight.configPeakOutputForward(Constants.LIFT_MAX_POWER);
+        // liftMotorRight.configPeakOutputReverse(Constants.LIFT_MAX_POWER);
 
         // Ensure the motors are stopped
         liftMotorRight.set(ControlMode.PercentOutput, 0.0);   // Clear any outstanding Motion Magic commands and park the motor
@@ -91,8 +93,18 @@ public class Climber {
     }
 
     public void reset() {
+        // Assume lift is retracted and reset encoders
+        liftMotorRight.setSelectedSensorPosition(0);
+        liftMotorLeft.setSelectedSensorPosition(0);
+
         // Stop any motor activity
-        liftMotorRight.set(ControlMode.PercentOutput, 0.0); // Left motor follow right motor
+        liftMotorRight.set(ControlMode.PercentOutput, 0.0);
+        liftMotorLeft.set(ControlMode.PercentOutput, 0.0);
+
+        // Have left motor follow right motor
+        // Configure left motor as a follower to right motor
+        liftMotorLeft.follow(liftMotorRight);
+        liftMotorLeft.setInverted(InvertType.OpposeMaster);
     }
 
 
@@ -105,6 +117,7 @@ public class Climber {
         SmartDashboard.putNumber("Right cur", liftMotorRight.getStatorCurrent());
         SmartDashboard.putNumber("Left cur", liftMotorLeft.getStatorCurrent());
         SmartDashboard.putNumber("Lift Power", liftPower);
+        SmartDashboard.putNumber("Lift Pos", liftMotorRight.getSelectedSensorPosition());
 
     }
 
@@ -126,11 +139,13 @@ public class Climber {
 
     public void pullArmDown() {
         if (!armsParked){
-            liftMotorRight.set(ControlMode.PercentOutput, Constants.LIFT_PARKED_POWER);
+            liftMotorRight.set(ControlMode.PercentOutput, Constants.LIFT_PARK_POWER);
+            liftMotorLeft.set(ControlMode.PercentOutput, Constants.LIFT_PARK_POWER);
         }
         
         if ((Math.abs(liftMotorRight.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT) && (Math.abs(liftMotorLeft.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT)){
             liftMotorRight.set(ControlMode.PercentOutput, 0.0);
+            liftMotorLeft.set(ControlMode.PercentOutput, 0.0);
             liftMotorRight.setSelectedSensorPosition(0);
             liftMotorLeft.setSelectedSensorPosition(0);
             armsParked = true;

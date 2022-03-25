@@ -165,12 +165,12 @@ public final class Constants {
     public static double LIFT_MM_CRUISE_VELO = 150000;
     public static double LIFT_MM_ACCEL       = 600000;
     public static double LIFT_DEADBAND       = 0.001;       // Set very small.  Default is 0.04
-    public static double LIFT_MAX_POWER      = 0.2;         // Absolute max power allowed for lift motors
+    public static double LIFT_MAX_POWER      = 0.5;         // Absolute max power allowed for lift motors
     public static double LIFT_STEADY_POWER   = 0.10;  
-    public static double LIFT_PARKED_POWER   = -0.02;       // Power to drive arms to parked position
+    public static double LIFT_PARK_POWER     = 0.10;       // Power to drive arms to parked position
     public static int    LIFT_TICKS_180      = 4736;
-    public static double LIFT_PARKED_CURRENT = 5;           // amount of current to check if arms in parked position
-    public static double LIFT_MAX_POSITION   = 331776.0;   //max number of ticks, 27(gear) * 2048() * 6 (3 in per rotation, 18 in fully extended)
+    public static double LIFT_PARKED_CURRENT = 10;           // amount of current to check if arms in parked position
+    public static double LIFT_MAX_POSITION   = -340000.0;   //max number of ticks, 27(gear) * 2048() * 6 (3 in per rotation, 18 in fully extended)
     public static double LIFT_MIN_POSITION   = 0;
     public static double LIFT_CHANGE_POSITION= 3500;         // add or subtract # of ticks to move arms
     public static double LIFT_FEED_FORWARD   = 0.1;   
