@@ -225,9 +225,7 @@ public class Collector {
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            System.out.println("I'm in shoot mode!");
             if ((shooter.isFlywheelReady()) && vision.isTargetLocked()) {
-                System.out.println("I'm shooting for reals!");
                 driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
             }
@@ -245,7 +243,6 @@ public class Collector {
             switch(collectorState) {
 
                 case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
-
                     if (topBall && bottomBall)
                         collectorState = CollectorState.TWO_BALLS;
                     else if (topBall)
@@ -329,7 +326,6 @@ public class Collector {
                     disableCollectMode(arm, powerMonitor);
                 break;
             }
-
         }   
     }
 
