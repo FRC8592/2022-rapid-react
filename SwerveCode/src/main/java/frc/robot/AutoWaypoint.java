@@ -37,8 +37,16 @@ public class AutoWaypoint {
             if (!currentWaypoint.here) {
                 double turnSpeed;
                 if (currentWaypoint.turnTo) {
-                    turnSpeed = autoDrive.turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y),
-                            drivetrain.getYaw());
+                    turnSpeed = 0;
+                    if(currentWaypoint.fetch){
+                        turnSpeed = autoDrive.turnTo(autoDrive.inverseHeading(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y)),
+                        drivetrain.getYaw());
+                    }
+                    else{
+                        turnSpeed = autoDrive.turnTo(autoDrive.inverseHeading(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y)),
+                        drivetrain.getYaw());
+                    }
+                        
                 } else {
                     turnSpeed = 0;
                 }

@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.controller.PIDController;
 
 public class AutoDrive {
 
@@ -36,6 +37,9 @@ public class AutoDrive {
     public double lastMoveTime;
     public double lastTurnTime;
     private Drivetrain drive;
+    private PIDController xVelocityPID;
+    private PIDController yVelocityPID;
+    private PIDController angularVelocityPID;
 
 
     /**
@@ -61,6 +65,10 @@ public class AutoDrive {
         lastMoveTime = moveTimer.get();
         lastTurnTime = turnTimer.get();
         this.drive = drive;
+        //PID Control
+        this.xVelocityPID = new PIDController(Constants.MOVE_TO_VELOCITY_P,Constants.MOVE_TO_VELOCITY_I, Constants.MOVE_TO_VELOCITY_D);
+        this.yVelocityPID = new PIDController(Constants.MOVE_TO_VELOCITY_P,Constants.MOVE_TO_VELOCITY_I, Constants.MOVE_TO_VELOCITY_D);
+        this.angularVelocityPID = new PIDController(Constants.MOVE_TO_VELOCITY_P,Constants.MOVE_TO_VELOCITY_I, Constants.MOVE_TO_VELOCITY_D);
     }
 
     // Needs to be called every update
@@ -79,12 +87,21 @@ public class AutoDrive {
         targetDistance = this.inchesToMeters(targetDistance);
         boolean testNone = false;
         if(vision.targetValid && testNone ){
+        /*
             double distance2 = (targetDistance + AutoDrive.hubRadius)/Math.cos(targetOffsetRotation);
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
             this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
             this.isGoodData = true;
+     */
+            double xCam = targetDistance;
+            double yCam = xCam/Math.tan(targetOffsetRotation);
+            double hCam = Math.sqrt(Math.pow(xCam,2) + Math.pow(yCam,2)) + AutoDrive.hubRadius;
+            this.positionX = -(xCam*Math.cos(targetOffsetRotation + robotRotation));
+            this.positionY = -(xCam*Math.sin(targetOffsetRotation + robotRotation));
+
             Pose2d pose = new Pose2d(this.positionX, this.positionY, new Rotation2d());
             drive.resetPose(pose);
+            this.isGoodData = true;
             
         } else {
             this.isGoodData = true;
@@ -122,62 +139,48 @@ public class AutoDrive {
     public boolean isGood(){
         return this.isGoodData;
     }
-
+    /**
+     * sets angular velocity to a given angle in Yaw using PID control
+     * @param targetAngle
+     * @param currentAngle
+     * @return
+     */
     public double turnTo(double targetAngle, double currentAngle){
+        double target = targetAngle;
         double angleError = targetAngle - currentAngle;
-        double angularVelocity;
-
+       //Need to change Angle SP to find shortest path
+       //Currently in Degrees
         if(angleError > 180){
-            angleError = angleError - 360;
-        }else if(angleError < -180){
-            angleError = angleError + 360;
+           target -= 360;
+        } else if(angleError < -180){
+            target += 360;
         }
-
-
-        double turnTime = turnTimer.get(); 
-        double changeInAngleError = (angleError - lastAngleError)/(turnTime - lastTurnTime);
-        lastAngleError = angleError;  // reset initial angle
-
-        angularVelocity = angleError * KP_angular_velocity + KD_angular_velocity * changeInAngleError;
-            angularVelocity = Math.min(angularVelocity, 1.7);
-            angularVelocity = Math.max(angularVelocity, -1.7);
-
-            return -angularVelocity;
+        double angleVelocity = angularVelocityPID.calculate(currentAngle, target);
+        angleVelocity = Math.max(angleVelocity, -ConfigRun.MAX_TURN_SPEED);
+        angleVelocity = Math.min(angleVelocity, ConfigRun.MAX_TURN_SPEED);
+        return angleVelocity;
     }
-
-    public double[] moveTo(double setPointX, double setPointY){
     
-        if(targetX != setPointX || targetY != setPointY){
-            lastErrorX = 0;
-            lastErrorY = 0;
-
-        }
-
-
+    /**
+     * sets Velocity values using PID control based on setPoint
+     * @param setPointX
+     * @param setPointY
+     * @return
+     */
+    public double[] moveTo(double setPointX, double setPointY){
         double[] velocity = new double [2]; 
         velocity[0] = 0;
-        velocity[1] = 0;
-        
+        velocity[1] = 0;   
         //updatePosition(robotRotation, vision);
         if(isGoodData){
-            double errorX = setPointX - this.positionX;
-            double errorY = setPointY - this.positionY;
 
-            double xtime = moveTimer.get(); 
-            double changeInErrorX = (errorX - lastErrorX)/(xtime - lastMoveTime);
-            lastErrorX = errorX;  // reset initial angle
+            velocity[0] = xVelocityPID.calculate(positionX, setPointX);
+            velocity[0] = Math.max(velocity[0], -ConfigRun.MAX_MOVE_SPEED);
+            velocity[0] = Math.min(velocity[1], ConfigRun.MAX_MOVE_SPEED);
 
-            double changeInErrorY = (errorY - lastErrorY)/(xtime - lastMoveTime);
-            lastErrorY = errorY;  // reset initial angle
-
-            velocity[0] = errorX * KP_velocity_X + KD_velocity_X * changeInErrorX;
-            velocity[0] = Math.min(velocity[0], 0.5);
-            velocity[0] = Math.max(velocity[0], -0.5);
-            velocity[1] = errorY * KP_velocity_Y + KD_velocity_Y * changeInErrorY;
-            velocity[1] = Math.min(velocity[1], 0.5);
-            velocity[1] = Math.max(velocity[1], -0.5);
-            lastMoveTime  = xtime;        // reset initial time
-            
+            velocity[1] = xVelocityPID.calculate(positionY, setPointY);
+            velocity[1] = Math.max(velocity[0], -ConfigRun.MAX_MOVE_SPEED);
+            velocity[1] = Math.min(velocity[1], ConfigRun.MAX_MOVE_SPEED);
         }
         return velocity;
     }
@@ -188,6 +191,10 @@ public class AutoDrive {
 
     public double getHeading(double x, double y){
         return Math.toDegrees(Math.atan2(y - getY(), x - getX()));
+    }
+
+    public double inverseHeading(double heading){
+        return heading + 180;
     }
 
     public double inchesToMeters(double inch){

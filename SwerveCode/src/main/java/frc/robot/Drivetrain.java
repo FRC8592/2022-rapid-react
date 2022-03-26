@@ -183,6 +183,9 @@ public class Drivetrain {
         return m_navx.getYaw();
 
     }
+    public double getYawRad(){
+        return Math.toRadians(m_navx.getYaw());
+    }
 
 
     public Pose2d getCurrentPos(){

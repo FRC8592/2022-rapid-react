@@ -209,4 +209,16 @@ public final class Constants {
 
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
+
+    //AUTO_DRIVE PID CONTROLLER 
+    
+    //Velocity PID
+    public static final double MOVE_TO_VELOCITY_P = .5;
+    public static final double MOVE_TO_VELOCITY_I = 0;
+    public static final double MOVE_TO_VELOCITY_D = 0;
+    //angular Velocity PID
+    public static final double MOVE_TO_ANGULAR_VELOCITY_P = 0.185;;
+    public static final double MOVE_TO_ANGULAR_VELOCITY_I = 0;
+    public static final double MOVE_TO_ANGULAR_VELOCITY_D = 0.022;
+
 }

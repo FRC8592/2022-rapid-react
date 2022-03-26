@@ -32,6 +32,10 @@ public final class ConfigRun {
     public static final double MAX_SWERVE_STEER_CURRENT = 10.0; // Lower values will turn slower
     //
     public static final double JOYSTICK_DEADBAND = 0.01;    // Deadband for translate and rotate joysticks
+    
     public static final boolean WAYPOINT = true;
+
+    public static final double MAX_TURN_SPEED = Math.PI/2; //max turnspeed in radians
+    public static final double MAX_MOVE_SPEED = 1.0; //1.7; //max move speed in meters per second
 
 }
