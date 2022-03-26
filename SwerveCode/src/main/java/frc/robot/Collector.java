@@ -209,9 +209,7 @@ public class Collector {
         // Force shoot does not check for aim lock before shooting
         //
         else if (forceShootMode) {
-            System.out.println("I'm in force shoto mode!");
             if (shooter.isFlywheelReady()) {
-                System.out.println("Oh no!  Someone forced me to shoot!");
                 driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
             }
@@ -227,9 +225,7 @@ public class Collector {
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            System.out.println("I'm in shoot mode!");
             if ((shooter.isFlywheelReady()) && vision.isTargetLocked()) {
-                System.out.println("I'm shooting for reals!");
                 driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
             }
@@ -247,8 +243,6 @@ public class Collector {
             switch(collectorState) {
 
                 case NO_BALLS_LOADED: //when there are no balls loaded we want to run the processing wheels to collect 1 ball
-                    System.out.println("NO_BALLS_LOADED");
-
                     if (topBall && bottomBall)
                         collectorState = CollectorState.TWO_BALLS;
                     else if (topBall)
@@ -267,7 +261,6 @@ public class Collector {
                 break;
             
                 case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to move it to the top while we continue collecting
-                System.out.println("ONE_BALL_BOTTOM");
                     if (!topBall & !bottomBall)
                         collectorState = CollectorState.BALL_XFER_TO_TOP;
                     else if (topBall & bottomBall)
@@ -284,7 +277,6 @@ public class Collector {
                 break;
 
                 case BALL_XFER_TO_TOP:
-                    System.out.println("BALL_XFER_TO_TOP");
                     if (topBall && bottomBall)
                         collectorState = CollectorState.TWO_BALLS;
                     else if (topBall)
@@ -301,7 +293,6 @@ public class Collector {
                 break;
 
                 case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball\
-                    System.out.println("ONE_BALL_TOP");
                     if (topBall && bottomBall)
                         collectorState = CollectorState.TWO_BALLS;
                     else if (topBall)
@@ -322,7 +313,6 @@ public class Collector {
                 break;
 
                 case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
-                System.out.println("TWO_BALLS");
                     if (!topBall && !bottomBall)    // We just shot and the bottom ball is on its way up (i.e. between sensors)
                         collectorState = CollectorState.BALL_XFER_TO_TOP;
                     else if (topBall && !bottomBall)
