@@ -21,19 +21,14 @@ public class Climber {
     // Object variables
     private WPI_TalonFX liftMotorRight;
     private WPI_TalonFX liftMotorLeft;
-
-    // State values
-    private static enum liftStates {LIFT_START, LIFT_UP, LIFT_RAISING, LIFT_DESCENDING, LIFT_DOWN}
     
     // Internal global variables
-    private liftStates liftState;
+    private boolean rightArmParked = false;
+    private boolean leftArmParked  = false;
 
 
     // Configure the lift motors
     public Climber () {
-
-        // Robot should ensure that the lift is in the down position before doing anything else
-        liftState = liftStates.LIFT_START;
 
         // Create the lift motor objects and clear configuration to factory defaults
         liftMotorRight = new WPI_TalonFX(Constants.LIFT_RIGHT_CAN);
@@ -43,19 +38,34 @@ public class Climber {
 
         // Configure voltage compensation and current limiting to both motors
         liftMotorRight.configVoltageCompSaturation(Constants.LIFT_VOLTAGE);
-        liftMotorLeft.configVoltageCompSaturation(Constants.LIFT_VOLTAGE);
         liftMotorRight.enableVoltageCompensation(true);   // Enable voltage compensation
-        liftMotorLeft.enableVoltageCompensation(true);    // Enable voltage compensation
         liftMotorRight.configSupplyCurrentLimit(Constants.LIFT_CURRENT_LIMIT);
+        liftMotorLeft.configVoltageCompSaturation(Constants.LIFT_VOLTAGE);
+        liftMotorLeft.enableVoltageCompensation(true);    // Enable voltage compensation
         liftMotorLeft.configSupplyCurrentLimit(Constants.LIFT_CURRENT_LIMIT);
+
+        // Reduce deadband so that we can use small power levels (The follower [see below] will automatically disable its deadband)
+        liftMotorRight.configNeutralDeadband(Constants.LIFT_DEADBAND);
 
         // Set motors to brake mode when idle
         liftMotorLeft.setNeutralMode(NeutralMode.Brake);
         liftMotorRight.setNeutralMode(NeutralMode.Brake);
 
+
+        // liftMotorLeft.configNominalOutputForward(0);
+        // liftMotorLeft.configNominalOutputReverse(0);
+        // liftMotorLeft.configPeakOutputForward(Constants.LIFT_MAX_POWER);
+        // liftMotorLeft.configPeakOutputReverse(Constants.LIFT_MAX_POWER);
+
         // Configure left motor as a follower to right motor
         liftMotorLeft.follow(liftMotorRight);
         liftMotorLeft.setInverted(InvertType.OpposeMaster);
+
+        // Put a hard limit on motor power to limit potential damage
+        // liftMotorRight.configNominalOutputForward(0);
+        // liftMotorRight.configNominalOutputReverse(0);
+        // liftMotorRight.configPeakOutputForward(Constants.LIFT_MAX_POWER);
+        // liftMotorRight.configPeakOutputReverse(Constants.LIFT_MAX_POWER);
 
         // Ensure the motors are stopped
         liftMotorRight.set(ControlMode.PercentOutput, 0.0);   // Clear any outstanding Motion Magic commands and park the motor
@@ -63,7 +73,7 @@ public class Climber {
         // Configure right motor for motion magic
         liftMotorRight.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
         liftMotorRight.setSelectedSensorPosition(0);
-        liftMotorRight.configNeutralDeadband(Constants.LIFT_DEADBAND);
+        liftMotorRight.configNeutralDeadband(Constants.LIFT_DEADBAND);  // The deadband should be very small to allow precise control
 
          // PID values for raising arm
         liftMotorRight.config_kP(RAISE_PID_SLOT, Constants.LIFT_UP_P);
@@ -84,11 +94,18 @@ public class Climber {
     }
 
     public void reset() {
-        // Robot should ensure that the lift is in the down position before doing anything else
-        liftState = liftStates.LIFT_START;
+        // Assume lift is retracted and reset encoders
+        liftMotorRight.setSelectedSensorPosition(0);
+        liftMotorLeft.setSelectedSensorPosition(0);
 
         // Stop any motor activity
-        liftMotorRight.set(ControlMode.PercentOutput, 0.0); // Left motor follow right motor
+        liftMotorRight.set(ControlMode.PercentOutput, 0.0);
+        liftMotorLeft.set(ControlMode.PercentOutput, 0.0);
+
+        // Have left motor follow right motor
+        // Configure left motor as a follower to right motor
+        liftMotorLeft.follow(liftMotorRight);
+        liftMotorLeft.setInverted(InvertType.OpposeMaster);
     }
 
 
@@ -100,12 +117,59 @@ public class Climber {
 
         SmartDashboard.putNumber("Right cur", liftMotorRight.getStatorCurrent());
         SmartDashboard.putNumber("Left cur", liftMotorLeft.getStatorCurrent());
+        SmartDashboard.putNumber("Lift Power", liftPower);
+        SmartDashboard.putNumber("Lift Pos", liftMotorRight.getSelectedSensorPosition());
 
     }
 
 
-    public void liftPeriodic() {
+    public void liftPeriodic(double liftPower) {
+        double climberPosition   = liftMotorRight.getSelectedSensorPosition();
+        double nextClimbPosition = climberPosition + (liftPower * Constants.LIFT_CHANGE_POSITION);
 
+        if (nextClimbPosition > Constants.LIFT_MAX_POSITION){
+            nextClimbPosition = Constants.LIFT_MAX_POSITION;
+        }
+        if (nextClimbPosition < Constants.LIFT_MIN_POSITION){
+            nextClimbPosition = Constants.LIFT_MIN_POSITION;
+        }
+
+        liftMotorRight.set(ControlMode.MotionMagic, nextClimbPosition, DemandType.ArbitraryFeedForward, Constants.LIFT_FEED_FORWARD);
     }
     
+
+    /**
+     * Put arms into the parked position
+     */
+    public void pullArmDown() {
+
+        // Pull the right and left arms down into the parked position
+        if (!rightArmParked)
+            liftMotorRight.set(ControlMode.PercentOutput, Constants.LIFT_PARK_POWER);
+
+        if (!leftArmParked)
+            liftMotorLeft.set(ControlMode.PercentOutput, -Constants.LIFT_PARK_POWER);
+
+        //
+        // If motor current peaks, it should be stalled at the bottom
+        // Stop motor and reset encoder to 0
+        //
+        if (Math.abs(liftMotorRight.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT) {
+            rightArmParked = true;
+            liftMotorRight.set(ControlMode.PercentOutput, 0.0);
+            liftMotorRight.setSelectedSensorPosition(0);
+        }
+
+        if (Math.abs(liftMotorLeft.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT) {
+            leftArmParked = true;
+            liftMotorLeft.set(ControlMode.PercentOutput, 0.0);
+            liftMotorLeft.setSelectedSensorPosition(0);
+        }
+
+        SmartDashboard.putBoolean("Right Parked", rightArmParked);
+        SmartDashboard.putBoolean("Left Parked", leftArmParked);
+        SmartDashboard.putNumber("R current", liftMotorRight.getStatorCurrent());
+        SmartDashboard.putNumber("L current", liftMotorLeft.getStatorCurrent());
+    }
+
 }
