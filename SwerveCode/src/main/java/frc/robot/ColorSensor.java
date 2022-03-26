@@ -129,9 +129,9 @@ public class ColorSensor{
             currentBallColor = BALL_COLOR.NONE;                             // Only return NONE if a ball is not in position
 
         // Place raw color data on the dashboard for diagnostics
-        SmartDashboard.putNumber("Red", detectedColor.red);                     // Red component of ball color
-        SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
-        SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
+        // SmartDashboard.putNumber("Red", detectedColor.red);                     // Red component of ball color
+        // SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
+        // SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
         SmartDashboard.putString("Ball", currentBallColor.toString());             // Computed ball color
         SmartDashboard.putString("Alliance", allianceColor.toString());
 

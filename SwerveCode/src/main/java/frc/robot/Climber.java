@@ -51,7 +51,6 @@ public class Climber {
         liftMotorLeft.setNeutralMode(NeutralMode.Brake);
         liftMotorRight.setNeutralMode(NeutralMode.Brake);
 
-
         // liftMotorLeft.configNominalOutputForward(0);
         // liftMotorLeft.configNominalOutputReverse(0);
         // liftMotorLeft.configPeakOutputForward(Constants.LIFT_MAX_POWER);
@@ -86,6 +85,8 @@ public class Climber {
         liftMotorRight.config_kI(LOWER_PID_SLOT, Constants.LIFT_DOWN_I);
         liftMotorRight.config_kD(LOWER_PID_SLOT, Constants.LIFT_DOWN_D);
         liftMotorRight.config_kF(LOWER_PID_SLOT, Constants.LIFT_DOWN_F);
+
+        liftMotorRight.selectProfileSlot(RAISE_PID_SLOT, 0);
   
         // Motion Magic parameters
         liftMotorRight.configMotionSCurveStrength(Constants.LIFT_MM_SMOOTHING);
@@ -97,6 +98,10 @@ public class Climber {
         // Assume lift is retracted and reset encoders
         liftMotorRight.setSelectedSensorPosition(0);
         liftMotorLeft.setSelectedSensorPosition(0);
+
+        // Simultaneously, flag the lift as *not* being down all the way
+        rightArmParked = false;
+        leftArmParked  = false;
 
         // Stop any motor activity
         liftMotorRight.set(ControlMode.PercentOutput, 0.0);
@@ -113,12 +118,13 @@ public class Climber {
      * Control the lift
      */
     public void moveLift(double liftPower) {
-        liftMotorRight.set(ControlMode.PercentOutput, liftPower);
+        double position = liftMotorRight.getSelectedSensorPosition();
 
-        SmartDashboard.putNumber("Right cur", liftMotorRight.getStatorCurrent());
-        SmartDashboard.putNumber("Left cur", liftMotorLeft.getStatorCurrent());
-        SmartDashboard.putNumber("Lift Power", liftPower);
-        SmartDashboard.putNumber("Lift Pos", liftMotorRight.getSelectedSensorPosition());
+        if (((liftPower < 0) && (position > Constants.LIFT_MIN_POSITION)) ||
+            ((liftPower > 0) && (position < 0)))
+            liftMotorRight.set(ControlMode.PercentOutput, liftPower);
+        else
+            liftMotorRight.set(ControlMode.PercentOutput, 0);
 
     }
 
@@ -142,14 +148,14 @@ public class Climber {
      * Put arms into the parked position
      */
     public void pullArmDown() {
-
+        liftMotorLeft.setInverted(true);
         // Pull the right and left arms down into the parked position
         if (!rightArmParked)
             liftMotorRight.set(ControlMode.PercentOutput, Constants.LIFT_PARK_POWER);
 
         if (!leftArmParked)
-            liftMotorLeft.set(ControlMode.PercentOutput, -Constants.LIFT_PARK_POWER);
-
+            liftMotorLeft.set(ControlMode.PercentOutput, Constants.LIFT_PARK_POWER);
+            
         //
         // If motor current peaks, it should be stalled at the bottom
         // Stop motor and reset encoder to 0
@@ -167,9 +173,6 @@ public class Climber {
         }
 
         SmartDashboard.putBoolean("Right Parked", rightArmParked);
-        SmartDashboard.putBoolean("Left Parked", leftArmParked);
-        SmartDashboard.putNumber("R current", liftMotorRight.getStatorCurrent());
-        SmartDashboard.putNumber("L current", liftMotorLeft.getStatorCurrent());
+        SmartDashboard.putBoolean("Left Parked",  leftArmParked);
     }
-
 }
