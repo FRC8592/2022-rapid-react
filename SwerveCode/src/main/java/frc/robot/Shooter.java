@@ -62,6 +62,8 @@ public class Shooter{
         flyWheelRight.config_kD(FAST, Constants.FLYWHEEL_FAST_D);
         flyWheelRight.config_kF(FAST, Constants.FLYWHEEL_FAST_F);
 
+        flyWheelRight.selectProfileSlot(FAST, 0);
+
         flyWheelRight.configClosedloopRamp(1);
 
         flyWheelRight.set(ControlMode.Velocity, 0);
@@ -117,7 +119,7 @@ public class Shooter{
         double flywheelRpmActual;
         double flywheelRpmError;
 
-        if (flyWheelRight.getSelectedSensorPosition() > 1500){
+        if (flywheelRpmSet> 1500){
             flyWheelRight.selectProfileSlot(FAST, 0);
         }
         else{
@@ -137,6 +139,8 @@ public class Shooter{
         // Post flywheel parameters to Smart Dashboard
         SmartDashboard.putNumber("Flywheel Actual", flywheelRpmActual);
         SmartDashboard.putBoolean("Flywheel Ready", flywheelReady);
+        SmartDashboard.putNumber("Flywheel Set", flywheelRpmSet);
+
     }
 
 
@@ -167,7 +171,7 @@ public class Shooter{
         int arrayIndex;
         double slope;
 
-        if (range > 0 && range <= 227.9){
+        if (range > 0 && range <= 239.9){
             arrayIndex = (int)((range) / 12);
             slope = (Constants.RANGE_TABLE[arrayIndex+1] - Constants.RANGE_TABLE[arrayIndex]) / (((arrayIndex * 12) + 12) - (arrayIndex * 12));
             flyWheelCalculatedVelocity = Constants.RANGE_TABLE[arrayIndex] + (slope * (range - (arrayIndex * 12)));

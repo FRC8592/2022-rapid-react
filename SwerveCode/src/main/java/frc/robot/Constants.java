@@ -78,20 +78,20 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_FAST_P = 0.17;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_FAST_I = 0.0000001;               // Starting value.  Needs tuning
-    public static double FLYWHEEL_FAST_D = 0.00;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_FAST_F = 0.056;                   // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_P = 0.28;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_I = 0.0;               // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_D = 50.00;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_F = 0.054;                   // Starting value.  Needs tuning
    
     public static double FLYWHEEL_SLOW_P = 0.17;                    // Starting value.  Needs tuning
-    public static double FLYWHEEL_SLOW_I = 0.0000001;               // Starting value.  Needs tuning
+    public static double FLYWHEEL_SLOW_I = 0.0;               // Starting value.  Needs tuning
     public static double FLYWHEEL_SLOW_D = 0.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_SLOW_F = 0.056;                   // Starting value.  Needs tuning
     
     public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
-    public static double RPM_MAX_ERROR   = 5;                 // Allowed RPM error for flywheel
+    public static double RPM_MAX_ERROR   = 8;                 // Allowed RPM error for flywheel
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
@@ -180,7 +180,28 @@ public final class Constants {
     public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 5, 20, 0.5);
 
     // Table for flywheel speeds.  Each entry represents 12" of distance from reflectors
-    public static double RANGE_TABLE[] = {2110, 2110, 2110, 2110, 2110, 2110, 2110, 2110, 2150, 2200, 2300, 2390, 2490, 2640, 2765, 2855, 3100, 3200, 3350, 3400};
+    public static double RANGE_TABLE[] = {
+        2110,  // 0 ft
+        2110,  // 1 ft
+        2110,  // 2 ft
+        2110,  // 3 ft
+        2110,  // 4 ft
+        2110,  // 5 ft
+        2110,  // 6 ft
+        2130,  // 7 ft
+        2150,  // 8 ft
+        2200,  // 9 ft 
+        2300,  // 10 ft
+        2390,  // 11 ft
+        2490,  // 12 ft
+        2615,  // 13 ft
+        2750,  // 14 ft 
+        2855,  // 15 ft 
+        3055,  // 16 ft 
+        3120,  // 17 ft
+        3280,  // 18 ft
+        3400,  // 19 ft
+        3400}; // 20 ft
 
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}

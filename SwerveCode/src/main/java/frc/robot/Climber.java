@@ -23,7 +23,8 @@ public class Climber {
     private WPI_TalonFX liftMotorLeft;
     
     // Internal global variables
-    private boolean armsParked = false;
+    private boolean rightArmParked = false;
+    private boolean leftArmParked  = false;
 
 
     // Configure the lift motors
@@ -137,21 +138,36 @@ public class Climber {
     }
     
 
+    /**
+     * Put arms into the parked position
+     */
     public void pullArmDown() {
-        if (!armsParked){
+
+        // Pull the right and left arms down into the parked position
+        if (!rightArmParked)
             liftMotorRight.set(ControlMode.PercentOutput, Constants.LIFT_PARK_POWER);
-            liftMotorLeft.set(ControlMode.PercentOutput, Constants.LIFT_PARK_POWER);
-        }
-        
-        if ((Math.abs(liftMotorRight.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT) && (Math.abs(liftMotorLeft.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT)){
+
+        if (!leftArmParked)
+            liftMotorLeft.set(ControlMode.PercentOutput, -Constants.LIFT_PARK_POWER);
+
+        //
+        // If motor current peaks, it should be stalled at the bottom
+        // Stop motor and reset encoder to 0
+        //
+        if (Math.abs(liftMotorRight.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT) {
+            rightArmParked = true;
             liftMotorRight.set(ControlMode.PercentOutput, 0.0);
-            liftMotorLeft.set(ControlMode.PercentOutput, 0.0);
             liftMotorRight.setSelectedSensorPosition(0);
-            liftMotorLeft.setSelectedSensorPosition(0);
-            armsParked = true;
         }
 
-        SmartDashboard.putBoolean("Arm Parked", armsParked);
+        if (Math.abs(liftMotorLeft.getStatorCurrent()) > Constants.LIFT_PARKED_CURRENT) {
+            leftArmParked = true;
+            liftMotorLeft.set(ControlMode.PercentOutput, 0.0);
+            liftMotorLeft.setSelectedSensorPosition(0);
+        }
+
+        SmartDashboard.putBoolean("Right Parked", rightArmParked);
+        SmartDashboard.putBoolean("Left Parked", leftArmParked);
         SmartDashboard.putNumber("R current", liftMotorRight.getStatorCurrent());
         SmartDashboard.putNumber("L current", liftMotorLeft.getStatorCurrent());
     }
