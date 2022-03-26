@@ -90,9 +90,6 @@ public class Vision {
     this.cameraHeight  = cameraHeight;
     this.cameraAngle   = cameraAngle;
     this.targetHeight  = targetHeight;
-    this.rotationKP    = rotationKP;
-    this.rotationKI    = rotationKI;
-    this.rotationKD    = rotationKD;
 
     // Creat the PID controller for turning
     turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
@@ -232,7 +229,7 @@ public class Vision {
 
     // If no targetValid, spin in a circle to search
     else {
-      turnSpeed = 2;    // Spin in a circle until a target is located
+      turnSpeed = 5;    // Spin in a circle until a target is located
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
@@ -256,6 +253,9 @@ public class Vision {
     }
 
     SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
+
+    //moveSpeed = 0.0;  // TODO: Remove after testing
+
     return moveSpeed;
   }
 

@@ -78,7 +78,7 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_FAST_P = 0.28;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_P = 0.4;               //0.35;                   // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_I = 0.0;               // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_D = 50.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_F = 0.054;                   // Starting value.  Needs tuning
@@ -95,14 +95,14 @@ public final class Constants {
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
-    public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
+    public static double RING_CLOSE_ERROR      = 5.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 36.75;         // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 30.0;          // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104.0;         // Center of target above ground (inches)
-    public static double TURRET_ROTATE_KP      = 0.12;          // Proportional constant for rotate speed
-    public static double TURRET_ROTATE_KI      = 0.000001;
-    public static double TURRET_ROTATE_KD      = 1.2; 
+    public static double TURRET_ROTATE_KP      = 0.185;          // Proportional constant for rotate speed
+    public static double TURRET_ROTATE_KI      = 0;           //0.000001;
+    public static double TURRET_ROTATE_KD      = 0.022; 
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     // Vision constants for the ball camera
@@ -112,9 +112,9 @@ public final class Constants {
     public static double BALL_CAMERA_HEIGHT    = 35.75;
     public static double BALL_CAMERA_ANGLE     = 30.0;
     public static double BALL_TARGET_HEIGHT    = 4.75;
-    public static double BALL_ROTATE_KP        = 0.15;           // Proportional constant for turret rotate speed
+    public static double BALL_ROTATE_KP        = 0.1; //0.15;           // Proportional constant for turret rotate speed
     public static double BALL_ROTATE_KI        = 0.0;
-    public static double BALL_ROTATE_KD        = 0.015;
+    public static double BALL_ROTATE_KD        = 0.01;   
     public static String LIMELIGHT_BALL        = "limelight-ball";
 
     // Common vision constants

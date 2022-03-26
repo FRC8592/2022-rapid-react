@@ -25,7 +25,7 @@ public final class ConfigRun {
 
     
     public static final double TARGET_LOCKED_SPEED = -4;
-    public static final double TARGET_CLOSE_SPEED  = -2.0;
+    public static final double TARGET_CLOSE_SPEED  = -1.0;
     // Maximum current provided to motors to help limit battery drain and harsh turning & acceleration
     //
     public static final double MAX_SWERVE_DRIVE_CURRENT = 20.0; // Lower values will reduce acceleration
