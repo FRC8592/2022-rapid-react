@@ -52,15 +52,15 @@ public class Power {
         energy  = revPDH.getTotalEnergy();
 
         // Place all parameters onto a dedicated Shuffleboard tab
-        Shuffleboard.selectTab("Power");
+        // Shuffleboard.selectTab("Power");
 
-        SmartDashboard.putNumber("Temperature", temp);
-        SmartDashboard.putNumber("Voltage", voltage);
-        SmartDashboard.putNumber("Current", current);
-        SmartDashboard.putNumber("Power", power);
-        SmartDashboard.putNumber("Energy", energy);
+        // SmartDashboard.putNumber("Temperature", temp);
+        // SmartDashboard.putNumber("Voltage", voltage);
+        // SmartDashboard.putNumber("Current", current);
+        // SmartDashboard.putNumber("Power", power);
+        // SmartDashboard.putNumber("Energy", energy);
 
-        Shuffleboard.selectTab("SmartDashboard");   // Switch back to default
+        // Shuffleboard.selectTab("SmartDashboard");   // Switch back to default
     }
 
 

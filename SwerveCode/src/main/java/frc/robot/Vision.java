@@ -166,7 +166,7 @@ public class Vision {
     //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
-    SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
+    //SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
     //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
 
@@ -252,9 +252,7 @@ public class Vision {
       moveSpeed = ConfigRun.TARGET_CLOSE_SPEED;
     }
 
-    SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
-
-    //moveSpeed = 0.0;  // TODO: Remove after testing
+    // SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
 
     return moveSpeed;
   }
