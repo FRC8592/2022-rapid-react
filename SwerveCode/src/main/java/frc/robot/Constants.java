@@ -91,7 +91,7 @@ public final class Constants {
     public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
-    public static double RPM_MAX_ERROR   = 8;                 // Allowed RPM error for flywheel
+    public static double RPM_MAX_ERROR   = 5;                  // Allowed RPM error for flywheel
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
