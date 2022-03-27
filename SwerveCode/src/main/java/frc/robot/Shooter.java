@@ -164,10 +164,8 @@ public class Shooter{
      * 
      * @param range Range to target (units?)
      */
-    public void computeFlywheelRPM(double range, boolean isAllianceColor) {
-        double flyWheelSetVelocity;
+    public void computeFlywheelRPM(double range, boolean fastMode, boolean flywheelLock) {
         double flyWheelCalculatedVelocity;
-        double flyWheelVelocity;
         int arrayIndex;
         double slope;
 
@@ -176,25 +174,27 @@ public class Shooter{
             slope = (Constants.RANGE_TABLE[arrayIndex+1] - Constants.RANGE_TABLE[arrayIndex]) / (((arrayIndex * 12) + 12) - (arrayIndex * 12));
             flyWheelCalculatedVelocity = Constants.RANGE_TABLE[arrayIndex] + (slope * (range - (arrayIndex * 12)));
             lastRPM = flyWheelCalculatedVelocity;
-
         }
         else {
             flyWheelCalculatedVelocity = lastRPM;
         }
 
         //
-        // Check to see if we have a ball from the opposite alliance ready to shoot.  If so, slow the
-        // flywheel so we can eject it safely.  The top level robot code will trigger the actual
-        // shooting action
+        // Lock the flywheel to a fixed speed if in flywheelLock mode
         //
-        if (!isAllianceColor)
-            flyWheelCalculatedVelocity = Constants.REJECT_FLYWHEEL_SPEED;
+        if (flywheelLock)
+            flyWheelCalculatedVelocity = Constants.RANGE_TABLE[Constants.FLYWHEEL_LOCK_RANGE];
+
+        //
+        // DISABLE FLYWHEEL when in slow mode
+        //
+        if (!fastMode)
+            flyWheelCalculatedVelocity = 0;
 
         // Command the flywheel
         updateFlywheel(flyWheelCalculatedVelocity);     // Send desired RPM to flywheel controller
 
         return;
-
     }
 
 }

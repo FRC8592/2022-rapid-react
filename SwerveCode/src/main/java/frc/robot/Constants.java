@@ -88,7 +88,8 @@ public final class Constants {
     public static double FLYWHEEL_SLOW_D = 0.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_SLOW_F = 0.056;                   // Starting value.  Needs tuning
     
-    public static double STARTING_FLYWHEEL_SPEED = 1000;
+    public static int    FLYWHEEL_LOCK_RANGE = 10;              // Lock in a 10' shooting range
+    public static double STARTING_FLYWHEEL_SPEED = Constants.RANGE_TABLE[FLYWHEEL_LOCK_RANGE];
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
     public static double RPM_MAX_ERROR   = 5;                  // Allowed RPM error for flywheel

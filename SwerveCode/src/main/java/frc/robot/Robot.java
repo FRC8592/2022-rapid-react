@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -12,11 +13,11 @@ import edu.wpi.first.wpilibj.XboxController;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
-import java.rmi.ConnectIOException;
-
-import javax.swing.RowFilter;
+import javax.swing.DropMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,16 +49,18 @@ public class Robot extends TimedRobot {
   public Collector collector;
   public CollectorArmMM arm;
   public Climber climber;
-  public ColorSensor colorSense;
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
 
-  // Toggle for fast/slow mode;
+  // Toggle for fast/slow mode
   private boolean fastMode;
 
-  // Our alliance color (read from color sensor)
-  private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
+  // Toggle to lock flywheel speed\
+  private boolean flywheelLock;
+
+  // Our alliance color
+  private DriverStation.Alliance allianceColor;
 
   // Indicate if Autonmous has run. If not, we have some things to initialize in
   // teleopInit()
@@ -162,26 +165,26 @@ public class Robot extends TimedRobot {
     System.out.println("Auto selected: " + m_autoSelected);
 
     //
-    // Create color sensor object here. The color sensor will lock in the alliance
-    // color
-    // upon creation. The starting ball may not be inside the robot when it is first
-    // powered
-    // up, so we do not want to instantiate the color sensor with other objects in
-    // robotInit()
+    // Get our alliance color from the field control system
     //
-    // Once we have our alliance color, use it to activate the appropirate Limelight
-    // pipeline
-    //
-    colorSense = new ColorSensor();
-    allianceColor = colorSense.getAllianceColor(); // Determine alliance color based on inserted ball
+    allianceColor = DriverStation.getAlliance();
     timer.start();
 
-    // Autonomous probably won't care about fast/slow mode, but configure it anyway
-    fastMode = true;
+    // Ensure we are in fast mode or the flywheel won't operate
+    fastMode     = true;
+    flywheelLock = false;
 
+    //
     // Set up the proper ball-seeking pipeline for our alliance color
-    NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-        .setNumber(allianceColor.ordinal());
+    //
+    // TODO: Clean this up so we're not assuming that Red = 0 and Blue = 1
+    //
+    if (allianceColor == DriverStation.Alliance.Red)
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+                          .setNumber(0);
+    else
+      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+                          .setNumber(1);
 
     // Allow limelight lights to turn back on
     powerMonitor.relayOn();
@@ -197,17 +200,18 @@ public class Robot extends TimedRobot {
     AutonomousHasRun = true;
     autoState = AutoState.TURN;
   }
+
+
   /**
    * Simple 2-ball autonomous routine
    */
   public void autonomousPeriodic() {
-    colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
+    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
     powerMonitor.powerPeriodic();
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13
     // feet away
@@ -267,20 +271,31 @@ public class Robot extends TimedRobot {
     // If we haven't run autonomous, do most of the autonomous initialization here
     //
     if (!AutonomousHasRun) {
-      // Create color sensor object here.
-      colorSense = new ColorSensor();
-      allianceColor = colorSense.getAllianceColor(); // Determine alliance color based on inserted ball
 
+      //
+      // Get our alliance color from the field control system
+      //
+      allianceColor = DriverStation.getAlliance();
+
+      //
       // Set up the proper ball-seeking pipeline for our alliance color
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(allianceColor.ordinal());
+      //
+      // TODO: Clean this up so we're not assuming that Red = 0 and Blue = 1
+      //
+      if (allianceColor == DriverStation.Alliance.Red)
+        NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+                            .setNumber(0);
+      else
+        NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+                            .setNumber(1);
 
       // Zero the gyroscope for field-relative drive
       drive.zeroGyroscope();
     }
 
     // Always start in fast mode
-    fastMode = true;
+    fastMode     = true;
+    flywheelLock = false;
 
     // Turn on lights
     powerMonitor.relayOn();
@@ -309,17 +324,15 @@ public class Robot extends TimedRobot {
     double translateY;
     double rotate;
 
-
     //
     // Call these methods on each update cycle to keep the robot running
     //
-    colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
+    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
     powerMonitor.powerPeriodic();
 
     //
@@ -337,6 +350,7 @@ public class Robot extends TimedRobot {
     // shooterController (Left trigger) : Auto aim at ring
     // shooterController (Right trigger) : Shoot
     // shooterController (Left bumper) : Auto ball fetch
+    // shooterController (Right bumper) : toggle flywheel lock mode
     // shooterController (Right stick Y) : Lift up and down
     // shooterController (A button) : Enter collect mode
     // shooterController (Y button) : Exit collect mode
@@ -349,42 +363,33 @@ public class Robot extends TimedRobot {
     // Unjam the intake by reversing the staging and collector motors. This function
     // has top priority
     //
-    if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
-      collector.unjam(arm);
-    else {
-      //
-      // Check to see if we have a ball for the opposite alliance loaded. If so, get
-      // rid of it by shooting it at low RPM. The flywheel will automaticallly adjust
-      // RPM in this condition, so here we only need to control the collector
-      //
-      if (!colorSense.isAllianceBallColor())
-        collector.forceShoot();
-      else {
-        //
-        // Enter collect mode
-        //
-        if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
-          collector.enableCollectMode(arm, powerMonitor);
-        //
-        // Exit collect mode
-        //
-        else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
-          collector.disableCollectMode(arm, powerMonitor);
+  if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
+    collector.unjam(arm);
+  else {
+    //
+    // Enter collect mode
+    //
+    if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
+      collector.enableCollectMode(arm, powerMonitor);
+    //
+    // Exit collect mode
+    //
+    else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
+      collector.disableCollectMode(arm, powerMonitor);
 
-        //
-        // Shoot ball with aiming automation disabled
-        //
-        if (shooterController.getRightBumper() && shooterController.getBackButton())
-          collector.forceShoot();
+    //
+    // Shoot ball with aiming automation disabled
+    //
+    if (shooterController.getRightBumper() && shooterController.getBackButton())
+      collector.forceShoot();
 
-        //
-        // Shoot ball
-        //
-        else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
-          collector.shoot();
-
-      }
-    }
+    //
+    // Shoot ball
+    //
+    else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
+      collector.shoot();
+  }
+    
 
     //
     // Reset gyroscope zero for field-relative driving
@@ -398,27 +403,33 @@ public class Robot extends TimedRobot {
     // Force Blue alliance
     //
     if (shooterController.getXButtonPressed() && shooterController.getBackButton()) {
-      colorSense.forceBlueAlliance();
-      allianceColor = colorSense.getAllianceColor();
+      allianceColor = DriverStation.Alliance.Blue;
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(allianceColor.ordinal());
+          .setNumber(1);
     }
 
     //
     // Force Red alliance
     //
     if (shooterController.getBButtonPressed() && shooterController.getBackButton()) {
-      colorSense.forceRedAlliance();
-      allianceColor = colorSense.getAllianceColor();
+      allianceColor = DriverStation.Alliance.Red;
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(allianceColor.ordinal());
+          .setNumber(0);
     }
 
     //
     // Toggle fast/slow mode
     //
+    // *** FLYWHEEL IS FORCED TO 0 RPM in Slow Mode
+    //
     if (driverController.getRightBumperPressed())
       fastMode = ! fastMode;
+
+    //
+    // Toggle flywheel lock mode
+    //
+    if (shooterController.getRightBumperPressed())
+      flywheelLock = ! flywheelLock;
 
     //
     // Control for climber
@@ -487,7 +498,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    colorSense = null;
 
     // Turn off lights when not operating. Make more friends and fewer enemies this
     // way.
