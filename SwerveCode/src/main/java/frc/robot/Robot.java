@@ -13,6 +13,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
+import java.rmi.ConnectIOException;
+
+import javax.swing.RowFilter;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -48,6 +53,9 @@ public class Robot extends TimedRobot {
   public Timer timer;
   public AutoWaypoint autoWaypoint;
 
+  // Toggle for fast/slow mode;
+  private boolean fastMode;
+
   // Our alliance color (read from color sensor)
   private ColorSensor.BALL_COLOR allianceColor = ColorSensor.BALL_COLOR.NONE;
 
@@ -73,6 +81,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    fastMode = true;
 
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
@@ -168,6 +178,9 @@ public class Robot extends TimedRobot {
     colorSense = new ColorSensor();
     allianceColor = colorSense.getAllianceColor(); // Determine alliance color based on inserted ball
     timer.start();
+
+    // Autonomous probably won't care about fast/slow mode, but configure it anyway
+    fastMode = true;
 
     // Set up the proper ball-seeking pipeline for our alliance color
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
@@ -274,6 +287,10 @@ public class Robot extends TimedRobot {
       drive.zeroGyroscope();
     }
 
+    // Always start in fast mode
+    fastMode = true;
+
+    // Turn on lights
     powerMonitor.relayOn();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
@@ -294,9 +311,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    double rotatePower;
+    double translatePower;
     double translateX;
     double translateY;
     double rotate;
+
 
     //
     // Call these methods on each update cycle to keep the robot running
@@ -317,6 +337,7 @@ public class Robot extends TimedRobot {
     // driverController (Left trigger) : Auto aim at ring
     // driverController (Right trigger): Shoot
     // driverController (Left bumper) : Auto ball fetch
+    // driverController (Right bumper) : Toggle fast / slow mode
     // driverController (A button) : Enter collect mode
     // driverController (Y button) : Exit collect mode
     // driverController (BACK + X) : Reset current heading to 0
@@ -324,6 +345,7 @@ public class Robot extends TimedRobot {
     // shooterController (Left trigger) : Auto aim at ring
     // shooterController (Right trigger) : Shoot
     // shooterController (Left bumper) : Auto ball fetch
+    // shooterController (Right stick Y) : Lift up and down
     // shooterController (A button) : Enter collect mode
     // shooterController (Y button) : Exit collect mode
     // shooterController (L + R stick) : Unjam
@@ -400,17 +422,36 @@ public class Robot extends TimedRobot {
     }
 
     //
-    // Temporary control for climber
-    //  moves arm up and down, checks that arm doesn't overextend
+    // Toggle fast/slow mode
+    //
+    if (driverController.getRightBumperPressed())
+      fastMode = ! fastMode;
+
+    //
+    // Control for climber
+    // Moves arm up and down, checks that arm doesn't overextend
+    //
     //climber.liftPeriodic(joystickDeadband(shooterController.getRightY()));
     climber.moveLift(joystickDeadband(shooterController.getRightY()));
+
+    //
+    // Select driver power settings based on fast/slow mode
+    //
+    if (fastMode) {
+      rotatePower    = ConfigRun.ROTATE_POWER_FAST;
+      translatePower = ConfigRun.TRANSLATE_POWER_FAST;
+    }
+    else {
+      rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
+      translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+    }
 
     //
     // Read gamepad controls for drivetrain and scale control values
     //
     rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-        * ConfigRun.ROTATE_POWER; // Right joystick
-    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER; // X
+        * rotatePower; // Right joystick
+    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
                                                                                                                         // is
                                                                                                                         // forward
                                                                                                                         // Direction,
@@ -419,7 +460,7 @@ public class Robot extends TimedRobot {
                                                                                                                         // Joystick
                                                                                                                         // is
                                                                                                                         // Y
-    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * ConfigRun.TRANSLATE_POWER;
+    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
     //
     // Activate ring targetting. Robot translate controls are functional while

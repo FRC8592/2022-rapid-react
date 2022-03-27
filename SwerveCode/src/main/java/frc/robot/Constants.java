@@ -91,7 +91,7 @@ public final class Constants {
     public static double STARTING_FLYWHEEL_SPEED = 1000;
     public static double REJECT_FLYWHEEL_SPEED   = 500;
     public static double RPM_TO_TICKS_MS = 2048.0 / 600.0;     // Conversion factor for rotational velocity (RPM to ticks per 100ms)
-    public static double RPM_MAX_ERROR   = 8;                 // Allowed RPM error for flywheel
+    public static double RPM_MAX_ERROR   = 5;                  // Allowed RPM error for flywheel
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
@@ -133,29 +133,32 @@ public final class Constants {
 
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.12;
+    public static double ARM_UP_P = 0.11;
     public static double ARM_UP_I = 0.0001;
-    public static double ARM_UP_D = 0.0;
+    public static double ARM_UP_D = 1.0;
     public static double ARM_UP_F = 0.0;
 
-    public static double ARM_DOWN_P = 0.096;
+    public static double ARM_DOWN_P = 0.12;
     public static double ARM_DOWN_I = 0.0;
     public static double ARM_DOWN_D = 12.0;
     public static double ARM_DOWN_F = 0.0;
 
     public static int    ARM_MM_SMOOTHING   = 1;
-    public static double ARM_MM_CRUISE_VELO = 300;
+    public static double ARM_MM_CRUISE_VELO = 450;
     public static double ARM_MM_ACCEL       = 2400;
     public static double ARM_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER   = 0.10;
+    public static double ARM_STEADY_POWER   = 0.26;
     public static int    ARM_TICKS_180      = 4736;
+
+    // Limit collector arm current
+    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 2, 10, 0.5);
 
     // Constants for the lift
     public static double LIFT_VOLTAGE = 11;     // Maximum controller voltage for voltage compensationble 
-    public static SupplyCurrentLimitConfiguration LIFT_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 40, 60, 0.5);
+    public static SupplyCurrentLimitConfiguration LIFT_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 12, 20, 0.5);
 
     public static int LIFT_TOP_POINT = 0;   // Need to measure top
-    public static double LIFT_UP_P = 0.0;   // Starting value.  Needs tuning
+    public static double LIFT_UP_P = 0.1;   // Starting value.  Needs tuning
     public static double LIFT_UP_I = 0.0;   // Starting value.  Needs tuning
     public static double LIFT_UP_D = 0.0;   // Starting value.  Needs tuning
     public static double LIFT_UP_F = 0.0;   // Starting value.  Needs tuning
@@ -171,17 +174,13 @@ public final class Constants {
     public static double LIFT_DEADBAND       = 0.001;        // Set very small.  Default is 0.04
     public static double LIFT_MAX_POWER      = 0.5;          // Absolute max power allowed for lift motors
     public static double LIFT_STEADY_POWER   = 0.10;  
-    public static double LIFT_PARK_POWER     = 0.05;         // Power to drive arms to parked position
+    public static double LIFT_PARK_POWER     = 0.08;         // Power to drive arms to parked position
     public static int    LIFT_TICKS_180      = 4736;
     public static double LIFT_PARKED_CURRENT = 10;           // amount of current to check if arms in parked position
-    public static double LIFT_MAX_POSITION   = -340000.0;    //max number of ticks, 27(gear) * 2048() * 6 (3 in per rotation, 18 in fully extended)
-    public static double LIFT_MIN_POSITION   = 0;
+    public static double LIFT_MAX_POSITION   = 0.0;          // Max number of ticks, 27(gear) * 2048() * 6 (3" per rotation, 18" fully extended)
+    public static double LIFT_MIN_POSITION   = -340000.0;
     public static double LIFT_CHANGE_POSITION= 3500;         // add or subtract # of ticks to move arms
-    public static double LIFT_FEED_FORWARD   = 0.1;   
-
-
-    // Limit collector arm current to 5A continuous, 20A peak
-    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 2, 10, 0.5);
+    public static double LIFT_FEED_FORWARD   = 0.18;   
 
     // Table for flywheel speeds.  Each entry represents 12" of distance from reflectors
     public static double RANGE_TABLE[] = {

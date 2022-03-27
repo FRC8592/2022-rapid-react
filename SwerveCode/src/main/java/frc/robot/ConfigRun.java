@@ -21,8 +21,10 @@ public final class ConfigRun {
     //
     // Driving Power
     //
-    public static final double TRANSLATE_POWER = 0.2;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER    = 0.2;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double TRANSLATE_POWER_FAST = 1.0;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double ROTATE_POWER_FAST    = 1.0;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double TRANSLATE_POWER_SLOW = 0.1;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double ROTATE_POWER_SLOW    = 0.1;      // Scaling for teleop driving.  1.0 is maximum   
 
     //
     // Joystick configuration
