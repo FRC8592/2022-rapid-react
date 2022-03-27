@@ -144,8 +144,8 @@ public class Robot extends TimedRobot {
 
     if(ConfigRun.WAYPOINT){
       autoWaypoint.addWaypoint(new Waypoint(true));
-      autoWaypoint.addWaypoint(new Waypoint(-3, -2, 0.1, true, false, false, new Timer()));
-      autoWaypoint.addWaypoint(new Waypoint(-6, -1, 0.1, true, true, false, new Timer()));
+      autoWaypoint.addWaypoint(new Waypoint(-3, -2, 0.1, true, false, false));
+      autoWaypoint.addWaypoint(new Waypoint(-6, -1, 0.1, true, true, false));
       //autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
       //autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
     }
