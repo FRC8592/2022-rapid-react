@@ -2,7 +2,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 
-import edu.wpi.first.math.geometry.Rotation2d;
+
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Collector.CollectorState;
 
@@ -27,7 +27,6 @@ public class AutoWaypoint {
         this.autoDrive = locality;
         this.ballVision = ballVision;
     }
-
     public void addWaypoint(Waypoint waypoint) {
         waypoints.add(waypoint);
     }
@@ -94,6 +93,7 @@ public class AutoWaypoint {
 
             } else {
                 currentWaypoint.done = true;
+                drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drivetrain.getGyroscopeRotation()));
             }
 
         } else if (!waypoints.isEmpty()) {
@@ -106,9 +106,8 @@ public class AutoWaypoint {
             waypoints.remove(0);
 
         } else {
-
+            //System.out.println("DONE!");
             drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drivetrain.getGyroscopeRotation()));
-            return;
         }
     }
 }

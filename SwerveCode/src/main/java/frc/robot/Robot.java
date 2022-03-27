@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     fastMode = true;
-
+    
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
     drive = new Drivetrain();
@@ -104,6 +104,7 @@ public class Robot extends TimedRobot {
     climber = new Climber();
     powerMonitor = new Power();
     timer = new Timer();
+    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -150,13 +151,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
 
-    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
+    
 
     if(ConfigRun.WAYPOINT){
       autoWaypoint.addWaypoint(new Waypoint(true));
-      autoWaypoint.addWaypoint(new Waypoint(-locality.inchesToMeters(180), -locality.inchesToMeters(75), 0.1, true, true, true));
-      //autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
-      //autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
+      autoWaypoint.addWaypoint(new Waypoint(-locality.inchesToMeters(180), -locality.inchesToMeters(70), 0.1, true, true, true));
     }
 
     m_autoSelected = m_chooser.getSelected();
