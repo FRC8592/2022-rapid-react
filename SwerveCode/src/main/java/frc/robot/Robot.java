@@ -154,8 +154,7 @@ public class Robot extends TimedRobot {
 
     if(ConfigRun.WAYPOINT){
       autoWaypoint.addWaypoint(new Waypoint(true));
-      autoWaypoint.addWaypoint(new Waypoint(-3, -2, 0.1, true, false, false));
-      autoWaypoint.addWaypoint(new Waypoint(-6, -1, 0.1, true, true, false));
+      autoWaypoint.addWaypoint(new Waypoint(-locality.inchesToMeters(180), -locality.inchesToMeters(75), 0.1, true, true, true));
       //autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
       //autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
     }
@@ -212,6 +211,7 @@ public class Robot extends TimedRobot {
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
     powerMonitor.powerPeriodic();
+    collector.enableCollectMode(arm, powerMonitor);
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13
     // feet away
     // decide state changes
