@@ -68,11 +68,13 @@ public class Robot extends TimedRobot {
 
   // Variables for simple autonomous
   private enum AutoState {
-    TURN, SHOOT, DRIVE
+    AIM, TURN, SHOOT, DRIVE
   };
 
   AutoState autoState = AutoState.TURN;
   private double autoStateTime;
+  private boolean aimLock = false;
+  private double lockTime;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -222,18 +224,33 @@ public class Robot extends TimedRobot {
     }
     else {
       switch (autoState) {
+        case AIM:
+          if (!aimLock)
+            if (visionRing.targetLocked) {
+              aimLock = true;
+              lockTime = timer.get();
+            }
+          else
+            if (timer.get() >= (lockTime + 2))
+              autoState = AutoState.SHOOT;
+          break;
+          
         case TURN:
-          if (visionRing.targetLocked) {
-            autoState = AutoState.DRIVE;
-            autoStateTime = timer.get() + 1.0;
-          }
+          // if (visionRing.targetLocked) {
+          //   autoState = AutoState.DRIVE;
+          //   autoStateTime = timer.get() + 1.0;
+          // }
+
+          autoState = AutoState.DRIVE;
+          autoStateTime = timer.get() + 1.0;
+
           break;
         case SHOOT:
 
           break;
         case DRIVE:
           if (collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {
-            autoState = AutoState.SHOOT;
+            autoState = AutoState.AIM;
 
           }
           break;
@@ -243,15 +260,20 @@ public class Robot extends TimedRobot {
 
       // execute current state
       switch (autoState) {
+        case AIM:
+          drive.drive(
+            ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+          break;
+
         case SHOOT:
           collector.shoot();
           drive.drive(
               ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
           break;
         case TURN:
-          drive.drive(
-              ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-          collector.enableCollectMode(arm, powerMonitor);
+          // drive.drive(
+          //     ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+          // collector.enableCollectMode(arm, powerMonitor);
           break;
         case DRIVE:
           drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(),

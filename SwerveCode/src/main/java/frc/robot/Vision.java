@@ -229,7 +229,7 @@ public class Vision {
 
     // If no targetValid, spin in a circle to search
     else {
-      turnSpeed = 5;    // Spin in a circle until a target is located
+      turnSpeed = -3;    // Spin in a circle until a target is located
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);

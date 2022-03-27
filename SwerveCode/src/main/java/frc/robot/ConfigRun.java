@@ -40,7 +40,7 @@ public final class ConfigRun {
     //
     // Speeds for autonomous ball collecting
     //
-    public static final double TARGET_LOCKED_SPEED = -4;
+    public static final double TARGET_LOCKED_SPEED = -3    ;
     public static final double TARGET_CLOSE_SPEED  = -1.0;
 
 
