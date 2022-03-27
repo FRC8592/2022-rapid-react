@@ -16,7 +16,7 @@ public final class ConfigRun {
     //
     public static final AutoOptions AUTONOMOUS_PROGRAM = AutoOptions.oneBall;
 
-    public static final boolean WAYPOINT = true;
+    public static final boolean WAYPOINT = false;
     
     //
     // Driving Power
