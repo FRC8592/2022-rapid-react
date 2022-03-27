@@ -16,7 +16,7 @@ public class AutoDrive {
     double robotRotation;                        //angle of robot relative to global field  
     private static double hubCenterX;            //xcenter of the hub in field coordinates
     private static double hubCenterY;            //ycenter of the hub in field coordinates
-    private static double hubRadius = .6;
+    private static double hubRadius = .609;
     private boolean isGoodData;                  //can this data be used
     private double positionX;                    //position in x;
     private double positionY;                    //position in y;
@@ -86,20 +86,20 @@ public class AutoDrive {
         double robotRotationRad = Math.toRadians(robotRotation);
         targetDistance = this.inchesToMeters(targetDistance);
         boolean testNone = false;
-        if(vision.targetValid && testNone ){
-        /*
-            double distance2 = (targetDistance + AutoDrive.hubRadius)/Math.cos(targetOffsetRotation);
+        if(vision.targetLocked){
+            double distance2 = ((targetDistance)/Math.cos(targetOffsetRotation)) + (AutoDrive.hubRadius - .177);
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
-            this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
-            this.isGoodData = true;
-     */
+            this.positionY = distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
+            //this.isGoodData = true;
+    /*
             double xCam = targetDistance;
-            double yCam = xCam/Math.tan(targetOffsetRotation);
-            double hCam = Math.sqrt(Math.pow(xCam,2) + Math.pow(yCam,2)) + AutoDrive.hubRadius;
-            this.positionX = -(xCam*Math.cos(targetOffsetRotation + robotRotation));
-            this.positionY = -(xCam*Math.sin(targetOffsetRotation + robotRotation));
-
+            double yCam = xCam/(Math.tan(targetOffsetRotation));
+            double hCam = Math.sqrt(Math.pow(xCam,2.0) + Math.pow(yCam,2.0)) + AutoDrive.hubRadius;
+            this.positionX = -hCam*Math.cos(targetOffsetRotation + robotRotationRad);
+            this.positionY = -hCam*Math.sin(targetOffsetRotation + robotRotationRad);
+            */
             Pose2d pose = new Pose2d(this.positionX, this.positionY, new Rotation2d());
+        
             drive.resetPose(pose);
             this.isGoodData = true;
             
@@ -155,9 +155,14 @@ public class AutoDrive {
         } else if(angleError < -180){
             target += 360;
         }
+        angleError = target - currentAngle;
+      
         double angleVelocity = angularVelocityPID.calculate(currentAngle, target);
         angleVelocity = Math.max(angleVelocity, -ConfigRun.MAX_TURN_SPEED);
         angleVelocity = Math.min(angleVelocity, ConfigRun.MAX_TURN_SPEED);
+        if(Math.abs(angleError) < 5){
+            angleVelocity = 0;
+        }
         return angleVelocity;
     }
     
@@ -176,10 +181,10 @@ public class AutoDrive {
 
             velocity[0] = xVelocityPID.calculate(positionX, setPointX);
             velocity[0] = Math.max(velocity[0], -ConfigRun.MAX_MOVE_SPEED);
-            velocity[0] = Math.min(velocity[1], ConfigRun.MAX_MOVE_SPEED);
+            velocity[0] = Math.min(velocity[0], ConfigRun.MAX_MOVE_SPEED);
 
             velocity[1] = xVelocityPID.calculate(positionY, setPointY);
-            velocity[1] = Math.max(velocity[0], -ConfigRun.MAX_MOVE_SPEED);
+            velocity[1] = Math.max(velocity[1], -ConfigRun.MAX_MOVE_SPEED);
             velocity[1] = Math.min(velocity[1], ConfigRun.MAX_MOVE_SPEED);
         }
         return velocity;
@@ -193,8 +198,8 @@ public class AutoDrive {
         return Math.toDegrees(Math.atan2(y - getY(), x - getX()));
     }
 
-    public double inverseHeading(double heading){
-        return heading + 180;
+    public double inverseHeading(double x, double y){
+        return Math.toDegrees(Math.atan2(getY() - y, getX()- x));
     }
 
     public double inchesToMeters(double inch){

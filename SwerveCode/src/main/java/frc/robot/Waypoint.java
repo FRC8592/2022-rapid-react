@@ -13,9 +13,9 @@ public class Waypoint {
     public boolean here;
     public boolean done;
     public boolean init;
-    public Timer waypointTimer;
+    public boolean firstLock;
 
-    public Waypoint(double x, double y, double acceptRadius, boolean turnTo,boolean fetch, boolean shoot, Timer waypointTimer){
+    public Waypoint(double x, double y, double acceptRadius, boolean turnTo,boolean fetch, boolean shoot){
         this.x = x;
         this.y = y;
         this.acceptRadius = acceptRadius;
@@ -23,7 +23,19 @@ public class Waypoint {
         this.shoot = shoot;
         this.here = false;
         this.done = false;
-        this.waypointTimer = waypointTimer;
         this.fetch = fetch;
+        firstLock = false;
+    }
+    public Waypoint(boolean firstLock){
+        this.firstLock = true;
+        this.x = 0;
+        this.y = 0;
+        this.acceptRadius = 0;
+        this.turnTo = false;
+        this.shoot = false;
+        this.here = false;
+        this.done = false;
+        this.fetch = false;
+
     }
 }

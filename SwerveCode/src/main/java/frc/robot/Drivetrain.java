@@ -185,6 +185,7 @@ public class Drivetrain {
     }
     public double getYawRad(){
         return Math.toRadians(m_navx.getYaw());
+        
     }
 
 
@@ -210,7 +211,6 @@ public class Drivetrain {
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
         getSMState(m_backRightModule));
-
     }
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));

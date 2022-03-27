@@ -95,19 +95,19 @@ public final class Constants {
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
-    public static double RING_CLOSE_ERROR      = 5.0;           // Closing in on acceptable error
+    public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 36.75;         // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 30.0;          // Limelight camera angle above horizontal (degrees)
     public static double RING_TARGET_HEIGHT    = 104.0;         // Center of target above ground (inches)
-    public static double TURRET_ROTATE_KP      = 0.185;          // Proportional constant for rotate speed
-    public static double TURRET_ROTATE_KI      = 0;           //0.000001;
+    public static double TURRET_ROTATE_KP      = 0.185;         // Proportional constant for rotate speed
+    public static double TURRET_ROTATE_KI      = 0;             //0.000001;
     public static double TURRET_ROTATE_KD      = 0.022; 
     public static String LIMELIGHT_RING        = "limelight-ring";
 
     // Vision constants for the ball camera
-    public static double BALL_LOCK_ERROR       = 2.0;
-    public static double BALL_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
+    public static double BALL_LOCK_ERROR       = 3.0;
+    public static double BALL_CLOSE_ERROR      = 5.0;           // Closing in on acceptable error
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 35.75;
     public static double BALL_CAMERA_ANGLE     = 30.0;
@@ -168,20 +168,20 @@ public final class Constants {
     public static int    LIFT_MM_SMOOTHING   = 1;
     public static double LIFT_MM_CRUISE_VELO = 150000;
     public static double LIFT_MM_ACCEL       = 600000;
-    public static double LIFT_DEADBAND       = 0.001;       // Set very small.  Default is 0.04
-    public static double LIFT_MAX_POWER      = 0.5;         // Absolute max power allowed for lift motors
+    public static double LIFT_DEADBAND       = 0.001;        // Set very small.  Default is 0.04
+    public static double LIFT_MAX_POWER      = 0.5;          // Absolute max power allowed for lift motors
     public static double LIFT_STEADY_POWER   = 0.10;  
-    public static double LIFT_PARK_POWER     = 0.10;       // Power to drive arms to parked position
+    public static double LIFT_PARK_POWER     = 0.05;         // Power to drive arms to parked position
     public static int    LIFT_TICKS_180      = 4736;
     public static double LIFT_PARKED_CURRENT = 10;           // amount of current to check if arms in parked position
-    public static double LIFT_MAX_POSITION   = -340000.0;   //max number of ticks, 27(gear) * 2048() * 6 (3 in per rotation, 18 in fully extended)
+    public static double LIFT_MAX_POSITION   = -340000.0;    //max number of ticks, 27(gear) * 2048() * 6 (3 in per rotation, 18 in fully extended)
     public static double LIFT_MIN_POSITION   = 0;
     public static double LIFT_CHANGE_POSITION= 3500;         // add or subtract # of ticks to move arms
     public static double LIFT_FEED_FORWARD   = 0.1;   
 
 
     // Limit collector arm current to 5A continuous, 20A peak
-    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 5, 20, 0.5);
+    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 2, 10, 0.5);
 
     // Table for flywheel speeds.  Each entry represents 12" of distance from reflectors
     public static double RANGE_TABLE[] = {
@@ -213,11 +213,11 @@ public final class Constants {
     //AUTO_DRIVE PID CONTROLLER 
     
     //Velocity PID
-    public static final double MOVE_TO_VELOCITY_P = .5;
+    public static final double MOVE_TO_VELOCITY_P = 15;
     public static final double MOVE_TO_VELOCITY_I = 0;
     public static final double MOVE_TO_VELOCITY_D = 0;
     //angular Velocity PID
-    public static final double MOVE_TO_ANGULAR_VELOCITY_P = 0.185;;
+    public static final double MOVE_TO_ANGULAR_VELOCITY_P = 0.185;
     public static final double MOVE_TO_ANGULAR_VELOCITY_I = 0;
     public static final double MOVE_TO_ANGULAR_VELOCITY_D = 0.022;
 

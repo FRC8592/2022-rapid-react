@@ -50,7 +50,6 @@ public class CollectorArmMM {
         armMotor.configNeutralDeadband(Constants.ARM_DEADBAND);
 
         // Set current limits so we don't burn up if we get stalled
-        //
         armMotor.configSupplyCurrentLimit(Constants.ARM_CURRENT_LIMIT);
 
         // PID values for raising arm
@@ -113,10 +112,9 @@ public class CollectorArmMM {
     public void update(){
         double feedForward = calcFeedForward(armMotor.getSelectedSensorPosition());
     
-        SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
-        SmartDashboard.putString("Arm State", armState.toString());
-        SmartDashboard.putNumber("Feed Forward", feedForward);
-        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        // SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
+        // SmartDashboard.putString("Arm State", armState.toString());
+        // SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
@@ -142,9 +140,7 @@ public class CollectorArmMM {
                 
                 // Raise arm to position 0
                 armMotor.selectProfileSlot(RAISE_PID_SLOT, 0);
-                armMotor.set(ControlMode.MotionMagic, 100, DemandType.ArbitraryFeedForward, feedForward);
-
-               
+                armMotor.set(ControlMode.MotionMagic, 100, DemandType.ArbitraryFeedForward, feedForward);               
                 break;
 
             case ARM_DESCENDING:
@@ -154,7 +150,6 @@ public class CollectorArmMM {
 
                 if (armMotor.getSelectedSensorPosition() <= Constants.BALL_SET_POINT)
                     armState = armStates.ARM_COLLECTING;
-
                 break;
 
             case ARM_COLLECTING:
@@ -166,11 +161,8 @@ public class CollectorArmMM {
                     armMotor.set(ControlMode.PercentOutput, -0.05);
                 else
                     armMotor.set(ControlMode.PercentOutput, -0.10);
-
                 break;
-
         }
-
     }
     
 }

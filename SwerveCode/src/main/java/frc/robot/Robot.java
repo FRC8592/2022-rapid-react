@@ -141,10 +141,13 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
 
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
+
     if(ConfigRun.WAYPOINT){
-      autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.5, false, true, false, new Timer()));
-      autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
-      autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
+      autoWaypoint.addWaypoint(new Waypoint(true));
+      autoWaypoint.addWaypoint(new Waypoint(-3, -2, 0.1, true, false, false, new Timer()));
+      autoWaypoint.addWaypoint(new Waypoint(-6, -1, 0.1, true, true, false, new Timer()));
+      //autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
+      //autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
     }
 
     m_autoSelected = m_chooser.getSelected();
@@ -199,7 +202,12 @@ public class Robot extends TimedRobot {
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13
     // feet away
     // decide state changes
+   /* if(true){
+      double turnSpeed = locality.turnTo(90, drive.getGyroscopeRotation().getDegrees());
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, turnSpeed, drive.getGyroscopeRotation()));
+    } */
     if (ConfigRun.WAYPOINT) {
+      System.out.println("WAY POINT");
         autoWaypoint.runWaypoint();
     }
     else {
@@ -360,7 +368,6 @@ public class Robot extends TimedRobot {
         //
         else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
           collector.shoot();
-
       }
     }
 

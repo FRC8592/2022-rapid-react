@@ -33,18 +33,30 @@ public class AutoWaypoint {
     }
 
     public void runWaypoint() {
+    //    System.out.println("RUNNING!");
         if (currentWaypoint != null && !currentWaypoint.done) {
-            if (!currentWaypoint.here) {
-                double turnSpeed;
+            if (currentWaypoint.firstLock){
+                System.out.println("TARGETING!");
+                drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
+                ringVision.turnRobot(), drivetrain.getGyroscopeRotation()));
+
+                if(ringVision.targetLocked){
+                    currentWaypoint.done = true;
+                    System.out.println("LOCKED");
+                }
+            }
+            else if (!currentWaypoint.here) {
+                System.out.println("Not Here!");
+                double turnSpeed = 0;
                 if (currentWaypoint.turnTo) {
                     turnSpeed = 0;
                     if(currentWaypoint.fetch){
-                        turnSpeed = autoDrive.turnTo(autoDrive.inverseHeading(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y)),
-                        drivetrain.getYaw());
+                        turnSpeed = autoDrive.turnTo(autoDrive.inverseHeading(currentWaypoint.x, currentWaypoint.y),
+                        drivetrain.getGyroscopeRotation().getDegrees());
                     }
                     else{
-                        turnSpeed = autoDrive.turnTo(autoDrive.inverseHeading(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y)),
-                        drivetrain.getYaw());
+                        turnSpeed = autoDrive.turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y),
+                        drivetrain.getGyroscopeRotation().getDegrees());
                     }
                         
                 } else {
@@ -56,7 +68,6 @@ public class AutoWaypoint {
                 double[] velocity = autoDrive.moveTo(currentWaypoint.x, currentWaypoint.y);
                 drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(velocity[0], velocity[1], turnSpeed,
                         drivetrain.getGyroscopeRotation()));
-
             } else if (currentWaypoint.fetch) {
                 System.out.println("ROBOT fetch!");
                 drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(ballVision.moveTowardsTarget(), 0,
