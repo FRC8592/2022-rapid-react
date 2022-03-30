@@ -170,6 +170,7 @@ public class Robot extends TimedRobot {
     // Get our alliance color from the field control system
     //
     allianceColor = DriverStation.getAlliance();
+    // allianceColor = DriverStation.Alliance.Red;
     timer.start();
 
     // Ensure we are in fast mode or the flywheel won't operate
@@ -298,7 +299,7 @@ public class Robot extends TimedRobot {
       //
       // Get our alliance color from the field control system
       //
-      allianceColor = DriverStation.getAlliance();
+      //allianceColor = DriverStation.getAlliance();
 
       //
       // Set up the proper ball-seeking pipeline for our alliance color

@@ -134,21 +134,21 @@ public final class Constants {
 
     // Collector arm
     public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.11;
+    public static double ARM_UP_P = 0.13;
     public static double ARM_UP_I = 0.0001;
-    public static double ARM_UP_D = 1.0;
+    public static double ARM_UP_D = 2.5;
     public static double ARM_UP_F = 0.0;
 
     public static double ARM_DOWN_P = 0.12;
     public static double ARM_DOWN_I = 0.0;
-    public static double ARM_DOWN_D = 12.0;
+    public static double ARM_DOWN_D = 4.0;
     public static double ARM_DOWN_F = 0.0;
 
     public static int    ARM_MM_SMOOTHING   = 1;
     public static double ARM_MM_CRUISE_VELO = 450;
     public static double ARM_MM_ACCEL       = 2400;
     public static double ARM_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER   = 0.26;
+    public static double ARM_STEADY_POWER   = 0.28;
     public static int    ARM_TICKS_180      = 4736;
 
     // Limit collector arm current

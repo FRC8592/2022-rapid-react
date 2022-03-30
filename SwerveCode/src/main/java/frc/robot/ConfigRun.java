@@ -34,13 +34,13 @@ public final class ConfigRun {
     //
     // Maximum current provided to motors to help limit battery drain and harsh turning & acceleration
     //
-    public static final double MAX_SWERVE_DRIVE_CURRENT = 20.0; // Lower values will reduce acceleration
+    public static final double MAX_SWERVE_DRIVE_CURRENT = 15.0; // Lower values will reduce acceleration
     public static final double MAX_SWERVE_STEER_CURRENT = 10.0; // Lower values will turn slower
 
     //
     // Speeds for autonomous ball collecting
     //
-    public static final double TARGET_LOCKED_SPEED = -3    ;
+    public static final double TARGET_LOCKED_SPEED = -2    ;
     public static final double TARGET_CLOSE_SPEED  = -1.0;
 
 

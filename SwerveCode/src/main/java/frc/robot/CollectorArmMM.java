@@ -158,9 +158,9 @@ public class CollectorArmMM {
                 // to push down on the ball we are probably collecting
                 //
                 if (armMotor.getSelectedSensorPosition() < Constants.BALL_SET_POINT)
-                    armMotor.set(ControlMode.PercentOutput, -0.05);
-                else
                     armMotor.set(ControlMode.PercentOutput, -0.10);
+                else
+                    armMotor.set(ControlMode.PercentOutput, -0.20);
                 break;
         }
     }
