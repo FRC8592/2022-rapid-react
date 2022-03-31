@@ -178,6 +178,10 @@ public class Drivetrain {
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
 
+    public boolean isGyroscopeRotating(){
+        return m_navx.isRotating();
+    }
+
 
     public double getYaw(){
         return m_navx.getYaw();

@@ -66,15 +66,6 @@ public class Robot extends TimedRobot {
   // teleopInit()
   private boolean AutonomousHasRun = false;
 
-  // Variables for simple autonomous
-  private enum AutoState {
-    AIM, TURN, SHOOT, DRIVE
-  };
-
-  AutoState autoState = AutoState.TURN;
-  private double autoStateTime;
-  private boolean aimLock = false;
-  private double lockTime;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -109,6 +100,7 @@ public class Robot extends TimedRobot {
     climber = new Climber();
     powerMonitor = new Power();
     timer = new Timer();
+    autonomous = new Autonomous();
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -171,7 +163,6 @@ public class Robot extends TimedRobot {
     //
     allianceColor = DriverStation.getAlliance();
     // allianceColor = DriverStation.Alliance.Red;
-    timer.start();
 
     // Ensure we are in fast mode or the flywheel won't operate
     fastMode     = true;
@@ -201,7 +192,6 @@ public class Robot extends TimedRobot {
 
     // Indicate to teleop that autonomous has run
     AutonomousHasRun = true;
-    autoState = AutoState.TURN;
   }
 
 
@@ -209,80 +199,7 @@ public class Robot extends TimedRobot {
    * Simple 2-ball autonomous routine
    */
   public void autonomousPeriodic() {
-    visionBall.updateVision();
-    visionRing.updateVision();
-    locality.updatePosition(drive.getYaw(), visionRing);
-    arm.update();
-    collector.ballControl(arm, shooter, visionRing, powerMonitor);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
-    powerMonitor.powerPeriodic();
-   
-    // Turn to ring, then shoot, then drive backwards until we see the ring being 13
-    // feet away
-    // decide state changes
-    if (ConfigRun.WAYPOINT) {
-        autoWaypoint.runWaypoint();
-    }
-    else {
-      switch (autoState) {
-        case AIM:
-          if (!aimLock)
-            if (visionRing.targetLocked) {
-              aimLock = true;
-              lockTime = timer.get();
-            }
-          else
-            if (timer.get() >= (lockTime + 2))
-              autoState = AutoState.SHOOT;
-          break;
-          
-        case TURN:
-          // if (visionRing.targetLocked) {
-          //   autoState = AutoState.DRIVE;
-          //   autoStateTime = timer.get() + 1.0;
-          // }
-
-          autoState = AutoState.DRIVE;
-          autoStateTime = timer.get() + 1.0;
-
-          break;
-        case SHOOT:
-
-          break;
-        case DRIVE:
-          if (collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {
-            autoState = AutoState.AIM;
-
-          }
-          break;
-      }
-
-      SmartDashboard.putString("autoState", autoState.name());
-
-      // execute current state
-      switch (autoState) {
-        case AIM:
-          drive.drive(
-            ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-          break;
-
-        case SHOOT:
-          collector.shoot();
-          drive.drive(
-              ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-          break;
-        case TURN:
-          // drive.drive(
-          //     ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-          // collector.enableCollectMode(arm, powerMonitor);
-          break;
-        case DRIVE:
-          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(),
-              Rotation2d.fromDegrees(0)));
-          collector.enableCollectMode(arm, powerMonitor);
-          break;
-      }
-    }
+    autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
   }
 
   /**
