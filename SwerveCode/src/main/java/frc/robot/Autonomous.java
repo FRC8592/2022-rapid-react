@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Collector.CollectorState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,9 +33,13 @@ public Autonomous() {
     autoState = AutoState.START;
   }
 
-  /**
-   * Simple 2-ball autonomous routine
-   */
+  public boolean shoot(Drivetrain drive, Collector collector, Vision visionRing){
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+    collector.shoot();
+
+    return collector.getCollectorState() == CollectorState.NO_BALLS_LOADED;
+  }
+  
   public void autonomousPeriodic(Vision visionBall, Vision visionRing, CollectorArmMM arm, AutoDrive locality, Collector collector, Shooter shooter, Power powerMonitor, Drivetrain drive) {
     
     visionBall.updateVision();
@@ -74,6 +79,7 @@ public Autonomous() {
        break;
        // shoot first 2 balls
        case SHOOT_A:
+       shoot(drive, collector, visionRing); //todo add switch
        break;
        //collector is up, and turn 200 degrees before moving
        case TURN_AWAY_FROM_A:
@@ -91,9 +97,10 @@ public Autonomous() {
 
        // fetch B-ball or C-ball
        case FETCH_BC:
-       break
+       break;
        //shoot 2 balls
        case SHOOT_BC:
+       shoot(drive, collector, visionRing); //todo add switch
        break;
        //move robot to D-ball
        case MOVE_B_TO_D:
@@ -103,6 +110,7 @@ public Autonomous() {
        break;
        //shoot ball D
        case SHOOT_D:
+       shoot(drive, collector, visionRing); //todo add switch
        break;
        //assuming we already see G, collect G
        case FETCH_G:
@@ -112,6 +120,7 @@ public Autonomous() {
        break;
        //shoot G-ball
        case SHOOT G:
+       shoot(drive, collector, visionRing); //todo add switch
        break;
 
        //starting in START_C position and collect C-ball
