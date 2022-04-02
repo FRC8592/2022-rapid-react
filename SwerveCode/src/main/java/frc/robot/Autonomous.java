@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class Autonomous{
 
     private enum AutoState {
-       START, TURN_TO_A,FETCH_A,SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_D, FETCH_D, MOVE_D_TO_G, FETCH_BC, SHOOT_BC, MOVE_B_TO_D, MOVE_CLOSER_D, SHOOT_D, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, 
+       START, TURN_TO_A,FETCH_A,SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_D, FETCH_D, MOVE_D_TO_G, FETCH_BC, SHOOT_BC, MOVE_B_TO_D, MOVE_CLOSER_D, SHOOT_D, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, SHOOT_C 
       };
     
     private enum FieldLocation{
@@ -75,73 +75,120 @@ public Autonomous() {
        }
        */
        break;
+
        // fetch A-ball slowly
        case FETCH_A:
-       this.fetch(drive, collector, visionBall);
+        if(this.fetch(drive, collector, visionBall)){
+          autoState = AutoState.SHOOT_A;
+        }
        break;
        // shoot first 2 balls
        case SHOOT_A:
        if(shoot(drive, collector, visionRing)){
-         autoState = AutoState.FETCH_A;
+         autoState = AutoState.TURN_AWAY_FROM_A;
        } //todo add switch
       
        break;
+
        //collector is up, and turn 200 degrees before moving
        case TURN_AWAY_FROM_A:
-        this.turnTo(200, drive, locality);
+        if(this.turnTo(200, drive, locality)){
+          autoState = AutoState.MOVE_A_TO_D;
+        }
        break;
+
        //move robot to D-ball
        case MOVE_A_TO_D:
-       this.driveTo(0, 0, true, locality, drive);
+        if(this.driveTo(0, 0, true, locality, drive)){
+          autoState = AutoState.FETCH_D;
+        }
        break;
+
        //collect D, slowly
        case FETCH_D:
-       this.fetch(drive, collector, visionBall);
+        if(this.fetch(drive, collector, visionBall)){
+          autoState = AutoState.MOVE_D_TO_G;
+        }
        break;
+
        //use moveto() to move robot to no-man's land
        // G-ball = Gavin's ball
        case MOVE_D_TO_G:
-       this.driveTo(0, 0, true, locality, drive);
+       if(this.driveTo(0, 0, true, locality, drive)){
+          autoState = AutoState.FETCH_G;
+       }
        break;
 
        // fetch B-ball or C-ball
        case FETCH_BC:
-       this.fetch(drive, collector, visionBall);
+        this.fetch(drive, collector, visionBall);
        break;
+
        //shoot 2 balls
        case SHOOT_BC:
-       shoot(drive, collector, visionRing); //todo add switch
+        if(shoot(drive, collector, visionRing)){
+          autoState = AutoState.MOVE_B_TO_D;
+        } //todo add switch
+        //? why do we need a switch
        break;
+
        //move robot to D-ball
        case MOVE_B_TO_D:
-       this.driveTo(0, 0, true, locality, drive);
+       if(this.driveTo(0, 0, true, locality, drive)){
+         autoState = AutoState.MOVE_CLOSER_D;
+       }
 
        break;
+
        //move closer to hub to shoot ball D
        case MOVE_CLOSER_D:
-       this.moveCloserToRing(drive, visionRing, locality);
+        if(this.moveCloserToRing(drive, visionRing, locality)){
+          autoState = AutoState.SHOOT_D;
+        }
        break;
+
        //shoot ball D
        case SHOOT_D:
-       shoot(drive, collector, visionRing); //todo add switch
+       if(shoot(drive, collector, visionRing)){
+          autoState = AutoState.FETCH_G;
+       } //todo add switch
+       //what switch? 
        break;
+
        //assuming we already see G, collect G
        case FETCH_G:
-       this.fetch(drive, collector, visionBall);
+       if(this.fetch(drive, collector, visionBall)){
+          autoState = AutoState.MOVE_CLOSER_G;
+       }
        break;
+
        //move closer to hub to shoot G-ball
        case MOVE_CLOSER_G:
-        this.moveCloserToRing(drive, visionRing, locality);
+        if(this.moveCloserToRing(drive, visionRing, locality)){
+          autoState = AutoState.SHOOT_G;
+        }
        break;
+
        //shoot G-ball
        case SHOOT_G:
-       shoot(drive, collector, visionRing); //todo add switch
+       if(shoot(drive, collector, visionRing)){
+          autoState = AutoState.STOP;
+       } //todo add switch
        break;
 
        //starting in START_C position and collect C-ball
        case FETCH_C:
-       this.fetch(drive, collector, visionBall);
+        if(this.fetch(drive, collector, visionBall)){
+          autoState = AutoState.SHOOT_C;
+        }
        break;
+
+       case SHOOT_C:
+       if(this.shoot(drive, collector, visionBall)){
+        autoState = AutoState.STOP;
+      }
+       break;
+
        //stop autonomous
        case STOP:
        this.stopDrive(drive);
