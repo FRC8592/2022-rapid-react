@@ -209,4 +209,11 @@ public final class Constants {
 
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
+
+
+    //Constants for our starting position in autonomous
+    public static final double POSITION_ERROR = 10; //error for checking what position we are in at the start of the match in degrees
+    public static final double ANGLE_A = -1;
+    public static final double ANGLE_B = -1;
+    public static final double ANGLE_C = -1;
 }

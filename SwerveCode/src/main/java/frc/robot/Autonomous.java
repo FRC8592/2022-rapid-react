@@ -10,12 +10,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class Autonomous{
 
     private enum AutoState {
-       START, TURN_TO_A,FETCH_A,SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_D, FETCH_D, MOVE_D_TO_G, FETCH_BC, SHOOT_BC, MOVE_B_TO_D, MOVE_CLOSER_D, SHOOT_D, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, SHOOT_C 
+       START, TURN_TO_A,FETCH_A,SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_D, FETCH_D, MOVE_D_TO_G, FETCH_B, SHOOT_B, MOVE_B_TO_D, MOVE_CLOSER_D, SHOOT_D, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, SHOOT_C 
       };
     
     private enum FieldLocation{
       START_A, START_B, START_C,
     };
+
+    
 
     public Timer timer;
     
@@ -35,7 +37,10 @@ public Autonomous() {
 
   public boolean shoot(Drivetrain drive, Collector collector, Vision visionRing){
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-    collector.shoot();
+
+    if(!drive.isGyroscopeRotating()){
+      collector.shoot();
+    }
 
     return collector.getCollectorState() == CollectorState.NO_BALLS_LOADED;
   }
@@ -61,16 +66,18 @@ public Autonomous() {
         case START:
         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
       if (!drive.isGyroscopeRotating()){
+
         
-        autoState = AutoState.FETCH_A;
       }
       break;
+
       // turn robot towards A-ball
        case TURN_TO_A:
        collector.enableCollectMode(arm, powerMonitor);
        this.fetch(drive, collector, visionBall);
+
        /*
-       if (collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {  //Don't quite know why we need this since we have a shoot state
+       if (collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {  //Don't quite know why we need this since we have a shoot state for the bigger overall state machine and we have a shoot method  
        // autoState = AutoState.SHOOT; This 
        }
        */
@@ -99,7 +106,7 @@ public Autonomous() {
 
        //move robot to D-ball
        case MOVE_A_TO_D:
-        if(this.driveTo(0, 0, true, locality, drive)){
+        if(this.driveTo(0, 0, true, locality, drive)){ //edit values when testing
           autoState = AutoState.FETCH_D;
         }
        break;
@@ -114,18 +121,18 @@ public Autonomous() {
        //use moveto() to move robot to no-man's land
        // G-ball = Gavin's ball
        case MOVE_D_TO_G:
-       if(this.driveTo(0, 0, true, locality, drive)){
+       if(this.driveTo(0, 0, true, locality, drive)){ //edit values when testing
           autoState = AutoState.FETCH_G;
        }
        break;
 
        // fetch B-ball or C-ball
-       case FETCH_BC:
+       case FETCH_B:
         this.fetch(drive, collector, visionBall);
        break;
 
        //shoot 2 balls
-       case SHOOT_BC:
+       case SHOOT_B:
         if(shoot(drive, collector, visionRing)){
           autoState = AutoState.MOVE_B_TO_D;
         } //todo add switch
@@ -287,10 +294,6 @@ public Autonomous() {
       isInRange = true;
       this.stopDrive(drive);
     }
-
-    
-    
-
     return isInRange;
   }
 
