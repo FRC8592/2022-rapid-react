@@ -242,14 +242,14 @@ public class Vision {
   // Drive towards the target.  We move forward before fully locked
   // This should probably be updated to base speed on distance from the target
   //
-  public double moveTowardsTarget() {
+  public double moveTowardsTarget(double targetLockedSpeed, double targetCloseSpeed) {
     double moveSpeed = 0.0; // Default is 0 speed
 
     if (targetLocked == true){
-      moveSpeed = ConfigRun.TARGET_LOCKED_SPEED;
+      moveSpeed = targetLockedSpeed;
     }
     else if (targetClose == true){
-      moveSpeed = ConfigRun.TARGET_CLOSE_SPEED;
+      moveSpeed = targetCloseSpeed;
     }
 
     // SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);

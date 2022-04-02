@@ -51,8 +51,8 @@ public class AutoWaypoint {
 
             } else if (currentWaypoint.fetch) {
                 System.out.println("ROBOT fetch!");
-                drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(ballVision.moveTowardsTarget(), 0,
-                ballVision.turnRobot(), Rotation2d.fromDegrees(0)));
+                //drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(ballVision.moveTowardsTarget(), 0,
+                //ballVision.turnRobot(), Rotation2d.fromDegrees(0)));
                 currentWaypoint.fetch = collector.getCollectorState() == collectorState;
                 System.out.println("ROBOT fetch!: " + currentWaypoint.fetch);
 
