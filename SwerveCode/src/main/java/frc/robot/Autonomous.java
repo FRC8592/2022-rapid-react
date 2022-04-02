@@ -17,7 +17,7 @@ public class Autonomous{
       START_A, START_B, START_C,
     };
 
-    
+    private FieldLocation startingPosition;
 
     public Timer timer;
     
@@ -66,8 +66,17 @@ public Autonomous() {
         case START:
         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
       if (!drive.isGyroscopeRotating()){
-
-        
+        if (Math.abs((drive.getGyroscopeRotation().getDegrees()) - (Constants.ANGLE_A)) <= Constants.POSITION_ERROR){
+          startingPosition = FieldLocation.START_A;
+          autoState = AutoState.FETCH_A;
+        }
+        if (Math.abs((drive.getGyroscopeRotation().getDegrees()) - (Constants.ANGLE_B)) <= Constants.POSITION_ERROR){
+          startingPosition = FieldLocation.START_B;
+          autoState = AutoState.FETCH_B;
+          
+        if (Math.abs((drive.getGyroscopeRotation().getDegrees()) - (Constants.ANGLE_C)) <= Constants.POSITION_ERROR){
+          startingPosition = FieldLocation.START_C;
+          autoState = AutoState.FETCH_C;
       }
       break;
 
@@ -87,6 +96,9 @@ public Autonomous() {
        case FETCH_A:
         if(this.fetch(drive, collector, visionBall)){
           autoState = AutoState.SHOOT_A;
+        }
+        else {
+          autoState = AutoState.;
         }
        break;
        // shoot first 2 balls
