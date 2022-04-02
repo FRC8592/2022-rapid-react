@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Collector.CollectorState;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -483,5 +484,64 @@ public class Robot extends TimedRobot {
       return inputJoystick;
     }
   }
+
+  public boolean turnTo(double angle){
+    boolean isDoneTurn = false;
+    double turnSpeed = locality.turnTo(angle, drive.getGyroscopeRotation().getDegrees());
+
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, turnSpeed, drive.getGyroscopeRotation()));
+
+    if(drive.getGyroscopeRotation().getDegrees() != angle){
+      isDoneTurn = false;
+    }else{
+      isDoneTurn = true;
+    }
+
+    return isDoneTurn;
+  }
+
+  public boolean fetch(){
+    boolean isDoneFetch = false;
+    CollectorState collectorState = collector.getCollectorState();
+
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0,
+          visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
+
+    if(collector.getCollectorState() == collectorState){
+      isDoneFetch = true;
+    }else{
+      isDoneFetch = false;
+    }
+
+    return isDoneFetch;
+  }
+
+  public boolean driveTo(double xPosition, double yPosition, boolean turnTo){
+    boolean isDoneDrive;
+    double[] velocity = locality.moveTo(xPosition, yPosition);
+    double turnSpeed;
+    double distance = locality.getDistance(xPosition, yPosition);
+
+    if(turnTo){
+      turnSpeed = locality.turnTo(locality.getHeading(xPosition, yPosition), drive.getGyroscopeRotation().getDegrees());
+    } else {
+      turnSpeed = 0;
+    }
+
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(velocity[0], velocity[1], turnSpeed,drive.getGyroscopeRotation()));
+
+    if(distance <= 0.2){
+      isDoneDrive = true;
+    }else{
+      isDoneDrive = false;
+    }
+
+    return isDoneDrive;
+  }
+
+  public void stopDrive(){
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,0,drive.getGyroscopeRotation()));
+  }
+  
 
 }
