@@ -63,7 +63,7 @@ public Autonomous() {
       switch (autoState) {
         //determine location in field (starting position)
         //locking onto ring, based on angle that robot is facing, it will determine the robot's location
-        case START:
+      case START:
         collector.enableCollectMode(arm, powerMonitor);
         moveCloserToRing(drive, visionRing, locality, 0, 0);
         if (!drive.isGyroscopeRotating()){
@@ -97,7 +97,6 @@ public Autonomous() {
        if(shoot(drive, collector, visionRing)){
          autoState = AutoState.TURN_AWAY_FROM_A;
        } //todo add switch
-      
        break;
 
        //collector is up, and turn 200 degrees before moving
@@ -131,7 +130,9 @@ public Autonomous() {
 
        // fetch B-ball or C-ball
        case FETCH_B:
-        this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED);
+        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
+          autoState = AutoState.SHOOT_B;
+        }
        break;
 
        //shoot 2 balls
