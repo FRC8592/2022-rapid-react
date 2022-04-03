@@ -245,6 +245,7 @@ public class Robot extends TimedRobot {
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
     
     collector.reset();
+    arm.reset();
     shooter.reset();
     visionRing.reset();
     visionBall.reset();

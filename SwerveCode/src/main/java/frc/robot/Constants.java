@@ -133,26 +133,26 @@ public final class Constants {
     public static double SHOOT_STAGING_POWER      =  1.0;
 
     // Collector arm
-    public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.13;
+    public static int BALL_SET_POINT = -2925;   // -3025 is bottom
+    public static double ARM_UP_P = 0.12;
     public static double ARM_UP_I = 0.0001;
-    public static double ARM_UP_D = 2.5;
+    public static double ARM_UP_D = 15.0; //2.5;
     public static double ARM_UP_F = 0.0;
 
     public static double ARM_DOWN_P = 0.12;
     public static double ARM_DOWN_I = 0.0;
-    public static double ARM_DOWN_D = 4.0;
+    public static double ARM_DOWN_D = 10.0;
     public static double ARM_DOWN_F = 0.0;
 
     public static int    ARM_MM_SMOOTHING   = 1;
-    public static double ARM_MM_CRUISE_VELO = 450;
+    public static double ARM_MM_CRUISE_VELO = 500;
     public static double ARM_MM_ACCEL       = 2400;
     public static double ARM_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER   = 0.28;
+    public static double ARM_STEADY_POWER   = 0.20;
     public static int    ARM_TICKS_180      = 4736;
 
     // Limit collector arm current
-    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 2, 10, 0.5);
+    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 10, 40, 0.5);
 
     // Constants for the lift
     public static double LIFT_VOLTAGE = 11;     // Maximum controller voltage for voltage compensationble 
