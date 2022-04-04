@@ -129,7 +129,7 @@ public Autonomous() {
 
        //collect D, slowly
        case FETCH_D:
-        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.ONE_BALL_BOTTOM, -1)){
+        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, -1)){
           autoState = AutoState.MOVE_CLOSER_D;
         }
        break;
@@ -153,7 +153,7 @@ public Autonomous() {
        case SHOOT_B:
         if(shoot(drive, collector, visionRing, -1)){
           timer.reset();
-          autoState = AutoState.MOVE_B_TO_D;
+          autoState = AutoState.FETCH_G;
         } //todo add switch
         //? why do we need a switch
        break;
@@ -186,7 +186,7 @@ public Autonomous() {
        case SHOOT_D:
        if(shoot(drive, collector, visionRing, -1)){
           timer.reset();
-          autoState = AutoState.MOVE_TO_G;
+          autoState = AutoState.STOP;
        }
        
         //todo add switch
@@ -206,8 +206,9 @@ public Autonomous() {
 
        //assuming we already see G, collect G
        case FETCH_G:
+       collector.enableCollectMode(arm, powerMonitor);
        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.ONE_BALL_BOTTOM, -1)){
-          autoState = AutoState.MOVE_CLOSER_G;
+          autoState = AutoState.FETCH_D;
        }
        break;
 
@@ -332,7 +333,7 @@ public Autonomous() {
 
   public boolean moveCloserToRing(Drivetrain drive, Vision visionRing, AutoDrive locality, double targetLockedSpeed, double targetCloseSpeed, double direction){
     boolean isInRange = false;
-    if(visionRing.distanceToTarget() >= locality.metersToInches(3) && visionRing.isTargetValid()){
+    if(visionRing.distanceToTarget() >= locality.metersToInches(4) && visionRing.isTargetValid()){
       isInRange = false;
 
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-visionRing.moveTowardsTarget(targetLockedSpeed, targetCloseSpeed), 0,
