@@ -50,6 +50,7 @@ public class Collector {
         // Invert collector motors so that positive power drives balls inward
         processing.setInverted(true);
         staging.setInverted(true);
+        collectorTimer.start();
     }
 
 

@@ -452,7 +452,7 @@ public class Robot extends TimedRobot {
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode")
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
-
+    
   }
 
   /** This function is called periodically when disabled. */

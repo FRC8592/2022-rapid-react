@@ -214,7 +214,7 @@ public class Vision {
    * 
    * @return
    */
-  public double turnRobot(double direction){
+  public double turnRobot(double visionSearchSpeed){
 
     // Stop turning if we have locked onto the target within acceptable angular error
     if (targetValid && targetLocked) {
@@ -231,7 +231,7 @@ public class Vision {
 
     // If no targetValid, spin in a circle to search
     else {
-      turnSpeed = direction * ConfigRun.VISION_SEARCH_SPEED;    // Spin in a circle until a target is located
+      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
