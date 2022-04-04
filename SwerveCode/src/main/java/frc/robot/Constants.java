@@ -96,7 +96,7 @@ public final class Constants {
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
-    public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
+    public static double RING_CLOSE_ERROR      = 6.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 36.75;         // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 30.0;          // Limelight camera angle above horizontal (degrees)
@@ -108,7 +108,7 @@ public final class Constants {
 
     // Vision constants for the ball camera
     public static double BALL_LOCK_ERROR       = 3.0;
-    public static double BALL_CLOSE_ERROR      = 5.0;           // Closing in on acceptable error
+    public static double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 35.75;
     public static double BALL_CAMERA_ANGLE     = 30.0;
