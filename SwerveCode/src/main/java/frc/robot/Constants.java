@@ -179,7 +179,8 @@ public final class Constants {
     public static int    LIFT_TICKS_180      = 4736;
     public static double LIFT_PARKED_CURRENT = 10;           // amount of current to check if arms in parked position
     public static double LIFT_MAX_POSITION   = 0.0;          // Max number of ticks, 27(gear) * 2048() * 6 (3" per rotation, 18" fully extended)
-    public static double LIFT_MIN_POSITION   = -340000.0;
+    public static double LIFT_RIGHT_MIN_POSITION = -395000.0;
+    public static double LIFT_LEFT_MIN_POSITION  = -395000.0;
     public static double LIFT_CHANGE_POSITION= 3500;         // add or subtract # of ticks to move arms
     public static double LIFT_FEED_FORWARD   = 0.18;   
 
