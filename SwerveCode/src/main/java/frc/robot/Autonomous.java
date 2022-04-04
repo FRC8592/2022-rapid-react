@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class Autonomous{
 
     private enum AutoState {
-       START, FETCH_A, SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_D, FETCH_D, MOVE_D_TO_G, FETCH_B, SHOOT_B, MOVE_B_TO_D, MOVE_CLOSER_D, SHOOT_D, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, FINAL_SHOOT 
+       START, FETCH_A, SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_D, FETCH_D, MOVE_D_TO_G, FETCH_B, SHOOT_B, MOVE_B_TO_D, MOVE_CLOSER_D, SHOOT_D, MOVE_TO_G, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, FINAL_SHOOT 
       };
     
     private enum FieldLocation{
@@ -29,24 +29,35 @@ public class Autonomous{
     private double lockTime;
 
 public Autonomous() {
+    timer = new Timer();
     timer.start();
 
+    
 
     autoState = AutoState.START;
   }
 
-  public boolean shoot(Drivetrain drive, Collector collector, Vision visionRing){
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
+  public void resetAuto(){
+    autoState = AutoState.START;
+  }
 
-    if(!drive.isGyroscopeRotating()){
+  public boolean shoot(Drivetrain drive, Collector collector, Vision visionRing, double direction){
+    boolean isDoneShooting = false;
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, visionRing.turnRobot(direction), drive.getGyroscopeRotation()));
       collector.shoot();
+  
+
+    if(collector.getCollectorState() ==  CollectorState.NO_BALLS_LOADED){
+      isDoneShooting = true;
+    }else{
+      isDoneShooting = false;
     }
 
-    return collector.getCollectorState() == CollectorState.NO_BALLS_LOADED;
+    return isDoneShooting;
   }
   
   public void autonomousPeriodic(Vision visionBall, Vision visionRing, CollectorArmMM arm, AutoDrive locality, Collector collector, Shooter shooter, Power powerMonitor, Drivetrain drive) {
-    
+    SmartDashboard.putString("Auto State", autoState.toString());
     visionBall.updateVision();
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
@@ -65,17 +76,20 @@ public Autonomous() {
         //locking onto ring, based on angle that robot is facing, it will determine the robot's location
       case START:
         collector.enableCollectMode(arm, powerMonitor);
-        moveCloserToRing(drive, visionRing, locality, 0, 0);
-        if (!drive.isGyroscopeRotating()){
-          if (Math.abs((drive.getGyroscopeRotation().getDegrees()) - (Constants.ANGLE_A)) <= Constants.POSITION_ERROR){
+        SmartDashboard.putBoolean("Gyroscope Rotating?", drive.isGyroscopeRotating());
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
+          visionRing.turnRobot(1), drive.getGyroscopeRotation()));
+
+        if (visionRing.isTargetLocked()){
+          if (Math.abs(drive.getAutoHeading() - (Constants.ANGLE_A)) <= Constants.POSITION_ERROR){
             startingPosition = FieldLocation.START_A;
             autoState = AutoState.FETCH_A;
           }
-          if (Math.abs((drive.getGyroscopeRotation().getDegrees()) - (Constants.ANGLE_B)) <= Constants.POSITION_ERROR){
+           else if (Math.abs(drive.getAutoHeading() - (Constants.ANGLE_B)) <= Constants.POSITION_ERROR){
             startingPosition = FieldLocation.START_B;
             autoState = AutoState.FETCH_B;
           }
-          if (Math.abs((drive.getGyroscopeRotation().getDegrees()) - (Constants.ANGLE_C)) <= Constants.POSITION_ERROR){
+          else if (Math.abs(drive.getAutoHeading() - (Constants.ANGLE_C)) <= Constants.POSITION_ERROR){
             startingPosition = FieldLocation.START_C;
             autoState = AutoState.FETCH_C;
           }
@@ -84,7 +98,7 @@ public Autonomous() {
 
        // fetch A-ball slowly
        case FETCH_A:
-        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
+        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, -1)){
           autoState = AutoState.SHOOT_A;
         }
         else {
@@ -94,7 +108,7 @@ public Autonomous() {
 
        // shoot first 2 balls
        case SHOOT_A:
-       if(shoot(drive, collector, visionRing)){
+       if(shoot(drive, collector, visionRing, -1)){
          autoState = AutoState.TURN_AWAY_FROM_A;
        } //todo add switch
        break;
@@ -115,8 +129,8 @@ public Autonomous() {
 
        //collect D, slowly
        case FETCH_D:
-        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
-          autoState = AutoState.MOVE_D_TO_G;
+        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.ONE_BALL_BOTTOM, -1)){
+          autoState = AutoState.MOVE_CLOSER_D;
         }
        break;
 
@@ -130,14 +144,15 @@ public Autonomous() {
 
        // fetch B-ball or C-ball
        case FETCH_B:
-        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
+        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, -1)){
           autoState = AutoState.SHOOT_B;
         }
        break;
 
        //shoot 2 balls
        case SHOOT_B:
-        if(shoot(drive, collector, visionRing)){
+        if(shoot(drive, collector, visionRing, -1)){
+          timer.reset();
           autoState = AutoState.MOVE_B_TO_D;
         } //todo add switch
         //? why do we need a switch
@@ -145,57 +160,86 @@ public Autonomous() {
 
        //move robot to D-ball
        case MOVE_B_TO_D:
-       if(this.driveTo(0, 0, true, locality, drive)){
-         autoState = AutoState.MOVE_CLOSER_D;
+        collector.enableCollectMode(arm, powerMonitor);
+       if(timer.get() > 1){
+          this.stopDrive(drive);
+         autoState = AutoState.FETCH_D;
+       } else {
+         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1, 0, 0, Rotation2d.fromDegrees(0)));
        }
 
        break;
 
        //move closer to hub to shoot ball D
        case MOVE_CLOSER_D:
-        if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
+       if(!visionRing.isTargetValid()){
+       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
+          visionRing.turnRobot(1), drive.getGyroscopeRotation()));
+       }else{
+        if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, 12)){
           autoState = AutoState.SHOOT_D;
         }
+       }
        break;
 
        //shoot ball D
        case SHOOT_D:
-       if(shoot(drive, collector, visionRing)){
-          autoState = AutoState.FETCH_G;
-       } //todo add switch
+       if(shoot(drive, collector, visionRing, -1)){
+          timer.reset();
+          autoState = AutoState.MOVE_TO_G;
+       }
+       
+        //todo add switch
        //what switch? 
        break;
 
+       case MOVE_TO_G:
+        collector.enableCollectMode(arm, powerMonitor);
+        if(timer.get() > 1.5){
+          this.stopDrive(drive);
+         autoState = AutoState.FETCH_G;
+       } else {
+         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1, 0, 0, Rotation2d.fromDegrees(0)));
+       }
+       break;
+       
+
        //assuming we already see G, collect G
        case FETCH_G:
-       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
+       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.ONE_BALL_BOTTOM, -1)){
           autoState = AutoState.MOVE_CLOSER_G;
        }
        break;
 
        //move closer to hub to shoot G-ball
        case MOVE_CLOSER_G:
-        if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
-          autoState = AutoState.SHOOT_G;
+       if(!visionRing.isTargetValid()){
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
+           visionRing.turnRobot(1), drive.getGyroscopeRotation()));
+        }else{
+         if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, 1)){
+           autoState = AutoState.SHOOT_G;
+         }
         }
+        
        break;
 
        //shoot G-ball
        case SHOOT_G:
-       if(shoot(drive, collector, visionRing)){
+       if(shoot(drive, collector, visionRing, -1)){
           autoState = AutoState.STOP;
        } //todo add switch
        break;
 
        //starting in START_C position and collect C-ball
        case FETCH_C:
-        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED)){
+        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, -1)){
           autoState = AutoState.FINAL_SHOOT;
         }
        break;
 
        case FINAL_SHOOT:
-       if(this.shoot(drive, collector, visionBall)){
+       if(this.shoot(drive, collector, visionBall, -1)){
         autoState = AutoState.STOP;
       }
        break;
@@ -271,12 +315,11 @@ public Autonomous() {
     }
   
 
-  public boolean fetch(Drivetrain drive, Collector collector, Vision visionBall, double targetLockedSpeed, double targetCloseSpeed){
+  public boolean fetch(Drivetrain drive, Collector collector, Vision visionBall, double targetLockedSpeed, double targetCloseSpeed, CollectorState collectorState, double direction){
     boolean isDoneFetch = false;
-    CollectorState collectorState = collector.getCollectorState();
 
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(targetLockedSpeed, targetCloseSpeed), 0,
-          visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
+          visionBall.turnRobot(direction), Rotation2d.fromDegrees(0)));
 
     if(collector.getCollectorState() == collectorState){
       isDoneFetch = true;
@@ -287,13 +330,13 @@ public Autonomous() {
     return isDoneFetch;
   }
 
-  public boolean moveCloserToRing(Drivetrain drive, Vision visionRing, AutoDrive locality, double targetLockedSpeed, double targetCloseSpeed){
+  public boolean moveCloserToRing(Drivetrain drive, Vision visionRing, AutoDrive locality, double targetLockedSpeed, double targetCloseSpeed, double direction){
     boolean isInRange = false;
-    if(visionRing.distanceToTarget() >= locality.metersToInches(3)){
+    if(visionRing.distanceToTarget() >= locality.metersToInches(3) && visionRing.isTargetValid()){
       isInRange = false;
 
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionRing.moveTowardsTarget(targetLockedSpeed, targetCloseSpeed), 0,
-      visionRing.turnRobot(), Rotation2d.fromDegrees(0)));
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-visionRing.moveTowardsTarget(targetLockedSpeed, targetCloseSpeed), 0,
+      visionRing.turnRobot(direction), Rotation2d.fromDegrees(0)));
     }else{
       isInRange = true;
       this.stopDrive(drive);

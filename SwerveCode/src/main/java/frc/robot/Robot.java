@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
+import java.rmi.registry.LocateRegistry;
+
 import javax.swing.DropMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -147,7 +149,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
+    autonomous.resetAuto();
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
     if(ConfigRun.WAYPOINT){
       autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.5, false, true, false, new Timer()));
@@ -201,6 +203,7 @@ public class Robot extends TimedRobot {
    */
   public void autonomousPeriodic() {
     autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
+    SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
   }
 
   /**
@@ -266,7 +269,7 @@ public class Robot extends TimedRobot {
     double translateX;
     double translateY;
     double rotate;
-
+    SmartDashboard.putNumber("Gyroscope Value2", drive.getAutoHeading());
     //
     // Call these methods on each update cycle to keep the robot running
     //
@@ -415,7 +418,7 @@ public class Robot extends TimedRobot {
     //
     if ((driverController.getLeftTriggerAxis() > 0.1) || (shooterController.getLeftTriggerAxis() > 0.1)) {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          visionRing.turnRobot(), drive.getGyroscopeRotation()));
+          visionRing.turnRobot(-1), drive.getGyroscopeRotation()));
     }
 
     //
@@ -424,7 +427,7 @@ public class Robot extends TimedRobot {
     //
     else if (driverController.getLeftBumper() || shooterController.getLeftBumper()) {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED), 0,
-          visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
+          visionBall.turnRobot(-1), Rotation2d.fromDegrees(0)));
     }
 
     //

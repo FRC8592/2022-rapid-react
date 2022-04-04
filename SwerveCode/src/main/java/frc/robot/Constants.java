@@ -78,7 +78,7 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_FAST_P = 0.4;               //0.35;                   // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_P = 0.6;               //0.35;                   // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_I = 0.0;               // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_D = 50.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_F = 0.054;                   // Starting value.  Needs tuning
@@ -212,8 +212,8 @@ public final class Constants {
 
 
     //Constants for our starting position in autonomous
-    public static final double POSITION_ERROR = 10; //error for checking what position we are in at the start of the match in degrees
-    public static final double ANGLE_A = -1;
-    public static final double ANGLE_B = -1;
-    public static final double ANGLE_C = -1;
+    public static final double POSITION_ERROR = 20; //error for checking what position we are in at the start of the match in degrees
+    public static final double ANGLE_A = -82;
+    public static final double ANGLE_B = -55;
+    public static final double ANGLE_C = 24;
 }
