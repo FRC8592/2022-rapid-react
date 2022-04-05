@@ -2,6 +2,9 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import java.util.stream.Collectors;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -202,6 +205,7 @@ public class Collector {
         if (unjamMode) {
             driveProcessingWheels(Constants.UNJAM_PROCESSING_POWER);
             driveStagingWheels(Constants.UNJAM_STAGING_POWER);
+            collectorState = CollectorState.NO_BALLS_LOADED;
             unjamMode = false;  // Clear mode.  Will be overwritten if unjam button is held down
         }
 
