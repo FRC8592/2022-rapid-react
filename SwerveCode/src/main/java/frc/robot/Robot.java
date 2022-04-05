@@ -394,7 +394,13 @@ public class Robot extends TimedRobot {
     else {
       rotatePower    = ConfigRun.ROTATE_POWER_SLOW;
       translatePower = ConfigRun.TRANSLATE_POWER_SLOW;
+      collector.disableCollectMode(arm, powerMonitor);
     }
+
+    //
+    // Display robot heading
+    //
+    SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
 
     //
     // Read gamepad controls for drivetrain and scale control values

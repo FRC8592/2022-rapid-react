@@ -118,7 +118,7 @@ public class CollectorArmMM {
     
         // SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
         // SmartDashboard.putString("Arm State", armState.toString());
-        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        // SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
