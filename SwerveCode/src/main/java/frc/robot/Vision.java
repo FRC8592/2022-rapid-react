@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 import java.util.LinkedList;
 
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
+
 public class Vision {
   
   //constants passed in during initilization 
@@ -212,7 +214,7 @@ public class Vision {
    * 
    * @return
    */
-  public double turnRobot(){
+  public double turnRobot(double visionSearchSpeed){
 
     // Stop turning if we have locked onto the target within acceptable angular error
     if (targetValid && targetLocked) {
@@ -229,7 +231,7 @@ public class Vision {
 
     // If no targetValid, spin in a circle to search
     else {
-      turnSpeed = -2;    // Spin in a circle until a target is located
+      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
@@ -264,6 +266,10 @@ public class Vision {
    */
   public boolean isTargetLocked() {
     return targetLocked;
+  }
+
+  public boolean isTargetValid(){
+    return targetValid;
   }
 
 

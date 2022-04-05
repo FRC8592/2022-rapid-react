@@ -21,10 +21,10 @@ public final class ConfigRun {
     //
     // Driving Power
     //
-    public static final double TRANSLATE_POWER_FAST = 0.25; //1.0;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER_FAST    = 0.25; //1.0;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double TRANSLATE_POWER_SLOW = 0.1;      // Scaling for teleop driving.  1.0 is maximum
-    public static final double ROTATE_POWER_SLOW    = 0.1;      // Scaling for teleop driving.  1.0 is maximum   
+    public static final double TRANSLATE_POWER_FAST = 1.0;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double ROTATE_POWER_FAST    = 1.0;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double TRANSLATE_POWER_SLOW = 0.25;      // Scaling for teleop driving.  1.0 is maximum
+    public static final double ROTATE_POWER_SLOW    = 0.25;      // Scaling for teleop driving.  1.0 is maximum   
 
     //
     // Joystick configuration
@@ -40,8 +40,9 @@ public final class ConfigRun {
     //
     // Speeds for autonomous ball collecting
     //
-    public static final double TARGET_LOCKED_SPEED = -2    ;
-    public static final double TARGET_CLOSE_SPEED  = -1.0;
+    public static final double TARGET_LOCKED_SPEED = -4    ;
+    public static final double TARGET_CLOSE_SPEED  = -4   ;
+    public static final double VISION_SEARCH_SPEED = 4;
 
 
 

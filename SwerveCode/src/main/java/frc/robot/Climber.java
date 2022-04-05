@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
+
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 
@@ -57,8 +60,9 @@ public class Climber {
         // liftMotorLeft.configPeakOutputReverse(Constants.LIFT_MAX_POWER);
 
         // Configure left motor as a follower to right motor
-        liftMotorLeft.follow(liftMotorRight);
-        liftMotorLeft.setInverted(InvertType.OpposeMaster);
+        //liftMotorLeft.follow(liftMotorRight);
+        //liftMotorLeft.setInverted(InvertType.OpposeMaster);
+        liftMotorLeft.setInverted(true);
 
         // Put a hard limit on motor power to limit potential damage
         // liftMotorRight.configNominalOutputForward(0);
@@ -68,11 +72,16 @@ public class Climber {
 
         // Ensure the motors are stopped
         liftMotorRight.set(ControlMode.PercentOutput, 0.0);   // Clear any outstanding Motion Magic commands and park the motor
+        liftMotorLeft.set(ControlMode.PercentOutput, 0.0);
 
         // Configure right motor for motion magic
         liftMotorRight.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
+        liftMotorLeft.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0 ,0);
         liftMotorRight.setSelectedSensorPosition(0);
+        liftMotorLeft.setSelectedSensorPosition(0);
         liftMotorRight.configNeutralDeadband(Constants.LIFT_DEADBAND);  // The deadband should be very small to allow precise control
+        liftMotorLeft.configNeutralDeadband(Constants.LIFT_DEADBAND);  // The deadband should be very small to allow precise control
+
 
          // PID values for raising arm
         liftMotorRight.config_kP(RAISE_PID_SLOT, Constants.LIFT_UP_P);
@@ -116,32 +125,43 @@ public class Climber {
 
     /**
      * Control the lift
+     * 
      */
     public void moveLift(double liftPower) {
-        double position = liftMotorRight.getSelectedSensorPosition();
+        double positionRight = liftMotorRight.getSelectedSensorPosition();
+        double positionLeft = liftMotorLeft.getSelectedSensorPosition();
 
-        if (((liftPower < 0) && (position > Constants.LIFT_MIN_POSITION)) ||
-            ((liftPower > 0) && (position < 0)))
+
+        if (((liftPower < 0) && (positionRight > Constants.LIFT_RIGHT_MIN_POSITION)) ||
+            ((liftPower > 0) && (positionRight < 0)))
             liftMotorRight.set(ControlMode.PercentOutput, liftPower);
         else
             liftMotorRight.set(ControlMode.PercentOutput, 0);
 
+        if (((liftPower < 0) && (positionLeft > Constants.LIFT_LEFT_MIN_POSITION)) ||
+            ((liftPower > 0) && (positionLeft < 0)))
+            liftMotorLeft.set(ControlMode.PercentOutput, liftPower);
+        else
+            liftMotorLeft.set(ControlMode.PercentOutput, 0);
+        
+        SmartDashboard.putNumber("Right Pos", liftMotorRight.getSelectedSensorPosition());
+        SmartDashboard.putNumber("Left Pos", liftMotorLeft.getSelectedSensorPosition());
     }
 
 
-    public void liftPeriodic(double liftPower) {
-        double climberPosition   = liftMotorRight.getSelectedSensorPosition();
-        double nextClimbPosition = climberPosition + (liftPower * Constants.LIFT_CHANGE_POSITION);
+    // public void liftPeriodic(double liftPower) {
+    //     double climberPosition   = liftMotorRight.getSelectedSensorPosition();
+    //     double nextClimbPosition = climberPosition + (liftPower * Constants.LIFT_CHANGE_POSITION);
 
-        if (nextClimbPosition > Constants.LIFT_MAX_POSITION){
-            nextClimbPosition = Constants.LIFT_MAX_POSITION;
-        }
-        if (nextClimbPosition < Constants.LIFT_MIN_POSITION){
-            nextClimbPosition = Constants.LIFT_MIN_POSITION;
-        }
+    //     if (nextClimbPosition > Constants.LIFT_MAX_POSITION){
+    //         nextClimbPosition = Constants.LIFT_MAX_POSITION;
+    //     }
+    //     if (nextClimbPosition < Constants.LIFT_MIN_POSITION){
+    //         nextClimbPosition = Constants.LIFT_MIN_POSITION;
+    //     }
 
-        liftMotorRight.set(ControlMode.MotionMagic, nextClimbPosition, DemandType.ArbitraryFeedForward, Constants.LIFT_FEED_FORWARD);
-    }
+    //     liftMotorRight.set(ControlMode.MotionMagic, nextClimbPosition, DemandType.ArbitraryFeedForward, Constants.LIFT_FEED_FORWARD);
+    // }
     
 
     /**

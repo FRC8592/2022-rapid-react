@@ -92,9 +92,9 @@ public class AutoDrive {
             this.positionX = pose.getX();
             this.positionY = pose.getY();
         }
-        SmartDashboard.putNumber("Yaw value", robotRotation);
-        SmartDashboard.putNumber("Position Y", this.metersToInches(positionY));
-        SmartDashboard.putNumber("Position X", this.metersToInches(positionX));
+        //SmartDashboard.putNumber("Yaw value", robotRotation);
+        //SmartDashboard.putNumber("Position Y", this.metersToInches(positionY));
+        //SmartDashboard.putNumber("Position X", this.metersToInches(positionX));
        // SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
         
     }
@@ -139,8 +139,8 @@ public class AutoDrive {
         lastAngleError = angleError;  // reset initial angle
 
         angularVelocity = angleError * KP_angular_velocity + KD_angular_velocity * changeInAngleError;
-            angularVelocity = Math.min(angularVelocity, 1.7);
-            angularVelocity = Math.max(angularVelocity, -1.7);
+            angularVelocity = Math.min(angularVelocity, 0.5);
+            angularVelocity = Math.max(angularVelocity, -0.5);
 
             return -angularVelocity;
     }

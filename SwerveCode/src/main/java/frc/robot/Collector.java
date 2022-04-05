@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -29,6 +30,7 @@ public class Collector {
     // Internal state
     public enum CollectorState{NO_BALLS_LOADED, ONE_BALL_BOTTOM, BALL_XFER_TO_TOP, ONE_BALL_TOP, TWO_BALLS}
     private CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
+    Timer collectorTimer;
 
    
     //
@@ -37,6 +39,7 @@ public class Collector {
     public Collector() {
         processing   = new WPI_TalonFX(Constants.newFlywheelCollector);
         staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
+        collectorTimer = new Timer();
 
         staging.setNeutralMode(NeutralMode.Brake);
         processing.setNeutralMode(NeutralMode.Brake);
@@ -50,6 +53,7 @@ public class Collector {
         // Invert collector motors so that positive power drives balls inward
         processing.setInverted(true);
         staging.setInverted(true);
+        collectorTimer.start();
     }
 
 
@@ -265,9 +269,10 @@ public class Collector {
                 break;
             
                 case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to move it to the top while we continue collecting
-                    if (!topBall & !bottomBall)
+                    if (!topBall & !bottomBall){
                         collectorState = CollectorState.BALL_XFER_TO_TOP;
-                    else if (topBall & bottomBall)
+                        collectorTimer.reset();
+                    }else if (topBall & bottomBall)
                         collectorState = CollectorState.TWO_BALLS;
                     else if (topBall)
                         collectorState = CollectorState.ONE_BALL_TOP;
@@ -287,6 +292,9 @@ public class Collector {
                         collectorState = CollectorState.ONE_BALL_TOP;
                     else if (bottomBall)
                         collectorState = CollectorState.ONE_BALL_BOTTOM;
+                    else if(collectorTimer.get() >= 1.0){
+                        collectorState = CollectorState.NO_BALLS_LOADED;
+                    }
 
                     //
                     // We don't check for collectorMode here, because if we have one ball in the bottom, we always want to move it into the
@@ -317,11 +325,12 @@ public class Collector {
                 break;
 
                 case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
-                    if (!topBall && !bottomBall)    // We just shot and the bottom ball is on its way up (i.e. between sensors)
+                    if (!topBall && !bottomBall){    // We just shot and the bottom ball is on its way up (i.e. between sensors)
                         collectorState = CollectorState.BALL_XFER_TO_TOP;
-                    else if (topBall && !bottomBall)
+                        collectorTimer.reset();
+                    }else if (topBall && !bottomBall){
                         collectorState = CollectorState.ONE_BALL_TOP;
-                    else if (bottomBall && !topBall)
+                    }else if (bottomBall && !topBall)
                         collectorState = CollectorState.ONE_BALL_BOTTOM;
                     
                     driveProcessingWheels(0);

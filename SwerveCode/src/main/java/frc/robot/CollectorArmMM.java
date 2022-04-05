@@ -21,7 +21,7 @@ public class CollectorArmMM {
     private static final int    LOWER_PID_SLOT = 1;
 
     // State values
-    private static enum armStates {ARM_UP, ARM_RAISING, ARM_DESCENDING, ARM_COLLECTING}
+    private static enum armStates {ARM_START, ARM_UP, ARM_RAISING, ARM_DESCENDING, ARM_COLLECTING}
 
     // Object variables
     private WPI_TalonFX  armMotor;
@@ -35,7 +35,7 @@ public class CollectorArmMM {
     public CollectorArmMM () {
 
         // Robot should start with arm in up position
-        armState = armStates.ARM_UP;  
+        armState = armStates.ARM_START;
 
         // Create the arm motor object
         armMotor = new WPI_TalonFX(Constants.COLLECTOR_ARM_CAN);
@@ -105,6 +105,10 @@ public class CollectorArmMM {
         return Constants.ARM_STEADY_POWER * Math.sin(angleRad);
     }
 
+    public void reset() {
+        armState = armStates.ARM_START;
+    }
+
 
     /**
      * Control the arm state machine
@@ -118,6 +122,19 @@ public class CollectorArmMM {
         
         switch (armState) {
 
+            case ARM_START:
+                //
+                // If the limit switch is pressed, we are at the top
+                // Otherwise, the arm is down and needs to be brought up
+                //
+                if (limitSwitch.get() == false) {
+                    armState = armStates.ARM_UP;
+                }
+                else {
+                    armMotor.setSelectedSensorPosition(-3025);
+                    armState = armStates.ARM_RAISING;
+                }
+                
             case ARM_UP:
                 // Disable power if the arm is pressed against the switch
                 if(limitSwitch.get() == false){

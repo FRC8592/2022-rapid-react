@@ -78,7 +78,7 @@ public final class Constants {
 
     // Constants for controlling the shooter flywheel
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
-    public static double FLYWHEEL_FAST_P = 0.4;               //0.35;                   // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_P = 0.6;               //0.35;                   // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_I = 0.0;               // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_D = 50.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_F = 0.054;                   // Starting value.  Needs tuning
@@ -96,7 +96,7 @@ public final class Constants {
 
     // Vision constants for the ring camera
     public static double RING_LOCK_ERROR       = 2.0;           // Angular error allowed for targetting
-    public static double RING_CLOSE_ERROR      = 4.0;           // Closing in on acceptable error
+    public static double RING_CLOSE_ERROR      = 6.0;           // Closing in on acceptable error
     public static double TURRET_ERROR          = 0.5;           // Allowed aiming error in degrees
     public static double RING_CAMERA_HEIGHT    = 36.75;         // Limelight height above ground (inches)
     public static double RING_CAMERA_ANGLE     = 30.0;          // Limelight camera angle above horizontal (degrees)
@@ -108,7 +108,7 @@ public final class Constants {
 
     // Vision constants for the ball camera
     public static double BALL_LOCK_ERROR       = 3.0;
-    public static double BALL_CLOSE_ERROR      = 5.0;           // Closing in on acceptable error
+    public static double BALL_CLOSE_ERROR      = 7.0;           // Closing in on acceptable error
     public static double BALL_ERROR            = 0.5;           // Allowed aiming error in degrees
     public static double BALL_CAMERA_HEIGHT    = 35.75;
     public static double BALL_CAMERA_ANGLE     = 30.0;
@@ -133,26 +133,26 @@ public final class Constants {
     public static double SHOOT_STAGING_POWER      =  1.0;
 
     // Collector arm
-    public static int BALL_SET_POINT = -3100;   // -3200 is bottom
-    public static double ARM_UP_P = 0.13;
+    public static int BALL_SET_POINT = -2925;   // -3025 is bottom
+    public static double ARM_UP_P = 0.12;
     public static double ARM_UP_I = 0.0001;
-    public static double ARM_UP_D = 2.5;
+    public static double ARM_UP_D = 15.0; //2.5;
     public static double ARM_UP_F = 0.0;
 
     public static double ARM_DOWN_P = 0.12;
     public static double ARM_DOWN_I = 0.0;
-    public static double ARM_DOWN_D = 4.0;
+    public static double ARM_DOWN_D = 10.0;
     public static double ARM_DOWN_F = 0.0;
 
     public static int    ARM_MM_SMOOTHING   = 1;
-    public static double ARM_MM_CRUISE_VELO = 450;
+    public static double ARM_MM_CRUISE_VELO = 500;
     public static double ARM_MM_ACCEL       = 2400;
     public static double ARM_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER   = 0.28;
+    public static double ARM_STEADY_POWER   = 0.20;
     public static int    ARM_TICKS_180      = 4736;
 
     // Limit collector arm current
-    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 2, 10, 0.5);
+    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 10, 40, 0.5);
 
     // Constants for the lift
     public static double LIFT_VOLTAGE = 11;     // Maximum controller voltage for voltage compensationble 
@@ -179,7 +179,8 @@ public final class Constants {
     public static int    LIFT_TICKS_180      = 4736;
     public static double LIFT_PARKED_CURRENT = 10;           // amount of current to check if arms in parked position
     public static double LIFT_MAX_POSITION   = 0.0;          // Max number of ticks, 27(gear) * 2048() * 6 (3" per rotation, 18" fully extended)
-    public static double LIFT_MIN_POSITION   = -340000.0;
+    public static double LIFT_RIGHT_MIN_POSITION = -395000.0;
+    public static double LIFT_LEFT_MIN_POSITION  = -395000.0;
     public static double LIFT_CHANGE_POSITION= 3500;         // add or subtract # of ticks to move arms
     public static double LIFT_FEED_FORWARD   = 0.18;   
 
@@ -212,8 +213,8 @@ public final class Constants {
 
 
     //Constants for our starting position in autonomous
-    public static final double POSITION_ERROR = 10; //error for checking what position we are in at the start of the match in degrees
-    public static final double ANGLE_A = -1;
-    public static final double ANGLE_B = -1;
-    public static final double ANGLE_C = -1;
+    public static final double POSITION_ERROR = 20; //error for checking what position we are in at the start of the match in degrees
+    public static final double ANGLE_A = -82;
+    public static final double ANGLE_B = -55;
+    public static final double ANGLE_C = 24;
 }
