@@ -28,6 +28,8 @@ public class Autonomous{
     private boolean aimLock = false;
     private double lockTime;
 
+    private boolean twoBallMode = false;
+
 public Autonomous() {
     timer = new Timer();
     timer.start();
@@ -104,10 +106,13 @@ public Autonomous() {
 
        // shoot first 2 balls
        case SHOOT_A:
-       if(shoot(drive, collector, visionRing, ConfigRun.VISION_SEARCH_SPEED)){
+       if(shoot(drive, collector, visionRing, ConfigRun.VISION_SEARCH_SPEED) && !twoBallMode){
          timer.reset();
          autoState = AutoState.MOVE_A_TO_G;
        } //todo add switch
+       else {
+         autoState = AutoState.STOP;
+       }
        break;
 
        //collector is up, and turn 200 degrees before moving
@@ -153,9 +158,12 @@ public Autonomous() {
 
        //shoot 2 balls
        case SHOOT_B:
-        if(shoot(drive, collector, visionRing, -ConfigRun.VISION_SEARCH_SPEED)){
+        if(shoot(drive, collector, visionRing, -ConfigRun.VISION_SEARCH_SPEED) && !twoBallMode){
           timer.reset();
           autoState = AutoState.FETCH_G;
+        }
+        else{
+          autoState = AutoState.STOP;
         } //todo add switch
         //? why do we need a switch
        break;
