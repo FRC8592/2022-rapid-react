@@ -23,6 +23,9 @@ public class Vision {
   private double rotationKP;
   private double rotationKI;
   private double rotationKD;
+  private double closeRotationKP;
+  private double closeRotationKI;
+  private double closeRotationKD;
   // Network Table entries
   private NetworkTableEntry tx;   // Angle error (x) from LimeLight camera
   private NetworkTableEntry ty;   // Angle error (y) from LimeLight camera
@@ -45,7 +48,7 @@ public class Vision {
 
   // PID controller for turning;
   private PIDController turnPID;
-
+  private PIDController closeTurnPID;
   //constants for averaging limelight averages
   private int MIN_LOCKS = 3;
   private int STAT_SIZE = 5; 
@@ -95,6 +98,7 @@ public class Vision {
 
     // Creat the PID controller for turning
     turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
+    closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
   }
 
 
@@ -239,6 +243,30 @@ public class Vision {
     return turnSpeed;
   }
 
+  public double closeTurnRobot(double visionSearchSpeed){
+
+    // Stop turning if we have locked onto the target within acceptable angular error
+    if (targetValid && targetLocked) {
+      turnSpeed = 0;
+    }
+
+    // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
+    // Limit maximum speed
+    else if (targetValid) {
+      turnSpeed = closeTurnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
+      turnSpeed = Math.max(turnSpeed, -8);
+      turnSpeed = Math.min(turnSpeed, 8);
+    }
+
+    // If no targetValid, spin in a circle to search
+    else {
+      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
+    }
+
+    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+
+    return turnSpeed;
+  }
 
   //
   // Drive towards the target.  We move forward before fully locked
