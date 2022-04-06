@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class Autonomous{
 
     private enum AutoState {
-       START, FETCH_A, SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_G, FETCH_D, MOVE_D_TO_G, FETCH_B, SHOOT_B, MOVE_B_TO_G, MOVE_CLOSER_D, SHOOT_D, MOVE_TO_G, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, FINAL_SHOOT 
+       START, FETCH_A, SHOOT_A, TURN_AWAY_FROM_A, MOVE_A_TO_D, FETCH_D, MOVE_D_TO_G, FETCH_B, SHOOT_B, MOVE_B_TO_G, MOVE_CLOSER_D, SHOOT_D, MOVE_TO_G, FETCH_G, MOVE_CLOSER_G, SHOOT_G, FETCH_C, STOP, FINAL_SHOOT 
       };
     
     private enum FieldLocation{
@@ -106,31 +106,28 @@ public Autonomous() {
 
        // shoot first 2 balls
        case SHOOT_A:
-       if(shoot(drive, collector, visionRing, ConfigRun.VISION_SEARCH_SPEED) && !twoBallMode){
+       if(shoot(drive, collector, visionRing, ConfigRun.VISION_SEARCH_SPEED)){
          timer.reset();
-         autoState = AutoState.MOVE_A_TO_G;
+         autoState = AutoState.MOVE_A_TO_D;
        } //todo add switch
-       else {
-         autoState = AutoState.STOP;
-       }
        break;
 
        //collector is up, and turn 200 degrees before moving
        case TURN_AWAY_FROM_A:
         if(this.turnTo(20, drive, locality)){
-          autoState = AutoState.MOVE_A_TO_G;
+          autoState = AutoState.MOVE_A_TO_D;
         }
        break;
 
        //move robot to D-ball
-       case MOVE_A_TO_G:
+       case MOVE_A_TO_D:
        collector.enableCollectMode(arm, powerMonitor);
        turnTo(0, drive, locality);
        if(timer.get() >= 1.5){
           this.stopDrive(drive);
-         autoState = AutoState.FETCH_G;
+         autoState = AutoState.FETCH_D;
        } else {
-         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 2, 0, Rotation2d.fromDegrees(0)));
+         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1.5, 0, 0, drive.getGyroscopeRotation()));
        }
        break;
 
@@ -158,13 +155,11 @@ public Autonomous() {
 
        //shoot 2 balls
        case SHOOT_B:
-        if(shoot(drive, collector, visionRing, -ConfigRun.VISION_SEARCH_SPEED) && !twoBallMode){
+        if(shoot(drive, collector, visionRing, -ConfigRun.VISION_SEARCH_SPEED)){
           timer.reset();
-          autoState = AutoState.FETCH_G;
+          autoState = AutoState.MOVE_B_TO_G;
         }
-        else{
-          autoState = AutoState.STOP;
-        } //todo add switch
+        //todo add switch
         //? why do we need a switch
        break;
 
@@ -173,7 +168,7 @@ public Autonomous() {
         collector.enableCollectMode(arm, powerMonitor);
        if(timer.get() > 1){
           this.stopDrive(drive);
-         autoState = AutoState.FETCH_D;
+         autoState = AutoState.FETCH_G;
        } else {
          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1, 0, 0, Rotation2d.fromDegrees(0)));
        }
@@ -186,7 +181,7 @@ public Autonomous() {
        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
           visionRing.turnRobot(ConfigRun.VISION_SEARCH_SPEED), drive.getGyroscopeRotation()));
        }else{
-        if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, ConfigRun.VISION_SEARCH_SPEED, 4)){
+        if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, ConfigRun.VISION_SEARCH_SPEED, 6)){
           autoState = AutoState.SHOOT_D;
         }
        }
@@ -217,7 +212,7 @@ public Autonomous() {
        //assuming we already see G, collect G
        case FETCH_G:
        collector.enableCollectMode(arm, powerMonitor);
-       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, -2)){
+       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, 2)){
           autoState = AutoState.MOVE_CLOSER_G;
        }
        break;
