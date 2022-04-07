@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Collector.CollectorState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 
@@ -27,6 +28,7 @@ public class Autonomous{
     private double autoStateTime;
     private boolean aimLock = false;
     private double lockTime;
+    private boolean sweepPositive = true;
 
 public Autonomous() {
     timer = new Timer();
@@ -112,15 +114,15 @@ public Autonomous() {
 
        //collector is up, and turn 200 degrees before moving
        case TURN_AWAY_FROM_A:
-        if(this.turnTo(20, drive, locality)){
-          autoState = AutoState.MOVE_A_TO_G;
-        }
+        //if(this.turnTo(20, drive, locality)){
+          //autoState = AutoState.MOVE_A_TO_G;
+        //}
        break;
 
        //move robot to D-ball
        case MOVE_A_TO_G:
        collector.enableCollectMode(arm, powerMonitor);
-       turnTo(0, drive, locality);
+      // turnTo(0, drive, locality);
        if(timer.get() >= 1.5){
           this.stopDrive(drive);
          autoState = AutoState.FETCH_G;
@@ -374,18 +376,48 @@ public Autonomous() {
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,0,drive.getGyroscopeRotation()));
   }
   
-  public boolean turnTo(double angle, Drivetrain drive, AutoDrive locality){
-    boolean isDoneTurn = false;
-    double turnSpeed = locality.turnTo(angle, drive.getAutoHeading());
+  public double turnTo(double targetAngle, Drivetrain drive, double directionToRotate){
+    double turnSpeed = 0;
+    double currentAngle = drive.getAutoHeading();
+    double angleError = 2;
 
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, turnSpeed, drive.getGyroscopeRotation()));
+    if(Math.abs(currentAngle - (targetAngle)) <= angleError){
+      this.stopDrive(drive);
+      turnSpeed = 0;
+    }else if(Math.abs(currentAngle - (targetAngle)) > angleError){
+      turnSpeed = 1.5 * directionToRotate;
+    }
+    
+    return turnSpeed;
+  }
 
-    if(drive.getAutoHeading() != angle){
-      isDoneTurn = false;
+  public boolean sweepFetchMode(double maxAngle, double sweepStartAngle, double centerAngle, Drivetrain drive, Vision visionBall, Collector collector, CollectorState collectorState, double targetLockedSpeed, double targetCloseSpeed, double visionSearchSpeed, double sweepSpeed){
+      boolean isDoneFetch = false;
+      
+    if(this.sweepPositive){
+        if(drive.getAutoHeading() <= maxAngle + centerAngle){
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, sweepSpeed, Rotation2d.fromDegrees(0)));
+        } else {
+          this.sweepPositive = false;
+        }
+    } else{
+        if(drive.getAutoHeading() > maxAngle + centerAngle){
+          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, -sweepSpeed, Rotation2d.fromDegrees(0)));
+        } else {
+          this.sweepPositive = true;
+        }
+    }
+      
+
+    
+    
+    if(collector.getCollectorState() == collectorState){
+      isDoneFetch = true;
     }else{
-      isDoneTurn = true;
+      isDoneFetch = false;
     }
 
-    return isDoneTurn;
+    return isDoneFetch;
+
   }
 }
