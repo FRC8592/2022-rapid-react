@@ -125,7 +125,7 @@ public Autonomous() {
        turnTo(0, drive, locality);
        if(timer.get() >= 1.5){
           this.stopDrive(drive);
-         autoState = AutoState.FETCH_D;
+         autoState = AutoState.FETCH_G;
        } else {
          drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1.5, 0, 0, drive.getGyroscopeRotation()));
        }
@@ -133,7 +133,7 @@ public Autonomous() {
 
        //collect D, slowly
        case FETCH_D:
-        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, -ConfigRun.VISION_SEARCH_SPEED)){
+        if(this.fetch(drive, collector, visionBall, -2.5, -2.5, CollectorState.ONE_BALL_BOTTOM, -2.5)){
           autoState = AutoState.MOVE_CLOSER_D;
         }
        break;
@@ -212,7 +212,7 @@ public Autonomous() {
        //assuming we already see G, collect G
        case FETCH_G:
        collector.enableCollectMode(arm, powerMonitor);
-       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, 2)){
+       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.ONE_BALL_TOP, 2)){
           autoState = AutoState.MOVE_CLOSER_G;
        }
        break;
@@ -233,7 +233,7 @@ public Autonomous() {
        //shoot G-ball
        case SHOOT_G:
        if(shoot(drive, collector, visionRing, -ConfigRun.VISION_SEARCH_SPEED)){
-          autoState = AutoState.STOP;
+          autoState = AutoState.FETCH_D;
        } //todo add switch
        break;
 

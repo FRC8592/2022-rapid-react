@@ -80,7 +80,7 @@ public final class Constants {
     public static double FLYWHEEL_VOLTAGE = 11;                // Maximum controller voltage for voltage compensation
     public static double FLYWHEEL_FAST_P = 0.6;               //0.35;                   // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_I = 0.0;               // Starting value.  Needs tuning
-    public static double FLYWHEEL_FAST_D = 50.00;                    // Starting value.  Needs tuning
+    public static double FLYWHEEL_FAST_D = 60.00;                    // Starting value.  Needs tuning
     public static double FLYWHEEL_FAST_F = 0.054;                   // Starting value.  Needs tuning
    
     public static double FLYWHEEL_SLOW_P = 0.17;                    // Starting value.  Needs tuning
@@ -140,7 +140,7 @@ public final class Constants {
     public static int BALL_SET_POINT = -2925;   // -3025 is bottom
     public static double ARM_UP_P = 0.12;
     public static double ARM_UP_I = 0.0001;
-    public static double ARM_UP_D = 15.0; //2.5;
+    public static double ARM_UP_D = 15.0;
     public static double ARM_UP_F = 0.0;
 
     public static double ARM_DOWN_P = 0.12;
@@ -152,11 +152,11 @@ public final class Constants {
     public static double ARM_MM_CRUISE_VELO = 500;
     public static double ARM_MM_ACCEL       = 2400;
     public static double ARM_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER   = 0.20;
+    public static double ARM_STEADY_POWER   = 0.25;
     public static int    ARM_TICKS_180      = 4736;
 
     // Limit collector arm current
-    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 10, 40, 0.5);
+    public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 10, 40, 6.0);
 
     // Constants for the lift
     public static double LIFT_VOLTAGE = 11;     // Maximum controller voltage for voltage compensationble 
