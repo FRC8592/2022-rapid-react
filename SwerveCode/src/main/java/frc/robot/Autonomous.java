@@ -71,7 +71,15 @@ public Autonomous() {
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13
     // feet away
     // decide state changes
-
+    boolean normal = true;
+    /*
+    if(visionRing.distanceToTarget() < 170){
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1, 0, 0, drive.getGyroscopeRotation()));
+    }else{
+      this.shoot(drive, collector, visionRing, -1);
+    }
+    */
+    if(normal){
       switch (autoState) {
         //determine location in field (starting position)
         //locking onto ring, based on angle that robot is facing, it will determine the robot's location
@@ -157,7 +165,7 @@ public Autonomous() {
        case SHOOT_B:
         if(shoot(drive, collector, visionRing, -ConfigRun.VISION_SEARCH_SPEED)){
           timer.reset();
-          autoState = AutoState.MOVE_B_TO_G;
+          autoState = AutoState.STOP;
         }
         //todo add switch
         //? why do we need a switch
@@ -239,13 +247,13 @@ public Autonomous() {
 
        //starting in START_C position and collect C-ball
        case FETCH_C:
-        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, -1)){
+        if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.TWO_BALLS, ConfigRun.VISION_SEARCH_SPEED)){
           autoState = AutoState.FINAL_SHOOT;
         }
        break;
 
        case FINAL_SHOOT:
-       if(this.shoot(drive, collector, visionBall, -ConfigRun.VISION_SEARCH_SPEED)){
+       if(this.shoot(drive, collector, visionRing, -ConfigRun.VISION_SEARCH_SPEED)){
         autoState = AutoState.STOP;
       }
        break;
@@ -254,7 +262,7 @@ public Autonomous() {
        case STOP:
        this.stopDrive(drive);
        break;
-
+    }
 
 
 
