@@ -120,7 +120,7 @@ public final class Constants {
 
     public static double CLOSE_BALL_ROTATE_KP  = 0.6; //0.15;           // Proportional constant for turret rotate speed
     public static double CLOSE_BALL_ROTATE_KI  = 0.0;
-    public static double CLOSE_BALL_ROTATE_KD  = 0.;  
+    public static double CLOSE_BALL_ROTATE_KD  = 0.0;  
 
     // Common vision constants
     public static double MIN_TURN_SPEED = 0.8;

@@ -57,6 +57,9 @@ public class Vision {
 
   private String limelightName;
 
+  private double optDistance;
+  private double distanceFeet;
+
   // Pipeline constants
   private static int BLUE_PIPELINE = 1;
   private static int RED_PIPELINE = 0;
@@ -140,7 +143,7 @@ public class Vision {
       }
     }
 
-    processedDx = totalDx/totalValid;
+    processedDx = (totalDx/totalValid) - 1.0;
     processedDy = totalDy/totalValid;
     targetValid = (totalValid >= MIN_LOCKS);
 
@@ -171,6 +174,7 @@ public class Vision {
     //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
     //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
+    SmartDashboard.putBoolean(limelightName + "/inRange", targetRange >120 && targetRange < 265);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
     //SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
     //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
@@ -195,11 +199,10 @@ public class Vision {
   public double distanceToTarget(){
     if (targetValid){
       double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + processedDy) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
-      return distanceInches;
+      return distanceInches - 4;
     }
     return -1;
   }
-
 
   /**
    * 

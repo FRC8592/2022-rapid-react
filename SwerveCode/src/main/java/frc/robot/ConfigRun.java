@@ -44,6 +44,9 @@ public final class ConfigRun {
     public static final double TARGET_CLOSE_SPEED  = -3.5;
     public static final double VISION_SEARCH_SPEED = 3.5;
 
+    //Time before you can take another shot
+    public static final double TIME_BEFORE_SHOT = 1;
+
 
 
 

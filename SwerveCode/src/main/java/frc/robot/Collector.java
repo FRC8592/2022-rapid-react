@@ -31,6 +31,7 @@ public class Collector {
     public enum CollectorState{NO_BALLS_LOADED, ONE_BALL_BOTTOM, BALL_XFER_TO_TOP, ONE_BALL_TOP, TWO_BALLS}
     private CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
     Timer collectorTimer;
+    Timer shootTimer;
 
    
     //
@@ -40,6 +41,7 @@ public class Collector {
         processing   = new WPI_TalonFX(Constants.newFlywheelCollector);
         staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
         collectorTimer = new Timer();
+        shootTimer     = new Timer();
 
         staging.setNeutralMode(NeutralMode.Brake);
         processing.setNeutralMode(NeutralMode.Brake);
@@ -54,6 +56,7 @@ public class Collector {
         processing.setInverted(true);
         staging.setInverted(true);
         collectorTimer.start();
+        shootTimer.start();
     }
 
 
@@ -233,9 +236,10 @@ public class Collector {
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            if ((shooter.isFlywheelReady()) && vision.isTargetLocked()) {
+            if ((shooter.isFlywheelReady()) && vision.isTargetLocked() && shootTimer.get() >= ConfigRun.TIME_BEFORE_SHOT) {
                 driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
+                shootTimer.reset();
             }
 
             // Stop shoot mode once the top ball is gone

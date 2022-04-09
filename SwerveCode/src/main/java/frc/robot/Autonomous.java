@@ -223,7 +223,7 @@ public Autonomous() {
         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
            visionRing.turnRobot(ConfigRun.VISION_SEARCH_SPEED), drive.getGyroscopeRotation()));
         }else{
-         if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, ConfigRun.VISION_SEARCH_SPEED, 5)){
+         if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, ConfigRun.VISION_SEARCH_SPEED, 4)){
            autoState = AutoState.SHOOT_G;
          }
         }
