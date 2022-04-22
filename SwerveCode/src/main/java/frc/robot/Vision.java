@@ -192,14 +192,15 @@ public class Vision {
 
   /**
    * Gives distance from the robot to the target in inches
-   * Compute range to target.
+   * Com
+   * ute range to target.
    * Formula taken from https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
    * @return distance in inches
    */
   public double distanceToTarget(){
     if (targetValid){
       double distanceInches = (targetHeight - cameraHeight) / Math.tan((cameraAngle + processedDy) * DEG_TO_RAD);//Equation is from limelight documentation finding distance
-      return distanceInches - 4;
+      return distanceInches;
     }
     return -1;
   }

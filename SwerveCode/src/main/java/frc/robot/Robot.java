@@ -159,7 +159,7 @@ public class Robot extends TimedRobot {
 
     m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    //System.out.println("Auto selected: " + m_autoSelected);
 
     //
     // Get our alliance color from the field control system
@@ -341,7 +341,7 @@ public class Robot extends TimedRobot {
     // Reset gyroscope zero for field-relative driving
     //
     if (driverController.getXButton() && driverController.getBackButton()) {
-      System.out.println("Override - zeroing gyroscope");
+      //System.out.println("Override - zeroing gyroscope");
       drive.zeroGyroscope();
     }
 

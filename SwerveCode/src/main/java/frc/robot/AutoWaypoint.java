@@ -1,3 +1,4 @@
+
 package frc.robot;
 
 import java.util.ArrayList;
@@ -50,11 +51,11 @@ public class AutoWaypoint {
                         drivetrain.getGyroscopeRotation()));
 
             } else if (currentWaypoint.fetch) {
-                System.out.println("ROBOT fetch!");
+                //System.out.println("ROBOT fetch!");
                 //drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(ballVision.moveTowardsTarget(), 0,
                 //ballVision.turnRobot(), Rotation2d.fromDegrees(0)));
                 currentWaypoint.fetch = collector.getCollectorState() == collectorState;
-                System.out.println("ROBOT fetch!: " + currentWaypoint.fetch);
+                //System.out.println("ROBOT fetch!: " + currentWaypoint.fetch);
 
             } else if (currentWaypoint.shoot) {
 
@@ -92,7 +93,7 @@ public class AutoWaypoint {
 
         } else if (!waypoints.isEmpty()) {
             currentWaypoint = waypoints.get(0);
-            System.out.println("AutoWaypoint New Waypoint");
+            //System.out.println("AutoWaypoint New Waypoint");
             if (currentWaypoint.turnTo) {
                 currentWaypoint.heading = autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y);
                 collectorState = collector.getCollectorState();

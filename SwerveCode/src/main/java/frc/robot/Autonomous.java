@@ -71,14 +71,14 @@ public Autonomous() {
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13
     // feet away
     // decide state changes
-    boolean normal = true;
-    /*
-    if(visionRing.distanceToTarget() < 170){
+    boolean normal = false;
+    
+    if(visionRing.distanceToTarget() < 160){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1, 0, 0, drive.getGyroscopeRotation()));
     }else{
       this.shoot(drive, collector, visionRing, -1);
     }
-    */
+
     if(normal){
       switch (autoState) {
         //determine location in field (starting position)
@@ -88,7 +88,7 @@ public Autonomous() {
         SmartDashboard.putBoolean("Gyroscope Rotating?", drive.isGyroscopeRotating());
         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
           visionRing.turnRobot(ConfigRun.VISION_SEARCH_SPEED), drive.getGyroscopeRotation()));
-
+        
         if (visionRing.isTargetLocked()){
           if (Math.abs(drive.getAutoHeading() - (Constants.ANGLE_A)) <= Constants.POSITION_ERROR){
             startingPosition = FieldLocation.START_A;
