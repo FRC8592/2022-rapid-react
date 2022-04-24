@@ -5,9 +5,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
 
 import java.util.LinkedList;
+
+import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
 public class Vision {
   
@@ -18,6 +21,11 @@ public class Vision {
   private double cameraAngle;
   private double targetHeight;
   private double rotationKP;
+  private double rotationKI;
+  private double rotationKD;
+  private double closeRotationKP;
+  private double closeRotationKI;
+  private double closeRotationKD;
   // Network Table entries
   private NetworkTableEntry tx;   // Angle error (x) from LimeLight camera
   private NetworkTableEntry ty;   // Angle error (y) from LimeLight camera
@@ -32,26 +40,32 @@ public class Vision {
   private double processedDx = 0;
   private double processedDy = 0;
   //Private autoaim variables
-   private double turnSpeed;
-   private double lastTime  = 0;
-   private double xtime     = 0;
-   private double lastAngle = 0;
-   private double changeInAngleError = 0;
+  private double turnSpeed;
+  private double lastTime  = 0;
+  private double xtime     = 0;
+  private double lastAngle = 0;
+  private double changeInAngleError = 0;
 
-   //constants for averaging limelight averages
-   private int MIN_LOCKS = 3;
-   private int STAT_SIZE = 5; 
+  // PID controller for turning;
+  private PIDController turnPID;
+  private PIDController closeTurnPID;
+  //constants for averaging limelight averages
+  private int MIN_LOCKS = 3;
+  private int STAT_SIZE = 5; 
 
-   private LinkedList<LimelightData> previousCoordinates;
+  private LinkedList<LimelightData> previousCoordinates;
 
-   private String limelightName;
+  private String limelightName;
+
+  private double optDistance;
+  private double distanceFeet;
 
   // Pipeline constants
-   private static int BLUE_PIPELINE = 1;
-   private static int RED_PIPELINE = 0;
+  private static int BLUE_PIPELINE = 1;
+  private static int RED_PIPELINE = 0;
 
-   private final double DEG_TO_RAD = 0.0174533;
-   private final double IN_TO_METERS = 0.0254;
+  private final double DEG_TO_RAD = 0.0174533;
+  private final double IN_TO_METERS = 0.0254;
   
 
   /**
@@ -59,7 +73,7 @@ public class Vision {
    */
   public Vision(String limelightName, double lockError, double closeError,
                 double cameraHeight, double cameraAngle, double targetHeight,
-                double rotationKP) {
+                double rotationKP, double rotationKI, double rotationKD) {
 
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
@@ -84,7 +98,10 @@ public class Vision {
     this.cameraHeight  = cameraHeight;
     this.cameraAngle   = cameraAngle;
     this.targetHeight  = targetHeight;
-    this.rotationKP    = rotationKP;
+
+    // Creat the PID controller for turning
+    turnPID = new PIDController(rotationKP, rotationKI, rotationKD);
+    closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
   }
 
 
@@ -126,7 +143,7 @@ public class Vision {
       }
     }
 
-    processedDx = totalDx/totalValid;
+    processedDx = (totalDx/totalValid) - 1.0;
     processedDy = totalDy/totalValid;
     targetValid = (totalValid >= MIN_LOCKS);
 
@@ -146,10 +163,6 @@ public class Vision {
       targetClose = false;
     }
 
-    System.out.printf("%s: Target locked = %b\n", limelightName, targetLocked);
-    System.out.printf("%s: Target close = %b\n", limelightName, targetClose);
-
-
     //post driver data to smart dashboard periodically
     //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
     //SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
@@ -161,8 +174,9 @@ public class Vision {
     //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
     //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
+    SmartDashboard.putBoolean(limelightName + "/inRange", targetRange >120 && targetRange < 265);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
-    SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
+    //SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
     //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
 
@@ -177,10 +191,11 @@ public class Vision {
 
 
   /**
-   * Gives distance from the robot to the target in meters
-   * Compute range to target.
+   * Gives distance from the robot to the target in inches
+   * Com
+   * ute range to target.
    * Formula taken from https://docs.limelightvision.io/en/latest/cs_estimating_distance.html
-   * @return distance in meters
+   * @return distance in inches
    */
   public double distanceToTarget(){
     if (targetValid){
@@ -190,9 +205,7 @@ public class Vision {
     return -1;
   }
 
-
   /**
-   * 
    * 
    * @return angle offset in radians 
    */
@@ -200,64 +213,101 @@ public class Vision {
     return Math.toRadians(processedDx);
   }
 
-  public double turnRobot(){
-    if (targetValid){
-      // Setting power based on the xError causes the turret to slow down as the error approaches 0
-      // This prevents the turret from overshooting 0 and oscillating back and forth
-      // KP is a scaling factor that we tested
-      turnSpeed = Math.toRadians(processedDx) * rotationKP; // + turret_rotate_kd*delta();
-      turnSpeed = Math.max(turnSpeed, -8);
-      turnSpeed = Math.min(turnSpeed, 8);
 
-      //
-      // Set a minimum turnSpeed so that we don't get stuck when close to zero error
-      //
-      if (turnSpeed > 0){
-        turnSpeed = Math.max(turnSpeed, Constants.MIN_TURN_SPEED);
-      }
-      else{
-        turnSpeed = Math.min(turnSpeed, -Constants.MIN_TURN_SPEED);
-      }
-    }
-    else{
-      turnSpeed = 2;    // Spin in a circle until a target is located
-    }
-    
-    //
-    // Stop turning immediately when target is locked (at center)
-    //
-    if (targetLocked){
+  /**
+   * Turn the robot based on limelight data
+   * 1) If no targetValid turn in a circle until we get a targetValid indicator
+   * 2) if targetValid, turns towards the target using the PID controller output for turn speed
+   * 3) if targetValid and processedDx is within our "locked" criteria, stop turning
+   * 
+   * @return
+   */
+  public double turnRobot(double visionSearchSpeed){
+
+    // Stop turning if we have locked onto the target within acceptable angular error
+    if (targetValid && targetLocked) {
       turnSpeed = 0;
     }
-    SmartDashboard.putNumber(limelightName + "/Turret Speed", turnSpeed);
+
+    // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
+    // Limit maximum speed
+    else if (targetValid) {
+      turnSpeed = turnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
+      turnSpeed = Math.max(turnSpeed, -8);
+      turnSpeed = Math.min(turnSpeed, 8);
+    }
+
+    // If no targetValid, spin in a circle to search
+    else {
+      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
+    }
+
+    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
 
     return turnSpeed;
   }
 
+  public double closeTurnRobot(double visionSearchSpeed){
+
+    // Stop turning if we have locked onto the target within acceptable angular error
+    if (targetValid && targetLocked) {
+      turnSpeed = 0;
+    }
+
+    // Otherwise, if we have targetValid, turn towards the target using the PID controller to determine speed
+    // Limit maximum speed
+    else if (targetValid) {
+      turnSpeed = closeTurnPID.calculate(processedDx, 0);  // Setpoint is always 0 degrees (dead center)
+      turnSpeed = Math.max(turnSpeed, -8);
+      turnSpeed = Math.min(turnSpeed, 8);
+    }
+
+    // If no targetValid, spin in a circle to search
+    else {
+      turnSpeed = visionSearchSpeed;    // Spin in a circle until a target is located
+    }
+
+    SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+
+    return turnSpeed;
+  }
 
   //
   // Drive towards the target.  We move forward before fully locked
   // This should probably be updated to base speed on distance from the target
   //
-  // TODO: Do we need to prevent driving forward before being completely on target
-  //       (e.g. targetLocked == true) if the robot is too close to the target?
-  //
-  public double moveTowardsTarget() {
-    double moveSpeed = 0.0;
+  public double moveTowardsTarget(double targetLockedSpeed, double targetCloseSpeed) {
+    double moveSpeed = 0.0; // Default is 0 speed
+
     if (targetLocked == true){
-      moveSpeed = ConfigRun.TARGET_LOCKED_SPEED;
+      moveSpeed = targetLockedSpeed;
     }
     else if (targetClose == true){
-      moveSpeed = ConfigRun.TARGET_CLOSE_SPEED;
+      moveSpeed = targetCloseSpeed;
     }
-    SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
+
+    // SmartDashboard.putNumber(limelightName + "/Move Speed", moveSpeed);
+
     return moveSpeed;
   }
 
+
+  /**
+   * 
+   * @return true if vision target is locked within the allowed angular error
+   */
   public boolean isTargetLocked() {
     return targetLocked;
   }
 
+  public boolean isTargetValid(){
+    return targetValid;
+  }
+
+
+  /**
+   * Local class used to store a history of limelight data to allow averaging
+   */
   private class LimelightData{ 
     double dx;
     double dy;

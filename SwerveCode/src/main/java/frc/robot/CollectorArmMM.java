@@ -21,7 +21,7 @@ public class CollectorArmMM {
     private static final int    LOWER_PID_SLOT = 1;
 
     // State values
-    private static enum armStates {ARM_UP, ARM_RAISING, ARM_DESCENDING, ARM_COLLECTING}
+    private static enum armStates {ARM_START, ARM_UP, ARM_RAISING, ARM_DESCENDING, ARM_COLLECTING}
 
     // Object variables
     private WPI_TalonFX  armMotor;
@@ -35,7 +35,7 @@ public class CollectorArmMM {
     public CollectorArmMM () {
 
         // Robot should start with arm in up position
-        armState = armStates.ARM_UP;  
+        armState = armStates.ARM_START;
 
         // Create the arm motor object
         armMotor = new WPI_TalonFX(Constants.COLLECTOR_ARM_CAN);
@@ -50,7 +50,6 @@ public class CollectorArmMM {
         armMotor.configNeutralDeadband(Constants.ARM_DEADBAND);
 
         // Set current limits so we don't burn up if we get stalled
-        //
         armMotor.configSupplyCurrentLimit(Constants.ARM_CURRENT_LIMIT);
 
         // PID values for raising arm
@@ -106,6 +105,10 @@ public class CollectorArmMM {
         return Constants.ARM_STEADY_POWER * Math.sin(angleRad);
     }
 
+    public void reset() {
+        armState = armStates.ARM_START;
+    }
+
 
     /**
      * Control the arm state machine
@@ -113,13 +116,25 @@ public class CollectorArmMM {
     public void update(){
         double feedForward = calcFeedForward(armMotor.getSelectedSensorPosition());
     
-        SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
-        SmartDashboard.putString("Arm State", armState.toString());
-        SmartDashboard.putNumber("Feed Forward", feedForward);
-        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        // SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
+        // SmartDashboard.putString("Arm State", armState.toString());
+        // SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
+            case ARM_START:
+                //
+                // If the limit switch is pressed, we are at the top
+                // Otherwise, the arm is down and needs to be brought up
+                //
+                if (limitSwitch.get() == false) {
+                    armState = armStates.ARM_UP;
+                }
+                else {
+                    armMotor.setSelectedSensorPosition(-3025);
+                    armState = armStates.ARM_RAISING;
+                }
+                
             case ARM_UP:
                 // Disable power if the arm is pressed against the switch
                 if(limitSwitch.get() == false){
@@ -142,9 +157,7 @@ public class CollectorArmMM {
                 
                 // Raise arm to position 0
                 armMotor.selectProfileSlot(RAISE_PID_SLOT, 0);
-                armMotor.set(ControlMode.MotionMagic, 100, DemandType.ArbitraryFeedForward, feedForward);
-
-               
+                armMotor.set(ControlMode.MotionMagic, 100, DemandType.ArbitraryFeedForward, feedForward);               
                 break;
 
             case ARM_DESCENDING:
@@ -154,7 +167,6 @@ public class CollectorArmMM {
 
                 if (armMotor.getSelectedSensorPosition() <= Constants.BALL_SET_POINT)
                     armState = armStates.ARM_COLLECTING;
-
                 break;
 
             case ARM_COLLECTING:
@@ -163,14 +175,11 @@ public class CollectorArmMM {
                 // to push down on the ball we are probably collecting
                 //
                 if (armMotor.getSelectedSensorPosition() < Constants.BALL_SET_POINT)
-                    armMotor.set(ControlMode.PercentOutput, 0.0);
-                else
                     armMotor.set(ControlMode.PercentOutput, -0.10);
-
+                else
+                    armMotor.set(ControlMode.PercentOutput, -0.20);
                 break;
-
         }
-
     }
     
 }

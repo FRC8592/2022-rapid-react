@@ -24,6 +24,9 @@ public class Shooter{
     // stores the last valid RPM 
     private double lastRPM = Constants.STARTING_FLYWHEEL_SPEED;
 
+    private final int FAST = 1;
+    private final int SLOW = 0;
+
     //
     // Constructor to instantiate the Collector object and the flywheel motors
     //
@@ -48,10 +51,19 @@ public class Shooter{
         // Settings for flywheel PID constant velocity mode
         // flywheelLeft is a follower and does not need PID configuration
         flyWheelRight.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        flyWheelRight.config_kP(0, Constants.FLYWHEEL_P);
-        flyWheelRight.config_kI(0, Constants.FLYWHEEL_I);
-        flyWheelRight.config_kD(0, Constants.FLYWHEEL_D);
-        flyWheelRight.config_kF(0, Constants.FLYWHEEL_F);
+     
+        flyWheelRight.config_kP(SLOW, Constants.FLYWHEEL_SLOW_P);
+        flyWheelRight.config_kI(SLOW, Constants.FLYWHEEL_SLOW_I);
+        flyWheelRight.config_kD(SLOW, Constants.FLYWHEEL_SLOW_D);
+        flyWheelRight.config_kF(SLOW, Constants.FLYWHEEL_SLOW_F);
+
+        flyWheelRight.config_kP(FAST, Constants.FLYWHEEL_FAST_P);
+        flyWheelRight.config_kI(FAST, Constants.FLYWHEEL_FAST_I);
+        flyWheelRight.config_kD(FAST, Constants.FLYWHEEL_FAST_D);
+        flyWheelRight.config_kF(FAST, Constants.FLYWHEEL_FAST_F);
+
+        flyWheelRight.selectProfileSlot(FAST, 0);
+
         flyWheelRight.configClosedloopRamp(1);
 
         flyWheelRight.set(ControlMode.Velocity, 0);
@@ -107,6 +119,14 @@ public class Shooter{
         double flywheelRpmActual;
         double flywheelRpmError;
 
+        if (flywheelRpmSet> 1500){
+            flyWheelRight.selectProfileSlot(FAST, 0);
+        }
+        else{
+            flyWheelRight.selectProfileSlot(SLOW, 0);
+        }
+
+
         flyWheelRight.set(ControlMode.Velocity, rpmToFalcon(flywheelRpmSet));
         flywheelRpmActual = falconToRpm(flyWheelRight.getSelectedSensorVelocity());
         flywheelRpmError  = Math.abs(flywheelRpmSet - flywheelRpmActual);
@@ -119,6 +139,8 @@ public class Shooter{
         // Post flywheel parameters to Smart Dashboard
         SmartDashboard.putNumber("Flywheel Actual", flywheelRpmActual);
         SmartDashboard.putBoolean("Flywheel Ready", flywheelReady);
+        SmartDashboard.putNumber("Flywheel Set", flywheelRpmSet);
+
     }
 
 
@@ -142,38 +164,37 @@ public class Shooter{
      * 
      * @param range Range to target (units?)
      */
-    public void computeFlywheelRPM(double range, boolean isAllianceColor) {
-        double flyWheelSetVelocity;
+    public void computeFlywheelRPM(double range, boolean fastMode, boolean flywheelLock) {
         double flyWheelCalculatedVelocity;
-        double flyWheelVelocity;
         int arrayIndex;
         double slope;
 
-        if (range > 0 && range <= 227.9){
+        if (range > 0 && range <= 239.9){
             arrayIndex = (int)((range) / 12);
             slope = (Constants.RANGE_TABLE[arrayIndex+1] - Constants.RANGE_TABLE[arrayIndex]) / (((arrayIndex * 12) + 12) - (arrayIndex * 12));
             flyWheelCalculatedVelocity = Constants.RANGE_TABLE[arrayIndex] + (slope * (range - (arrayIndex * 12)));
             lastRPM = flyWheelCalculatedVelocity;
-
         }
         else {
             flyWheelCalculatedVelocity = lastRPM;
-
         }
 
         //
-        // Check to see if we have a ball from the opposite alliance ready to shoot.  If so, slow the
-        // flywheel so we can eject it safely.  The top level robot code will trigger the actual
-        // shooting action
+        // Lock the flywheel to a fixed speed if in flywheelLock mode
         //
-        if (!isAllianceColor)
-            flyWheelCalculatedVelocity = Constants.REJECT_FLYWHEEL_SPEED;
+        if (flywheelLock)
+            flyWheelCalculatedVelocity = Constants.RANGE_TABLE[Constants.FLYWHEEL_LOCK_RANGE];
+
+        //
+        // DISABLE FLYWHEEL when in slow mode
+        //
+        if (!fastMode)
+            flyWheelCalculatedVelocity = 0;
 
         // Command the flywheel
         updateFlywheel(flyWheelCalculatedVelocity);     // Send desired RPM to flywheel controller
 
         return;
-
     }
 
 }
