@@ -51,8 +51,7 @@ public class AutoWaypoint {
 
             } else if (currentWaypoint.fetch) {
                 System.out.println("ROBOT fetch!");
-                drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(ballVision.moveTowardsTarget(), 0,
-                ballVision.turnRobot(), Rotation2d.fromDegrees(0)));
+                this.fetch(drivetrain, collector, ballVision, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, collectorState, ConfigRun.ROTATE_POWER_SLOW);
                 currentWaypoint.fetch = collector.getCollectorState() == collectorState;
                 System.out.println("ROBOT fetch!: " + currentWaypoint.fetch);
 
@@ -104,5 +103,20 @@ public class AutoWaypoint {
             drivetrain.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drivetrain.getGyroscopeRotation()));
             return;
         }
+    }
+
+    public boolean fetch(Drivetrain drive, Collector collector, Vision visionBall, double targetLockedSpeed, double targetCloseSpeed, CollectorState collectorState, double visionSearchSpeed){
+        boolean isDoneFetch = false;
+    
+        drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(targetLockedSpeed, targetCloseSpeed), 0,
+              visionBall.turnRobot(visionSearchSpeed), Rotation2d.fromDegrees(0)));
+    
+        if(collector.getCollectorState() == collectorState){
+          isDoneFetch = true;
+        }else{
+          isDoneFetch = false;
+        }
+    
+        return isDoneFetch;
     }
 }

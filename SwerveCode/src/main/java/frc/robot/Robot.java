@@ -54,7 +54,6 @@ public class Robot extends TimedRobot {
   public Collector collector;
   public CollectorArmMM arm;
   public Climber climber;
-  public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
 
@@ -152,21 +151,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    //autonomous.resetAuto();
-    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
-    if(ConfigRun.WAYPOINT){
-      autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.5, false, true, false, new Timer()));
-      autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
-      autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
-    }
-
     drive.resetPose(new Pose2d(0,0,new Rotation2d()));
     
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
-    autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.5, false, true, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.1, true, false, true, new Timer()));
-    collector.enableCollectMode(arm, powerMonitor);
+    autoWaypoint.addWaypoint(new Waypoint(-1, 0, 0.5, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(-1, -1, 0.5, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(0, -1, 0.5, false, false, false, new Timer()));
+    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.5, false, false, false, new Timer()));
+
+
+    //collector.enableCollectMode(arm, powerMonitor);
     m_autoSelected = m_chooser.getSelected();
     m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     //System.out.println("Auto selected: " + m_autoSelected);
@@ -213,53 +207,15 @@ public class Robot extends TimedRobot {
    * Simple 2-ball autonomous routine
    */
   public void autonomousPeriodic() {
-    colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
-    //powerMonitor.powerPeriodic();
+    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), true, false);
+    powerMonitor.powerPeriodic();
+
     autoWaypoint.runWaypoint();
-    //turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
-   // powerMonitor.powerPeriodic();
-    // Turn to ring, then shoot, then drive backwards until we see the ring being 13 feet away
-    // decide state changes
-   /* switch(autoState) {
-      case TURN:
-         if(visionRing.targetLocked) {
-          autoState = AutoState.DRIVE;
-         autoStateTime = timer.get() + 1.0;
-    }
-   break;
-   case SHOOT:
-        
-   break;
-   case DRIVE:
-   if(collector.getCollectorState() == Collector.CollectorState.TWO_BALLS) {
-    autoState = AutoState.SHOOT;
-    
-  }
-
-   SmartDashboard.putString("autoState", autoState.name());
-
- //execute current state
-   switch(autoState) {
-  case SHOOT:
-    collector.shoot();
-    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-    break;
-   case TURN:
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0, 0.0, visionRing.turnRobot(), drive.getGyroscopeRotation()));
-      collector.enableCollectMode(arm, powerMonitor);
-     break;
-  case DRIVE:
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(), 0.0, visionBall.turnRobot(), Rotation2d.fromDegrees(0)));
-      collector.enableCollectMode(arm, powerMonitor); 
-      break;
-     }
-     */
    }
 
 
@@ -331,15 +287,13 @@ public class Robot extends TimedRobot {
     //
     // Call these methods on each update cycle to keep the robot running
     //
-    locality.updatePosition(drive.getYaw(), visionRing);
-    
-    colorSense.updateCurrentBallColor();
     visionBall.updateVision();
     visionRing.updateVision();
-    
+    locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), colorSense.isAllianceBallColor());
+    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
+    powerMonitor.powerPeriodic();
  
     //
     // Current control scheme
