@@ -77,8 +77,8 @@ public class AutoDrive {
         double targetOffsetRotation = vision.offsetAngle(); 
         double robotRotationRad = Math.toRadians(robotRotation);
         targetDistance = this.inchesToMeters(targetDistance);
-        boolean testNone = false;
-        if(vision.targetValid && testNone ){
+        boolean testNone = true;
+        if(vision.targetValid && testNone){
             double distance2 = (targetDistance + AutoDrive.hubRadius)/Math.cos(targetOffsetRotation) + this.inchesToMeters(24) ;
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
             this.positionY = -distance2 * Math.sin(robotRotationRad + targetOffsetRotation) + hubCenterY;
@@ -139,8 +139,8 @@ public class AutoDrive {
         lastAngleError = angleError;  // reset initial angle
 
         angularVelocity = angleError * KP_angular_velocity + KD_angular_velocity * changeInAngleError;
-            angularVelocity = Math.min(angularVelocity, 0.5);
-            angularVelocity = Math.max(angularVelocity, -0.5);
+            angularVelocity = Math.min(angularVelocity, 1);
+            angularVelocity = Math.max(angularVelocity, -1);
 
             return -angularVelocity;
     }
@@ -169,8 +169,8 @@ public class AutoDrive {
             lastErrorY = errorY;  // reset initial angle
 
             velocity[0] = errorX * KP_velocity_X + KD_velocity_X * changeInErrorX;
-            velocity[0] = Math.min(velocity[0], 0.5);
-            velocity[0] = Math.max(velocity[0], -0.5);
+            velocity[0] = Math.min(velocity[0], 0.3);
+            velocity[0] = Math.max(velocity[0], -0.3);
             velocity[1] = errorY * KP_velocity_Y + KD_velocity_Y * changeInErrorY;
             velocity[1] = Math.min(velocity[1], 0.5);
             velocity[1] = Math.max(velocity[1], -0.5);

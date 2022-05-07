@@ -152,12 +152,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     drive.resetPose(new Pose2d(0,0,new Rotation2d()));
+
     
-    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
-    autoWaypoint.addWaypoint(new Waypoint(-1, 0, 0.5, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(-1, -1, 0.5, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(0, -1, 0.5, false, false, false, new Timer()));
-    autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.5, false, false, false, new Timer()));
+    
+    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall, arm, powerMonitor);
+    autoWaypoint.addWaypoint(new Waypoint(3, 0, 0.2, false, false, false, true, new Timer()));
+    //autoWaypoint.addWaypoint(new Waypoint(-2, -2, 0.15, true, false, false, new Timer()));
+    //autoWaypoint.addWaypoint(new Waypoint(0, -2, 0.15, true, false, false, new Timer()));
+    //autoWaypoint.addWaypoint(new Waypoint(0, 0, 0.15, true, false, false, new Timer()));
 
 
     //collector.enableCollectMode(arm, powerMonitor);
@@ -508,7 +510,7 @@ public class Robot extends TimedRobot {
     if (Math.abs(inputJoystick) < ConfigRun.JOYSTICK_DEADBAND) {
       return 0;
     } else {
-      return inputJoystick;
+      return inputJoystick * 0.5;
     }
   }
 

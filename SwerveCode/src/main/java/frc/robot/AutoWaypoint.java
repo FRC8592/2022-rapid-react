@@ -15,11 +15,15 @@ public class AutoWaypoint {
     private Shooter shooter;
     private Vision ringVision;
     private Vision ballVision;
+    private CollectorArmMM collectorArmMM;
+    private Power powerMonitor;
     private CollectorState collectorState;
 
     public AutoWaypoint(AutoDrive locality, Drivetrain drivetrain, Collector collector, Shooter shooter,
-            Vision ringVision, Vision ballVision) {
+            Vision ringVision, Vision ballVision, CollectorArmMM collectorArmMM, Power powerMonitor) {
         waypoints = new ArrayList<Waypoint>();
+        this.powerMonitor = powerMonitor;
+        this.collectorArmMM = collectorArmMM;
         this.drivetrain = drivetrain;
         this.collector = collector;
         this.shooter = shooter;
@@ -39,6 +43,8 @@ public class AutoWaypoint {
                 if (currentWaypoint.turnTo) {
                     turnSpeed = autoDrive.turnTo(autoDrive.getHeading(currentWaypoint.x, currentWaypoint.y),
                             drivetrain.getYaw());
+                } else if(currentWaypoint.lock){
+                    turnSpeed = ringVision.turnRobot(0.2);
                 } else {
                     turnSpeed = 0;
                 }
@@ -51,7 +57,8 @@ public class AutoWaypoint {
 
             } else if (currentWaypoint.fetch) {
                 System.out.println("ROBOT fetch!");
-                this.fetch(drivetrain, collector, ballVision, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, collectorState, ConfigRun.ROTATE_POWER_SLOW);
+                collector.enableCollectMode(collectorArmMM, powerMonitor);
+                this.fetch(drivetrain, collector, ballVision, -1, -1, collectorState, ConfigRun.ROTATE_POWER_SLOW);
                 currentWaypoint.fetch = collector.getCollectorState() == collectorState;
                 System.out.println("ROBOT fetch!: " + currentWaypoint.fetch);
 
