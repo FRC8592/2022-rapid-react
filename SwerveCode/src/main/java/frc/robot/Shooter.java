@@ -182,9 +182,8 @@ public class Shooter{
         //
         // Lock the flywheel to a fixed speed if in flywheelLock mode
         //
-        if (flywheelLock)
-            flyWheelCalculatedVelocity = Constants.RANGE_TABLE[Constants.FLYWHEEL_LOCK_RANGE];
-
+        // if (flywheelLock)
+        flyWheelCalculatedVelocity = 1000;
         //
         // DISABLE FLYWHEEL when in slow mode
         //
