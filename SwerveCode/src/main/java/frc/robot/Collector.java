@@ -18,6 +18,7 @@ public class Collector {
     private boolean shootMode      = false;
     private boolean forceShootMode = false;
     private boolean collectorMode  = false;
+    public int ballMode;
 
     // Line break sensors
     private DigitalInput lineSensorTop;
@@ -270,6 +271,8 @@ public class Collector {
                         driveProcessingWheels(0);
                         driveStagingWheels(0);   
                     }
+
+                    ballMode = 0;
                 break;
             
                 case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to move it to the top while we continue collecting
@@ -287,6 +290,8 @@ public class Collector {
                     //
                     driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                     driveStagingWheels(Constants.COLLECT_STAGING_POWER);
+
+                    ballMode = 1;
                 break;
 
                 case BALL_XFER_TO_TOP:
@@ -306,6 +311,8 @@ public class Collector {
                     //
                     driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                     driveStagingWheels(Constants.COLLECT_STAGING_POWER);
+
+                    ballMode = 2;
                 break;
 
                 case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball\
@@ -326,6 +333,8 @@ public class Collector {
                         driveProcessingWheels(0);
                         driveStagingWheels(0);
                     }
+
+                    ballMode = 3;
                 break;
 
                 case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
@@ -341,7 +350,11 @@ public class Collector {
                     driveStagingWheels(0);
 
                     disableCollectMode(arm, powerMonitor);
+
+                    ballMode = 4;
                 break;
+
+                    
             }
         }   
     }
