@@ -217,7 +217,7 @@ public class Drivetrain {
         this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
         getSMState(m_backRightModule));
 
-    }
+    } 
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
     }

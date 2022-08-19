@@ -137,7 +137,7 @@ public final class Constants {
     public static double SHOOT_STAGING_POWER      =  1.0;
 
     // Collector arm
-    public static int BALL_SET_POINT = -2925;   // -3025 is bottom
+    public static int BALL_SET_POINT = -27500;   // -3025 is bottom
     public static double ARM_UP_P = 0.12;
     public static double ARM_UP_I = 0.0001;
     public static double ARM_UP_D = 15.0;
@@ -149,11 +149,11 @@ public final class Constants {
     public static double ARM_DOWN_F = 0.0;
 
     public static int    ARM_MM_SMOOTHING   = 1;
-    public static double ARM_MM_CRUISE_VELO = 500;
-    public static double ARM_MM_ACCEL       = 2400;
+    public static double ARM_MM_CRUISE_VELO = 16000;
+    public static double ARM_MM_ACCEL       = 15000;
     public static double ARM_DEADBAND       = 0.001;  // Set very small.  Default is 0.04
-    public static double ARM_STEADY_POWER   = 0.25;
-    public static int    ARM_TICKS_180      = 4736;
+    public static double ARM_STEADY_POWER   = 0.10;
+    public static int    ARM_TICKS_180      = 42624;
 
     // Limit collector arm current
     public static SupplyCurrentLimitConfiguration ARM_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(true, 10, 40, 6.0);
