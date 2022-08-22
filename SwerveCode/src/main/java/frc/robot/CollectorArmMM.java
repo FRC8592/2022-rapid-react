@@ -74,6 +74,11 @@ public class CollectorArmMM {
     }
 
 
+    public boolean outputLimitSwitch(){
+        return limitSwitch.get();
+    }
+
+
     /**
      * Raise the collector arm to the parked position
      */

@@ -467,6 +467,13 @@ public class Robot extends TimedRobot {
     // Prevent possible(?) timeouts from occuring by sending commands to the motor
     // continuously
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+    SmartDashboard.putNumber("Yaw value", locality.getYaw());
+    SmartDashboard.putNumber("Position Y (inch)", locality.inchesToMeters(locality.getY()));
+    SmartDashboard.putNumber("Position X (inch)", locality.inchesToMeters(locality.getX()));
+    SmartDashboard.putNumber("Position Valid", locality.isGood() ? 1.0: 0.0);
+    SmartDashboard.putBoolean("limitSwitch", arm.outputLimitSwitch());
+
+    drive.getCurrentPos();
     // Pulls arm down until motor current peaks, current peaks = arm is parked
     
 
