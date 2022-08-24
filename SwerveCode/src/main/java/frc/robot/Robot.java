@@ -22,6 +22,7 @@ import java.rmi.registry.LocateRegistry;
 
 import javax.swing.DropMode;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -69,6 +70,8 @@ public class Robot extends TimedRobot {
   // teleopInit()
   private boolean AutonomousHasRun = false;
 
+  SlewRateLimiter filter;
+
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -104,6 +107,9 @@ public class Robot extends TimedRobot {
     powerMonitor = new Power();
     timer = new Timer();
     autonomous = new Autonomous();
+    filter = new SlewRateLimiter(8);
+
+
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -440,7 +446,7 @@ public class Robot extends TimedRobot {
     // Normal teleop drive
     //
     else {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(filter.calculate(translateX)), -joystickDeadband(filter.calculate(translateY)),
           -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
                                                                      // opposite of controller directions
     }
