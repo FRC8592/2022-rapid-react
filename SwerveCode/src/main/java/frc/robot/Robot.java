@@ -440,6 +440,8 @@ public class Robot extends TimedRobot {
     translateX = xfilter.calculate(translateX);
     translateY = yfilter.calculate(translateY);
 
+    translateX = exponentialModifier(translateX);
+    translateY = exponentialModifier(translateY);
 
     translateY = (translateY * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
     translateX = (translateX * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
@@ -527,6 +529,17 @@ public class Robot extends TimedRobot {
     } else {
       return inputJoystick;
     }
+  }
+
+  public double exponentialModifier(double inputJoystick){
+    if(inputJoystick < 0){
+      inputJoystick = Math.pow(inputJoystick, 2);
+      inputJoystick = inputJoystick * -1;
+    }else{
+      inputJoystick = Math.pow(inputJoystick, 2);
+    }
+
+    return inputJoystick;
   }
 
   
