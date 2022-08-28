@@ -70,7 +70,8 @@ public class Robot extends TimedRobot {
   // teleopInit()
   private boolean AutonomousHasRun = false;
 
-  SlewRateLimiter filter;
+  SlewRateLimiter xfilter;
+  SlewRateLimiter yfilter;
 
 
   /**
@@ -107,7 +108,8 @@ public class Robot extends TimedRobot {
     powerMonitor = new Power();
     timer = new Timer();
     autonomous = new Autonomous();
-    filter = new SlewRateLimiter(8);
+    xfilter = new SlewRateLimiter(4);
+    yfilter = new SlewRateLimiter(4);
 
 
 
@@ -413,7 +415,7 @@ public class Robot extends TimedRobot {
     //
     rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
         * rotatePower; // Right joystick
-    translateX = (driverController.getLeftY() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower; // X
+    translateX = driverController.getLeftY(); // X
                                                                                                                         // is
                                                                                                                         // forward
                                                                                                                         // Direction,
@@ -422,7 +424,26 @@ public class Robot extends TimedRobot {
                                                                                                                         // Joystick
                                                                                                                         // is
                                                                                                                         // Y
-    translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    translateY = driverController.getLeftX();
+
+
+    //
+    //Adds deadband to the joysticks
+    //
+    translateY = -joystickDeadband(translateY);
+    translateX = -joystickDeadband(translateX);
+
+
+    //
+    //Adds Slew rate limiter
+    //
+    translateX = xfilter.calculate(translateX);
+    translateY = yfilter.calculate(translateY);
+
+
+    translateY = (translateY * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    translateX = (translateX * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+ 
 
     //
     // Activate ring targetting. Robot translate controls are functional while
@@ -446,7 +467,7 @@ public class Robot extends TimedRobot {
     // Normal teleop drive
     //
     else {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(filter.calculate(translateX)), -joystickDeadband(filter.calculate(translateY)),
+      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(translateX, translateY,
           -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
                                                                      // opposite of controller directions
     }
