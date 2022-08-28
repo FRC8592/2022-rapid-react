@@ -413,8 +413,7 @@ public class Robot extends TimedRobot {
     //
     // Read gamepad controls for drivetrain and scale control values
     //
-    rotate = (driverController.getRightX() * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND)
-        * rotatePower; // Right joystick
+    rotate = driverController.getRightX(); // Right joystick
     translateX = driverController.getLeftY(); // X
                                                                                                                         // is
                                                                                                                         // forward
@@ -442,9 +441,12 @@ public class Robot extends TimedRobot {
 
     translateX = exponentialModifier(translateX);
     translateY = exponentialModifier(translateY);
+    rotate = exponentialModifier(rotate);
+
 
     translateY = (translateY * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
     translateX = (translateX * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
+    rotate = (rotate * Drivetrain.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * rotatePower;
  
 
     //
