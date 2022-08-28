@@ -48,7 +48,7 @@ public class AutoDrive {
         AutoDrive.hubCenterY = hubCenterY;
         this.robotRotation = 0;
         AutoDrive.hubRadius = .6;
-        isGoodData = false;
+        isGoodData = true;
         this.driveTrain = drive;
         targetX = 0;
         targetY = 0;
@@ -77,7 +77,7 @@ public class AutoDrive {
         double targetOffsetRotation = vision.offsetAngle(); 
         double robotRotationRad = Math.toRadians(robotRotation);
         targetDistance = this.inchesToMeters(targetDistance);
-        boolean testNone = false;
+        boolean testNone = true;
         if(vision.targetValid && testNone ){
             double distance2 = (targetDistance + AutoDrive.hubRadius)/Math.cos(targetOffsetRotation);
             this.positionX = -distance2 * Math.cos(robotRotationRad + targetOffsetRotation) + hubCenterX;
@@ -87,7 +87,7 @@ public class AutoDrive {
             drive.resetPose(pose);
             
         } else {
-            this.isGoodData = true;
+            this.isGoodData = false;
             Pose2d pose = drive.getCurrentPos();
             this.positionX = pose.getX();
             this.positionY = pose.getY();
