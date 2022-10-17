@@ -386,9 +386,9 @@ public class Robot extends TimedRobot {
     // Toggle flywheel lock mode
     //
     if (shooterController.getRightBumperPressed()){
-      flywheelLock = ! flywheelLock;
+      flywheelLockToggle = ! flywheelLockToggle;
     }
-    flywheelLock = ! flywheelLockToggle || controlPanel.getRawButtonPressed(6);
+    flywheelLock = flywheelLockToggle || controlPanel.getRawButton(6);
     SmartDashboard.putBoolean("Fly Wheel Lock", flywheelLock);
     
     
