@@ -71,7 +71,7 @@ public Autonomous() {
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13
     // feet away
     // decide state changes
-    boolean normal = false;
+    boolean normal = true;
     
     if(visionRing.distanceToTarget() < 160){
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-1, 0, 0, drive.getGyroscopeRotation()));
