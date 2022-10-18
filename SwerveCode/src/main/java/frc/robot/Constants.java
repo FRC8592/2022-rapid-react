@@ -130,7 +130,7 @@ public final class Constants {
     public static int MAX_COLOR_CHECKS   = 10;
 
     // Main collector
-    public static double COLLECT_PROCESSING_POWER =  0.3;
+    public static double COLLECT_PROCESSING_POWER =  0.25;
     public static double COLLECT_STAGING_POWER    =  0.3;
     public static double UNJAM_PROCESSING_POWER   = -0.2;
     public static double UNJAM_STAGING_POWER      = -0.2;
