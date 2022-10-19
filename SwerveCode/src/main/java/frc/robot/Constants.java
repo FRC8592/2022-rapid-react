@@ -212,6 +212,8 @@ public final class Constants {
         3400,  // 19 ft
         3400}; // 20 ft
 
+    public static double FLYWHEEL_LIMIT = 3280;
+
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}
 
