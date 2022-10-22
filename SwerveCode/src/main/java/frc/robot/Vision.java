@@ -143,7 +143,7 @@ public class Vision {
       }
     }
 
-    processedDx = (totalDx/totalValid) - 1.0;
+    processedDx = (totalDx/totalValid) - 1.5;
     processedDy = totalDy/totalValid;
     targetValid = (totalValid >= MIN_LOCKS);
 

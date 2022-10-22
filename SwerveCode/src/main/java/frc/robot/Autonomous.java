@@ -40,7 +40,7 @@ public Autonomous() {
   }
 
   public void resetAuto(){
-    autoState = AutoState.MOVE_CLOSER_G;
+    autoState = AutoState.START;
   }
 
   public boolean shoot(Drivetrain drive, Collector collector, Vision visionRing, double visonSearchSpeed){
