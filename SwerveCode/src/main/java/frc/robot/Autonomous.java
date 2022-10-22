@@ -40,7 +40,7 @@ public Autonomous() {
   }
 
   public void resetAuto(){
-    autoState = AutoState.START;
+    autoState = AutoState.MOVE_CLOSER_G;
   }
 
   public boolean shoot(Drivetrain drive, Collector collector, Vision visionRing, double visonSearchSpeed){
@@ -116,7 +116,7 @@ public Autonomous() {
        case SHOOT_A:
        if(shoot(drive, collector, visionRing, ConfigRun.VISION_SEARCH_SPEED)){
          timer.reset();
-         autoState = AutoState.MOVE_A_TO_D;
+         autoState = AutoState.STOP;
        } //todo add switch
        break;
 
@@ -220,7 +220,7 @@ public Autonomous() {
        //assuming we already see G, collect G
        case FETCH_G:
        collector.enableCollectMode(arm, powerMonitor);
-       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.ONE_BALL_TOP, 2)){
+       if(this.fetch(drive, collector, visionBall, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, CollectorState.ONE_BALL_TOP, -2)){
           autoState = AutoState.MOVE_CLOSER_G;
        }
        break;
@@ -231,7 +231,7 @@ public Autonomous() {
         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
            visionRing.turnRobot(ConfigRun.VISION_SEARCH_SPEED), drive.getGyroscopeRotation()));
         }else{
-         if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, ConfigRun.VISION_SEARCH_SPEED, 4)){
+         if(this.moveCloserToRing(drive, visionRing, locality, ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED, ConfigRun.VISION_SEARCH_SPEED / 1.5, 4)){
            autoState = AutoState.SHOOT_G;
          }
         }
