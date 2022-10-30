@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
+  public LEDstrips LEDstrips;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -104,6 +105,8 @@ public class Robot extends TimedRobot {
     powerMonitor = new Power();
     timer = new Timer();
     autonomous = new Autonomous();
+    LEDstrips = new LEDstrips();
+    
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -111,6 +114,8 @@ public class Robot extends TimedRobot {
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode")
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+
+
 
   }
 
@@ -127,7 +132,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+   
   }
 
   /**
@@ -211,7 +216,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
-
+    LEDstrips.upAndDown();
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
     //
@@ -464,6 +469,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    LEDstrips.upAndDown();
     // Prevent possible(?) timeouts from occuring by sending commands to the motor
     // continuously
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
