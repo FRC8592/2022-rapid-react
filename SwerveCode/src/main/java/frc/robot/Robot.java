@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
+  public CollectorPID collectorPID;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -104,6 +105,8 @@ public class Robot extends TimedRobot {
     powerMonitor = new Power();
     timer = new Timer();
     autonomous = new Autonomous();
+    collectorPID = new CollectorPID(0.1, 0, 0);
+
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
