@@ -196,9 +196,9 @@ public class Drivetrain {
 
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
-        SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
-        SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
-        SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
+        //SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
+        //SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
+        //SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
         return pos;
     }
     public void resetPose(Pose2d pose){

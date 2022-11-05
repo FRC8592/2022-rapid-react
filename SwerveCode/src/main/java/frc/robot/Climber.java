@@ -144,8 +144,8 @@ public class Climber {
         else
             liftMotorLeft.set(ControlMode.PercentOutput, 0);
         
-        SmartDashboard.putNumber("Right Pos", liftMotorRight.getSelectedSensorPosition());
-        SmartDashboard.putNumber("Left Pos", liftMotorLeft.getSelectedSensorPosition());
+        //SmartDashboard.putNumber("Right Pos", liftMotorRight.getSelectedSensorPosition());
+        //SmartDashboard.putNumber("Left Pos", liftMotorLeft.getSelectedSensorPosition());
     }
 
 

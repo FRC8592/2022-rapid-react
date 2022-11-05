@@ -24,7 +24,8 @@ public class Collector {
     private DigitalInput lineSensorBottom;
 
     // Collector motors
-    private WPI_TalonFX processing;
+
+    private CollectorPID collectorPID;
     private WPI_TalonFX staging;
 
     // Internal state
@@ -38,22 +39,21 @@ public class Collector {
     // Intialize hardware
     //
     public Collector() {
-        processing   = new WPI_TalonFX(Constants.newFlywheelCollector);
+        //                               P   I   D      F
+        collectorPID = new CollectorPID(0.1, 0.0001, -0.15, 0.048);
         staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
         collectorTimer = new Timer();
         shootTimer     = new Timer();
 
         staging.setNeutralMode(NeutralMode.Brake);
-        processing.setNeutralMode(NeutralMode.Brake);
 
-        processing.set(ControlMode.Velocity, 0);
+        collectorPID.updateVelocity(0, 0);
         staging.set(ControlMode.Velocity, 0);
 
         lineSensorBottom = new DigitalInput(Constants.LINE_BREAK_BOTTOM_SENSOR_PORT);
         lineSensorTop    = new DigitalInput(Constants.LINE_BREAK_TOP_SENSOR_PORT);
    
         // Invert collector motors so that positive power drives balls inward
-        processing.setInverted(true);
         staging.setInverted(true);
         collectorTimer.start();
         shootTimer.start();
@@ -69,14 +69,13 @@ public class Collector {
         forceShootMode = false;
         collectorMode  = false;
 
-        processing.set(ControlMode.Velocity, 0);
         staging.set(ControlMode.Velocity, 0);
     }
     
 
     //Drives the processing wheels for state machine
     public void driveProcessingWheels(double speed){
-        this.processing.set(speed);
+        collectorPID.updateVelocity(speed, 0);
     }
 
 
@@ -88,7 +87,7 @@ public class Collector {
 
     //Stops processing wheels for state machine
     public void stopProcessingWheels(){
-        this.processing.set(0);
+        collectorPID.updateVelocity(0, 0);
     }
 
 
@@ -104,7 +103,7 @@ public class Collector {
 
     //Manually reverses the Processing wheels
     public void reverseProcessingWheels(){
-        this.processing.set(-0.2);
+        collectorPID.updateVelocity(-500, 0);
     }
 
     //Stops entire intake system if needed
@@ -115,7 +114,7 @@ public class Collector {
 
     //This runs the intake system in its entirety if needed
     public void intakeAllRun(){
-        this.driveProcessingWheels(0.2);
+        this.driveProcessingWheels(500);
         this.driveStagingWheels(0.2);
     }
 
@@ -210,7 +209,7 @@ public class Collector {
         // *** Unjam overrides any normal control ***
         //
         if (unjamMode) {
-            driveProcessingWheels(Constants.UNJAM_PROCESSING_POWER);
+            collectorPID.updateVelocity(Constants.UNJAM_PROCESSING_POWER,0);
             driveStagingWheels(Constants.UNJAM_STAGING_POWER);
             collectorState = CollectorState.NO_BALLS_LOADED;
             unjamMode = false;  // Clear mode.  Will be overwritten if unjam button is held down

@@ -55,7 +55,6 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
-  public CollectorPID collectorPID;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -105,7 +104,6 @@ public class Robot extends TimedRobot {
     powerMonitor = new Power();
     timer = new Timer();
     autonomous = new Autonomous();
-    collectorPID = new CollectorPID(0.1, 0, 0);
 
 
     // Turn all of our blindingly bright lights off until neeeded.
@@ -312,32 +310,32 @@ public class Robot extends TimedRobot {
     // Unjam the intake by reversing the staging and collector motors. This function
     // has top priority
     //
-  if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
-    collector.unjam(arm);
-  else {
-    //
-    // Enter collect mode
-    //
-    if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
-      collector.enableCollectMode(arm, powerMonitor);
-    //
-    // Exit collect mode
-    //
-    else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
-      collector.disableCollectMode(arm, powerMonitor);
+    if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
+      collector.unjam(arm);
+    else {
+      //
+      // Enter collect mode
+      //
+      if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
+        collector.enableCollectMode(arm, powerMonitor);
+      //
+      // Exit collect mode
+      //
+      else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
+        collector.disableCollectMode(arm, powerMonitor);
 
-    //
-    // Shoot ball with aiming automation disabled
-    //
-    if (shooterController.getRightBumper() && shooterController.getBackButton())
-      collector.forceShoot();
+      //
+      // Shoot ball with aiming automation disabled
+      //
+      if (shooterController.getRightBumper() && shooterController.getBackButton())
+        collector.forceShoot();
 
-    //
-    // Shoot ball
-    //
-    else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
-      collector.shoot();
-  }
+      //
+      // Shoot ball
+      //
+      else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
+        collector.shoot();
+    }
     
 
     //
@@ -470,11 +468,11 @@ public class Robot extends TimedRobot {
     // Prevent possible(?) timeouts from occuring by sending commands to the motor
     // continuously
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
-    SmartDashboard.putNumber("Yaw value", locality.getYaw());
-    SmartDashboard.putNumber("Position Y (inch)", locality.inchesToMeters(locality.getY()));
-    SmartDashboard.putNumber("Position X (inch)", locality.inchesToMeters(locality.getX()));
-    SmartDashboard.putNumber("Position Valid", locality.isGood() ? 1.0: 0.0);
-    SmartDashboard.putBoolean("limitSwitch", arm.outputLimitSwitch());
+    // SmartDashboard.putNumber("Yaw value", locality.getYaw());
+    // SmartDashboard.putNumber("Position Y (inch)", locality.inchesToMeters(locality.getY()));
+    // SmartDashboard.putNumber("Position X (inch)", locality.inchesToMeters(locality.getX()));
+    // SmartDashboard.putNumber("Position Valid", locality.isGood() ? 1.0: 0.0);
+    // SmartDashboard.putBoolean("limitSwitch", arm.outputLimitSwitch());
 
     drive.getCurrentPos();
     // Pulls arm down until motor current peaks, current peaks = arm is parked

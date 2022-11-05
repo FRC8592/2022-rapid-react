@@ -46,7 +46,7 @@ public class ColorSensor{
         if (allianceColor == BALL_COLOR.NONE)
             allianceColor = BALL_COLOR.BLUE;
 
-        SmartDashboard.putString("Alliance", allianceColor.toString());
+        //SmartDashboard.putString("Alliance", allianceColor.toString());
     }
 
 
@@ -132,8 +132,8 @@ public class ColorSensor{
         // SmartDashboard.putNumber("Red", detectedColor.red);                     // Red component of ball color
         // SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
         // SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
-        SmartDashboard.putString("Ball", currentBallColor.toString());             // Computed ball color
-        SmartDashboard.putString("Alliance", allianceColor.toString());
+        //SmartDashboard.putString("Ball", currentBallColor.toString());             // Computed ball color
+        //SmartDashboard.putString("Alliance", allianceColor.toString());
 
         return currentBallColor;
     }
