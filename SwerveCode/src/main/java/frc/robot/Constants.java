@@ -131,8 +131,9 @@ public final class Constants {
 
     // Main collector
     public static double COLLECT_PROCESSING_POWER =  2500;
+    public static double SHOOTING_PROCESSING_POWER =  500;
     public static double COLLECT_STAGING_POWER    =  0.3;
-    public static double UNJAM_PROCESSING_POWER   = -0.2;
+    public static double UNJAM_PROCESSING_POWER   = -1000;
     public static double UNJAM_STAGING_POWER      = -0.2;
     public static double SHOOT_STAGING_POWER      =  1.0;
 

@@ -236,7 +236,7 @@ public class Collector {
         //
         else if (shootMode) {
             if ((shooter.isFlywheelReady()) && vision.isTargetLocked() && shootTimer.get() >= ConfigRun.TIME_BEFORE_SHOT) {
-                driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
+                driveProcessingWheels(Constants.SHOOTING_PROCESSING_POWER);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
                 shootTimer.reset();
             }

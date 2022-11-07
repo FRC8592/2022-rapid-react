@@ -47,8 +47,13 @@ public class CollectorPID {
   }  
 
   public void updateVelocity(double targetSpeed, int mode){
-    double targetSpeedTicks = Constants.RPM_TO_TICKS_MS * targetSpeed;
-    armMotor.set(ControlMode.Velocity, targetSpeedTicks);
+    if(targetSpeed == 0) {
+      armMotor.set(ControlMode.PercentOutput, 0);
+    }
+    else {
+      double targetSpeedTicks = Constants.RPM_TO_TICKS_MS * targetSpeed;
+      armMotor.set(ControlMode.Velocity, targetSpeedTicks);
+    }
 
     SmartDashboard.putNumber("Collector Rotation Expected Speed", targetSpeed);
     //SmartDashboard.putNumber("Collector Rotation Actual Speed", this.getVelocity());
