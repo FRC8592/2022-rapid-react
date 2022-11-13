@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Collector.CollectorState;
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
   // Our robot objects
   public XboxController driverController;
   public XboxController shooterController;
+  public GenericHID controlPanel;
   public Drivetrain drive;
   public Autonomous autonomous;
   public Vision visionRing;
@@ -59,9 +61,11 @@ public class Robot extends TimedRobot {
 
   // Toggle for fast/slow mode
   private boolean fastMode;
+  private boolean slowModeToggle;
 
   // Toggle to lock flywheel speed\
   private boolean flywheelLock;
+  private boolean flywheelLockToggle;
 
   // Our alliance color
   private DriverStation.Alliance allianceColor;
@@ -86,6 +90,7 @@ public class Robot extends TimedRobot {
 
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
+    controlPanel = new GenericHID(2);
     drive = new Drivetrain();
     visionRing = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR,
         Constants.RING_CLOSE_ERROR, Constants.RING_CAMERA_HEIGHT,
@@ -175,6 +180,7 @@ public class Robot extends TimedRobot {
     // Ensure we are in fast mode or the flywheel won't operate
     fastMode     = true;
     flywheelLock = false;
+    flywheelLockToggle = false;
 
     //
     // Set up the proper ball-seeking pipeline for our alliance color
@@ -247,6 +253,9 @@ public class Robot extends TimedRobot {
     fastMode     = true;
     flywheelLock = false;
 
+    //slow mode is off
+    slowModeToggle = false;
+
     // Turn on lights
     powerMonitor.relayOn();
     NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("ledMode").setNumber(Constants.LIMELIGHT_LIGHT.PIPELINE_MODE.ordinal());
@@ -285,7 +294,7 @@ public class Robot extends TimedRobot {
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
     powerMonitor.powerPeriodic();
-
+    
     //
     // Current control scheme
     // driverController (Left stick) : translate
@@ -309,79 +318,85 @@ public class Robot extends TimedRobot {
     // shooterController (BACK + blue) : Force blue alliance
     // shooterController (BACK + red) : Force red alliance
     // shooterController (BACK Right bumper) : Shoot without lock on ring
-
+    
     //
     // Unjam the intake by reversing the staging and collector motors. This function
     // has top priority
     //
-  if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
+    if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
     collector.unjam(arm);
-  else {
-    //
-    // Enter collect mode
-    //
-    if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
+    else {
+      //
+      // Enter collect mode
+      //
+      if ((driverController.getAButtonPressed()) || shooterController.getAButtonPressed())
       collector.enableCollectMode(arm, powerMonitor);
-    //
-    // Exit collect mode
-    //
-    else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
+      //
+      // Exit collect mode
+      //
+      else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
       collector.disableCollectMode(arm, powerMonitor);
-
-    //
-    // Shoot ball with aiming automation disabled
-    //
-    if (shooterController.getRightBumper() && shooterController.getBackButton())
+      
+      //
+      // Shoot ball with aiming automation disabled
+      //
+      if (shooterController.getRightBumper() && shooterController.getBackButton())
       collector.forceShoot();
-
-    //
-    // Shoot ball
-    //
-    else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
+      
+      //
+      // Shoot ball
+      //
+      else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
       collector.shoot();
-  }
+    }
     
-
+    
     //
     // Reset gyroscope zero for field-relative driving
     //
-    if (driverController.getXButton() && driverController.getBackButton()) {
+    if (driverController.getXButton() && driverController.getBackButton() || controlPanel.getRawButtonPressed(1)) {
       //System.out.println("Override - zeroing gyroscope");
       drive.zeroGyroscope();
     }
-
+    
     //
     // Force Blue alliance
     //
-    if (shooterController.getXButtonPressed() && shooterController.getBackButton()) {
+    if (shooterController.getXButtonPressed() && shooterController.getBackButton() || controlPanel.getRawButtonPressed(2)) {
       allianceColor = DriverStation.Alliance.Blue;
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(1);
+      .setNumber(1);
     }
-
+    
     //
     // Force Red alliance
     //
-    if (shooterController.getBButtonPressed() && shooterController.getBackButton()) {
+    if (shooterController.getBButtonPressed() && shooterController.getBackButton() || controlPanel.getRawButtonPressed(3)) {
       allianceColor = DriverStation.Alliance.Red;
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(0);
+      .setNumber(0);
     }
-
+    
     //
     // Toggle fast/slow mode
     //
     // *** FLYWHEEL IS FORCED TO 0 RPM in Slow Mode
     //
-    if (driverController.getRightBumperPressed())
-      fastMode = ! fastMode;
-
+    if (driverController.getRightBumperPressed()){
+      slowModeToggle = ! slowModeToggle;
+    }
+    fastMode = ! slowModeToggle && !controlPanel.getRawButton(7);  
+    SmartDashboard.putBoolean("Fast Mode", fastMode);
     //
     // Toggle flywheel lock mode
     //
-    if (shooterController.getRightBumperPressed())
-      flywheelLock = ! flywheelLock;
-
+    if (shooterController.getRightBumperPressed()){
+      flywheelLockToggle = ! flywheelLockToggle;
+    }
+    flywheelLock = flywheelLockToggle || controlPanel.getRawButton(6);
+    SmartDashboard.putBoolean("Fly Wheel Lock", flywheelLock);
+    
+    
     //
     // Control for climber
     // Moves arm up and down, checks that arm doesn't overextend
