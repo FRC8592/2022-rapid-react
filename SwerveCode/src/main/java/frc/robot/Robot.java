@@ -57,6 +57,7 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
+  public LEDstrips LEDstrips;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -109,6 +110,8 @@ public class Robot extends TimedRobot {
     powerMonitor = new Power();
     timer = new Timer();
     autonomous = new Autonomous();
+    LEDstrips = new LEDstrips();
+    
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -116,6 +119,8 @@ public class Robot extends TimedRobot {
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode")
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+
+
 
   }
 
@@ -132,7 +137,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+   
   }
 
   /**
@@ -154,7 +159,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    //autonomous.resetAuto();
+    autonomous.resetAuto();
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
     if(ConfigRun.WAYPOINT){
       autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.5, false, true, false, new Timer()));
@@ -217,7 +222,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
-
+    LEDstrips.upAndDown();
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
     //
@@ -479,9 +484,17 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    LEDstrips.upAndDown();
     // Prevent possible(?) timeouts from occuring by sending commands to the motor
     // continuously
     drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, 0, drive.getGyroscopeRotation()));
+    SmartDashboard.putNumber("Yaw value", locality.getYaw());
+    SmartDashboard.putNumber("Position Y (inch)", locality.inchesToMeters(locality.getY()));
+    SmartDashboard.putNumber("Position X (inch)", locality.inchesToMeters(locality.getX()));
+    SmartDashboard.putNumber("Position Valid", locality.isGood() ? 1.0: 0.0);
+    SmartDashboard.putBoolean("limitSwitch", arm.outputLimitSwitch());
+
+    drive.getCurrentPos();
     // Pulls arm down until motor current peaks, current peaks = arm is parked
     
 

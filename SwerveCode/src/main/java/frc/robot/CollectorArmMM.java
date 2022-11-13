@@ -74,6 +74,11 @@ public class CollectorArmMM {
     }
 
 
+    public boolean outputLimitSwitch(){
+        return limitSwitch.get();
+    }
+
+
     /**
      * Raise the collector arm to the parked position
      */
@@ -116,9 +121,9 @@ public class CollectorArmMM {
     public void update(){
         double feedForward = calcFeedForward(armMotor.getSelectedSensorPosition());
     
-        // SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
-        // SmartDashboard.putString("Arm State", armState.toString());
-        // SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
+        SmartDashboard.putString("Arm State", armState.toString());
+        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
@@ -131,7 +136,7 @@ public class CollectorArmMM {
                     armState = armStates.ARM_UP;
                 }
                 else {
-                    armMotor.setSelectedSensorPosition(-3025);
+                    armMotor.setSelectedSensorPosition(Constants.BALL_SET_POINT);
                     armState = armStates.ARM_RAISING;
                 }
                 
@@ -174,11 +179,12 @@ public class CollectorArmMM {
                 // If we are below BALL_SET_POINT.  If we are above, apply a bit more power
                 // to push down on the ball we are probably collecting
                 //
-                if (armMotor.getSelectedSensorPosition() < Constants.BALL_SET_POINT)
+                /*if (armMotor.getSelectedSensorPosition() < Constants.BALL_SET_POINT)
                     armMotor.set(ControlMode.PercentOutput, -0.10);
                 else
                     armMotor.set(ControlMode.PercentOutput, -0.20);
-                break;
+                */
+                    break;
         }
     }
     

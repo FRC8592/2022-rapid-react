@@ -196,9 +196,9 @@ public class Drivetrain {
 
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
-        SmartDashboard.putNumber("Drive X", pos.getX() * 39.3701 );
-        SmartDashboard.putNumber("Drive Y", pos.getY()  * 39.3701 );
-        SmartDashboard.putNumber("Drive Yaw", pos.getRotation().getDegrees());
+        SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
+        SmartDashboard.putNumber("Drive Y (in)", pos.getY()  * 39.3701 );
+        SmartDashboard.putNumber("Drive Yaw (deg)", pos.getRotation().getDegrees());
         return pos;
     }
     public void resetPose(Pose2d pose){
@@ -217,7 +217,7 @@ public class Drivetrain {
         this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
         getSMState(m_backRightModule));
 
-    }
+    } 
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
     }

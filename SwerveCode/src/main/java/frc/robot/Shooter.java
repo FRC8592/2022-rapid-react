@@ -126,8 +126,7 @@ public class Shooter{
             flyWheelRight.selectProfileSlot(SLOW, 0);
         }
 
-
-        flyWheelRight.set(ControlMode.Velocity, rpmToFalcon(flywheelRpmSet));
+        flyWheelRight.set(ControlMode.Velocity, rpmToFalcon(Math.min(flywheelRpmSet, Constants.FLYWHEEL_LIMIT)));
         flywheelRpmActual = falconToRpm(flyWheelRight.getSelectedSensorVelocity());
         flywheelRpmError  = Math.abs(flywheelRpmSet - flywheelRpmActual);
 

@@ -32,7 +32,7 @@ public class Power {
     //
     public Power() {
         // Create new Rev Power Distribution object
-        revPDH = new PowerDistribution(Constants.PDH_CAN, PowerDistribution.ModuleType.kRev);
+       // revPDH = new PowerDistribution(Constants.PDH_CAN, PowerDistribution.ModuleType.kRev);
         
         // Create the shuffleboard tab for power data
         powerTab = Shuffleboard.getTab("Power");
@@ -45,11 +45,13 @@ public class Power {
     //
     public void powerPeriodic() {
         // Get parameters from the PDH
+        /*
         temp    = revPDH.getTemperature();
         voltage = revPDH.getVoltage();
         current = revPDH.getTotalCurrent();
         power   = revPDH.getTotalPower();
         energy  = revPDH.getTotalEnergy();
+        */
 
         // Place all parameters onto a dedicated Shuffleboard tab
         // Shuffleboard.selectTab("Power");
@@ -68,7 +70,7 @@ public class Power {
     // Turn the switchable 12v port on
     //
     public void relayOn() {
-        revPDH.setSwitchableChannel(true);
+        // revPDH.setSwitchableChannel(true);
     }
 
 
@@ -76,7 +78,6 @@ public class Power {
     // Turn the switchable 12v port off
     //
     public void relayOff() {
-        revPDH.setSwitchableChannel(false);
+        // revPDH.setSwitchableChannel(false);
     }
-
 }
