@@ -24,6 +24,11 @@ import javax.swing.DropMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -34,7 +39,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -77,6 +82,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    setUseTiming(isReal());
+    LoggedNetworkTables.getInstance().addTable("/SmartDashboard");
+    Logger.getInstance().recordMetadata("ProjectName", "MyProject");
+    if (isReal()) {
+      Logger.getInstance().addDataReceiver(new ByteLogReceiver("/media/sda1/")); // Log to USB stick (name will be selected automatically)
+      Logger.getInstance().addDataReceiver(new LogSocketServer(5800)); // Provide log data over the network, viewable in Advantage Scope.
+    } 
+    else {
+      String path = ByteLogReplay.promptForPath(); // Prompt the user for a file path on the command line
+      Logger.getInstance().setReplaySource(new ByteLogReplay(path)); // Read log file for replay
+      Logger.getInstance().addDataReceiver(new ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim"))); // Save replay results to a new log with the "_sim" suffix
+    }
+    Logger.getInstance().start();
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
