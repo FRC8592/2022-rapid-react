@@ -19,6 +19,7 @@ public final class Constants {
     // Treat like a static class.  No instantiation
     private Constants() {throw new UnsupportedOperationException();}
 
+    public static final double INCHES_TO_METERS = 0.0254;
     /**
      * The left-to-right distance between the drivetrain wheels
      *

@@ -50,6 +50,7 @@ public class Robot extends TimedRobot {
   public Vision visionRing;
   public Vision visionBall;
   public AutoDrive locality;
+  public AutoDrive2 drive2;
   public Shooter shooter;
   public Collector collector;
   public CollectorArmMM arm;
@@ -103,6 +104,7 @@ public class Robot extends TimedRobot {
         Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
         Constants.BALL_ROTATE_KD);
     locality = new AutoDrive(0, 0, drive);
+    drive2 = new AutoDrive2(0.3, 0, 0, 0.3, 0, 0, 0.5, 0.25);
     shooter = new Shooter();
     collector = new Collector();
     arm = new CollectorArmMM();
@@ -159,6 +161,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    drive.resetPose(new Pose2d(0, 0, new Rotation2d(0)));
+    /* 
     autonomous.resetAuto();
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
     if(ConfigRun.WAYPOINT){
@@ -206,6 +210,7 @@ public class Robot extends TimedRobot {
 
     // Indicate to teleop that autonomous has run
     AutonomousHasRun = true;
+     */
   }
 
 
@@ -213,8 +218,12 @@ public class Robot extends TimedRobot {
    * Simple 2-ball autonomous routine
    */
   public void autonomousPeriodic() {
-    autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
+    //autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
     SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
+    Pose2d pos = drive.getCurrentPos();
+    Pose2d robotPos = new Pose2d(pos.getX() * 0.0254, pos.getY() * 0.0254, pos.getRotation());
+    ChassisSpeeds velocitySP = drive2.moveTo(new Pose2d(2, 2, new Rotation2d()), pos);
+    drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(velocitySP.vxMetersPerSecond, velocitySP.vyMetersPerSecond, velocitySP.omegaRadiansPerSecond, drive.getGyroscopeRotation()));
   }
 
   /**
