@@ -1,9 +1,20 @@
-package frc.robot;
+package frc.robot.autonomous;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Collector.CollectorState;
+import frc.common.ConfigRun;
+import frc.common.Constants;
+import frc.robot.Drivetrain;
+import frc.robot.Shooter;
+import frc.robot.Vision;
+import frc.robot.hardware.Power;
+import frc.robot.modules.*;
+import frc.robot.modules.Collector.CollectorState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+
+import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy.FirstCharBasedValidator;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 
 
@@ -20,6 +31,8 @@ public class Autonomous{
     private FieldLocation startingPosition;
 
     public Timer timer;
+
+    private Timer trajectoryTimer;
     
     AutoState autoState = AutoState.START;
 
@@ -30,13 +43,31 @@ public class Autonomous{
 
     private boolean twoBallMode = false;
 
-public Autonomous() {
+    private AutoDrive autoDrive;
+
+    private Trajectory mFirst, mSecond, mThird;
+
+    private Drivetrain mDrive;
+
+    private boolean mFirstStage = true;
+    private boolean mSecondStage = false;
+
+  public Autonomous(Drivetrain drive) {
     timer = new Timer();
     timer.start();
-
-    
-
     autoState = AutoState.START;
+
+    trajectoryTimer = new Timer();
+
+    Trajectory firstBallTrajectory = TrajectoryUtils.buildJSONTrajectory("output/B_to_C.wpilib.json");
+    Trajectory otherTrajectory = TrajectoryUtils.buildJSONTrajectory("output/Tarmac_to_B.wpilib.json");
+    Trajectory otherOtherTrajectory = TrajectoryUtils.buildJSONTrajectory("output/C_to_Shoot.wpilib.json");
+
+    mSecond = firstBallTrajectory;
+    mFirst = otherTrajectory;
+    mThird = otherOtherTrajectory;
+    autoDrive = new AutoDrive(mFirst, drive);
+    mDrive = drive;
   }
 
   public void resetAuto(){
@@ -56,6 +87,35 @@ public Autonomous() {
     }
 
     return isDoneShooting;
+  }
+
+  public void initialize() {
+    autoDrive = new AutoDrive(mFirst, mDrive);
+    trajectoryTimer.reset();
+    trajectoryTimer.start();
+    mFirstStage = true;
+    mSecondStage = false;
+  }
+
+  public void autonomousPeriodic() 
+  {
+    if (trajectoryTimer.get() >= mFirst.getTotalTimeSeconds() + 0.02 && mFirstStage) {
+      autoDrive = new AutoDrive(mSecond, mDrive);
+      trajectoryTimer.reset();
+      trajectoryTimer.start();
+      mFirstStage = false;
+      mSecondStage = true;
+    }
+
+    if (trajectoryTimer.get() >= mSecond.getTotalTimeSeconds() + 0.02 && mSecondStage) {
+      autoDrive = new AutoDrive(mThird, mDrive);
+      trajectoryTimer.reset();
+      trajectoryTimer.start();
+      mFirstStage = false;
+      mSecondStage = false;
+    }
+
+    autoDrive.followTrajectory(trajectoryTimer.get());
   }
   
   public void autonomousPeriodic(Vision visionBall, Vision visionRing, CollectorArmMM arm, AutoDrive locality, Collector collector, Shooter shooter, Power powerMonitor, Drivetrain drive) {

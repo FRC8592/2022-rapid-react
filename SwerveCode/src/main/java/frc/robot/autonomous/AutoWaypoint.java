@@ -1,11 +1,16 @@
 
-package frc.robot;
+package frc.robot.autonomous;
 
 import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.Collector.CollectorState;
+import frc.common.Waypoint;
+import frc.robot.Drivetrain;
+import frc.robot.Shooter;
+import frc.robot.Vision;
+import frc.robot.modules.Collector;
+import frc.robot.modules.Collector.CollectorState;
 
 public class AutoWaypoint {
     private ArrayList<Waypoint> waypoints;

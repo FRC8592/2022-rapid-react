@@ -3,11 +3,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //code by Zolton
-package frc.robot;
+package frc.robot.hardware;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
+import frc.common.Constants;
 
 import com.revrobotics.ColorSensorV3;
 

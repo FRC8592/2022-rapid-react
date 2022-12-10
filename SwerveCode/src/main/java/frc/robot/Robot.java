@@ -8,23 +8,26 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Collector.CollectorState;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
-
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-
-import java.rmi.registry.LocateRegistry;
-
-import javax.swing.DropMode;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.common.ConfigRun;
+import frc.common.Constants;
+import frc.common.Data;
+import frc.common.Waypoint;
+import frc.robot.autonomous.AutoDrive;
+import frc.robot.autonomous.AutoWaypoint;
+import frc.robot.autonomous.Autonomous;
+import frc.robot.hardware.LEDstrips;
+import frc.robot.hardware.Power;
+import frc.robot.modules.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,6 +43,9 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  public static Field2d FIELD = new Field2d();
+  public static Data DATA = new Data();
 
   // Our robot objects
   public XboxController driverController;
@@ -57,7 +63,9 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
-  public LEDstrips LEDstrips;
+  public frc.robot.hardware.LEDstrips LEDstrips;
+
+  private ModuleList runningModules;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -87,6 +95,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     fastMode = true;
+    runningModules = new ModuleList();
 
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
@@ -109,7 +118,7 @@ public class Robot extends TimedRobot {
     climber = new Climber();
     powerMonitor = new Power();
     timer = new Timer();
-    autonomous = new Autonomous();
+    autonomous = new Autonomous(drive);
     LEDstrips = new LEDstrips();
     
 
@@ -120,8 +129,7 @@ public class Robot extends TimedRobot {
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode")
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
-
-
+    SmartDashboard.putData(FIELD);
   }
 
   /**
@@ -137,7 +145,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-   
+
   }
 
   /**
@@ -159,6 +167,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    autonomous.initialize();
     autonomous.resetAuto();
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
     if(ConfigRun.WAYPOINT){
@@ -213,8 +222,9 @@ public class Robot extends TimedRobot {
    * Simple 2-ball autonomous routine
    */
   public void autonomousPeriodic() {
-    autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
-    SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
+    // autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
+    autonomous.autonomousPeriodic();
+    //SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
   }
 
   /**

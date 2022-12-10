@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.hardware;
 
 import java.awt.Color;
 

@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.autonomous;
 import edu.wpi.first.math.geometry.Pose2d;
 /**
  * @author gavin malzahn
@@ -6,8 +6,11 @@ import edu.wpi.first.math.geometry.Pose2d;
  * FRC Season 2022
  */
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.Drivetrain;
+import frc.robot.Vision;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 
 public class AutoDrive {
@@ -21,7 +24,6 @@ public class AutoDrive {
     private double positionY;                    //position in y;
     private final double KP_velocity_X = 5;
     private final double KP_velocity_Y = 5;
-    private Drivetrain driveTrain;
     private final double KD_velocity_X = 0;
     private final double KD_velocity_Y = 0;
     private final double KP_angular_velocity = 0.5;
@@ -37,6 +39,7 @@ public class AutoDrive {
     public double lastTurnTime;
     private Drivetrain drive;
 
+    private TrajectoryFollower mFollower;
 
     /**
      * 
@@ -49,7 +52,6 @@ public class AutoDrive {
         this.robotRotation = 0;
         AutoDrive.hubRadius = .6;
         isGoodData = false;
-        this.driveTrain = drive;
         targetX = 0;
         targetY = 0;
         lastErrorY = 0;
@@ -63,6 +65,27 @@ public class AutoDrive {
         this.drive = drive;
     }
 
+    public AutoDrive(Trajectory trajectory, Drivetrain pDrive) {
+        //robotRotation = trajectory.sample(0).poseMeters.getRotation().getRadians();
+        isGoodData = false;
+        drive = pDrive;
+        targetX = 0;
+        targetY = 0;
+        lastErrorX = 0;
+        lastErrorY = 0;
+        moveTimer = new Timer();
+        turnTimer = new Timer();
+        lastMoveTime = moveTimer.get();
+        lastTurnTime = turnTimer.get();
+
+        mFollower = new TrajectoryFollower(trajectory);
+    }
+
+    public void followTrajectory(double pTime) {
+        ChassisSpeeds speeds = mFollower.follow(drive.getCurrentPos(), pTime);
+        drive.drive(speeds);
+    }
+
     // Needs to be called every update
 
     /***
@@ -72,7 +95,7 @@ public class AutoDrive {
      * @param SmartDashboard 
      */
     
-    public void updatePosition(double robotRotation, Vision vision){     
+    public void updatePosition(double robotRotation, Vision vision){
         double targetDistance = vision.distanceToTarget();
         double targetOffsetRotation = vision.offsetAngle(); 
         double robotRotationRad = Math.toRadians(robotRotation);

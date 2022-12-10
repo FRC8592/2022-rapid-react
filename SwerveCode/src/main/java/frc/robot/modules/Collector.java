@@ -1,4 +1,4 @@
-package frc.robot;
+package frc.robot.modules;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -10,6 +10,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.common.ConfigRun;
+import frc.common.Constants;
+import frc.robot.Shooter;
+import frc.robot.Vision;
+import frc.robot.hardware.Power;
 
 
 public class Collector {
