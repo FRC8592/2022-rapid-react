@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import java.util.ArrayList;
 
 public class AutoDrive2 {
     double maxVelocity; 
@@ -16,8 +17,12 @@ public class AutoDrive2 {
     double velocityKdY;
     double velocityKiY;
 
+    Pose2d currentGoal;
+
     PIDController pidVelocityControlX;
     PIDController pidVelocityControlY;
+
+    private ArrayList<Pose2d> waypoints;
     /**
      * 
      * @param kPX
@@ -40,6 +45,7 @@ public class AutoDrive2 {
         pidVelocityControlX = new PIDController(kPX, kIX, kDX);
         pidVelocityControlY = new PIDController(kPY, kIY, kDY);
         this.acceptanceRadius = acceptanceRadius;
+        this.wayPoints = new ArrayList<Pose2d>();
     }
 
     /**
@@ -63,5 +69,14 @@ public class AutoDrive2 {
 
     public double getDistance(Pose2d a, Pose2d b) {
         return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
+    }
+    public ChassisSpeeds moveToWayPoint(Pose2d robot) {
+        if(!this.waypoints.isEmpty()){
+            currentGoal = waypoints.remove(0);
+        }
+        return this.moveTo(this.currentGoal, robot)
+    }
+    public void addWaypoint(Pose2d point){
+        this.waypoints.add(point);
     }
 }
