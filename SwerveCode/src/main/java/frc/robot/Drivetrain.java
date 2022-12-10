@@ -100,7 +100,7 @@ public class Drivetrain {
                     .withPosition(0, 0),
             // Motor configuration
             swerveMotorConfig,
-            // This can either be L!, L2, L3 or L4
+            // This can either be L1, L2, L3 or L4
             Mk4SwerveModuleHelper.GearRatio.L2,
             // This is the ID of the drive motor
             FRONT_LEFT_MODULE_DRIVE_MOTOR,
@@ -220,5 +220,14 @@ public class Drivetrain {
     } 
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
+    }
+    public double[] getSwerveModuleStates(){
+      double[] result = {
+        m_frontLeftModule.getSteerAngle(), m_frontLeftModule.getDriveVelocity(), 
+        m_frontRightModule.getSteerAngle(), m_frontRightModule.getDriveVelocity(), 
+        m_backLeftModule.getSteerAngle(), m_backLeftModule.getDriveVelocity(), 
+        m_backRightModule.getSteerAngle(), m_backRightModule.getDriveVelocity()
+      };
+      return result;
     }
 }

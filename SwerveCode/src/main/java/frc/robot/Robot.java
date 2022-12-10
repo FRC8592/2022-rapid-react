@@ -17,6 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import java.rmi.registry.LocateRegistry;
 
@@ -64,7 +65,7 @@ public class Robot extends LoggedRobot {
   // Toggle for fast/slow mode
   private boolean fastMode;
 
-  // Toggle to lock flywheel speed\
+  // Toggle to lock flywheel speed
   private boolean flywheelLock;
 
   // Our alliance color
@@ -82,6 +83,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotInit() {
+    //AdvantageKit code
     setUseTiming(isReal());
     LoggedNetworkTables.getInstance().addTable("/SmartDashboard");
     Logger.getInstance().recordMetadata("ProjectName", "MyProject");
@@ -95,6 +97,7 @@ public class Robot extends LoggedRobot {
       Logger.getInstance().addDataReceiver(new ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim"))); // Save replay results to a new log with the "_sim" suffix
     }
     Logger.getInstance().start();
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -103,7 +106,7 @@ public class Robot extends LoggedRobot {
 
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
-    drive = new Drivetrain();
+
     visionRing = new Vision(Constants.LIMELIGHT_RING, Constants.RING_LOCK_ERROR,
         Constants.RING_CLOSE_ERROR, Constants.RING_CAMERA_HEIGHT,
         Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT,
@@ -114,6 +117,7 @@ public class Robot extends LoggedRobot {
         Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
         Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
         Constants.BALL_ROTATE_KD);
+    drive = new Drivetrain();
     locality = new AutoDrive(0, 0, drive);
     shooter = new Shooter();
     collector = new Collector();
@@ -145,7 +149,8 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    Logger.getInstance().recordOutput("Swerve/States", drive.getSwerveModuleStates());
+    Logger.getInstance().recordOutput("Swerve/Rotation", drive.getYaw());
   }
 
   /**
