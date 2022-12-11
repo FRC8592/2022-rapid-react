@@ -20,7 +20,7 @@ public class SmoothingFilter {
      * Take an array of zeros and fill each slot with a speed value until the value is hit
      * @param desiredSpeed Speed to accelerate towards
      */
-    public ChassisSpeeds smooth(ChassisSpeeds desiredSpeed) {
+    public ChassisSpeeds smooth(ChassisSpeeds desiredSpeed, double maxVelocity) {
         double sumXVelocities = 0;
         double sumYVelocities = 0;
         velocityValues[index] = desiredSpeed;
@@ -30,9 +30,7 @@ public class SmoothingFilter {
                 sumYVelocities += cs.vyMetersPerSecond;
             }
         }
-        index++;
-        index %= size;
-
+        index = (index + 1) % size;
         return new ChassisSpeeds(sumXVelocities / size, sumYVelocities / size, 0);
     }
 }
