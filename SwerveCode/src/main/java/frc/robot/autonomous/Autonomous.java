@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.common.ConfigRun;
 import frc.common.Constants;
 import frc.robot.Drivetrain;
+import frc.robot.Robot;
 import frc.robot.Shooter;
 import frc.robot.Vision;
 import frc.robot.hardware.Power;
@@ -45,12 +46,13 @@ public class Autonomous{
 
     private AutoDrive autoDrive;
 
-    private Trajectory mFirst, mSecond, mThird;
+    private Trajectory mFirst, mSecond, mThird, mFourth;
 
     private Drivetrain mDrive;
 
     private boolean mFirstStage = true;
     private boolean mSecondStage = false;
+    private boolean mThirdStage = false;
 
   public Autonomous(Drivetrain drive) {
     timer = new Timer();
@@ -62,10 +64,13 @@ public class Autonomous{
     Trajectory firstBallTrajectory = TrajectoryUtils.buildJSONTrajectory("output/B_to_C.wpilib.json");
     Trajectory otherTrajectory = TrajectoryUtils.buildJSONTrajectory("output/Tarmac_to_B.wpilib.json");
     Trajectory otherOtherTrajectory = TrajectoryUtils.buildJSONTrajectory("output/C_to_Shoot.wpilib.json");
+    Trajectory lastTrajectory = TrajectoryUtils.buildJSONTrajectory("output/Shoot_to_A.wpilib.json");
 
     mSecond = firstBallTrajectory;
     mFirst = otherTrajectory;
     mThird = otherOtherTrajectory;
+    mFourth = lastTrajectory;
+
     autoDrive = new AutoDrive(mFirst, drive);
     mDrive = drive;
   }
@@ -95,6 +100,7 @@ public class Autonomous{
     trajectoryTimer.start();
     mFirstStage = true;
     mSecondStage = false;
+    mThirdStage = false;
   }
 
   public void autonomousPeriodic() 
@@ -112,6 +118,15 @@ public class Autonomous{
       trajectoryTimer.reset();
       trajectoryTimer.start();
       mFirstStage = false;
+      mSecondStage = false;
+      mThirdStage = true;
+    }
+
+    if (trajectoryTimer.get() >= mThird.getTotalTimeSeconds() + 0.02 && mThirdStage) {
+      autoDrive = new AutoDrive(mFourth, mDrive);
+      trajectoryTimer.reset();
+      trajectoryTimer.start();
+      mThirdStage = false;
       mSecondStage = false;
     }
 
