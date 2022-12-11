@@ -149,8 +149,11 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("Swerve/States", drive.getSwerveModuleStates());
-    Logger.getInstance().recordOutput("Swerve/Rotation", drive.getYaw());
+    Logger.getInstance().recordOutput("CustomLogs/SwerveModuleStatesRadians", drive.getSwerveModuleStates());
+    Logger.getInstance().recordOutput("CustomLogs/SwerveModuleStates", drive.getSwerveModuleStatesDegrees());
+    Logger.getInstance().recordOutput("CustomLogs/RobotRotation", drive.getYaw());
+    Logger.getInstance().recordOutput("CustomLogs/RobotPoseRadians", drive.getRobotPose2DRadians());
+    Logger.getInstance().recordOutput("CustomLogs/RobotPoseDegrees", drive.getRobotPose2DDegrees());
   }
 
   /**

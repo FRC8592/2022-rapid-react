@@ -192,6 +192,10 @@ public class Drivetrain {
         return m_navx.getYaw();
 
     }
+    public double getYawRadians(){
+      return Math.toRadians(m_navx.getYaw());
+
+  }
 
 
     public Pose2d getCurrentPos(){
@@ -221,6 +225,7 @@ public class Drivetrain {
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
     }
+    //Get a list of doubles corresponding to swerve module states
     public double[] getSwerveModuleStates(){
       double[] result = {
         m_frontLeftModule.getSteerAngle(), m_frontLeftModule.getDriveVelocity(), 
@@ -228,6 +233,27 @@ public class Drivetrain {
         m_backLeftModule.getSteerAngle(), m_backLeftModule.getDriveVelocity(), 
         m_backRightModule.getSteerAngle(), m_backRightModule.getDriveVelocity()
       };
+      return result;
+    }
+    public double[] getSwerveModuleStatesDegrees(){
+      double[] result = {
+        Math.toDegrees(m_frontLeftModule.getSteerAngle()), m_frontLeftModule.getDriveVelocity(), 
+        Math.toDegrees(m_frontRightModule.getSteerAngle()), m_frontRightModule.getDriveVelocity(), 
+        Math.toDegrees(m_backLeftModule.getSteerAngle()), m_backLeftModule.getDriveVelocity(), 
+        Math.toDegrees(m_backRightModule.getSteerAngle()), m_backRightModule.getDriveVelocity()
+      };
+      return result;
+    }
+    //Get robot pose in meters and degrees
+    public double[] getRobotPose2DDegrees(){
+      Pose2d pos = odometry.getPoseMeters();
+      double[] result = {pos.getX(), pos.getY(), pos.getRotation().getDegrees()};
+      return result;
+    }
+    //Get robot pose in meters and radians
+    public double[] getRobotPose2DRadians(){
+      Pose2d pos = odometry.getPoseMeters();
+      double[] result = {pos.getX(), pos.getY(), pos.getRotation().getRadians()};
       return result;
     }
 }
