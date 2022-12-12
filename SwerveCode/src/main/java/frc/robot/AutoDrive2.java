@@ -29,7 +29,7 @@ public class AutoDrive2 {
     PIDController pidVelocityControlX;
     PIDController pidVelocityControlY;
     PIDController pidOmegaControl;
-    SmoothingFilter sf = new SmoothingFilter(5);
+    SmoothingFilter sf = new SmoothingFilter(5, 5, 5);
 
     private ArrayList<Pose2d> waypoints;
     /**
@@ -90,8 +90,8 @@ public class AutoDrive2 {
             omega = pidOmegaControl.calculate(robot.getRotation().getRadians(), goal.getRotation().getRadians());
             omega = Math.max(Math.min(omega, maxTheta), -maxTheta);
         }
-        //return new ChassisSpeeds(velocityX, velocityY, 0);
-        return new ChassisSpeeds(velocityX, velocityY, omega);
+        ChassisSpeeds cs = new ChassisSpeeds(velocityX, velocityY, omega);
+        return sf.smooth(cs);
     }
 
     /**
