@@ -18,16 +18,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import frc.common.ConfigRun;
-import frc.common.Constants;
-import frc.common.Data;
-import frc.common.Waypoint;
-import frc.robot.autonomous.AutoDrive;
-import frc.robot.autonomous.AutoWaypoint;
-import frc.robot.autonomous.Autonomous;
-import frc.robot.hardware.LEDstrips;
-import frc.robot.hardware.Power;
-import frc.robot.modules.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,7 +35,6 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   public static Field2d FIELD = new Field2d();
-  public static Data DATA = new Data();
 
   // Our robot objects
   public XboxController driverController;
@@ -63,7 +52,7 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
-  public frc.robot.hardware.LEDstrips LEDstrips;
+  public frc.robot.LEDstrips LEDstrips;
 
   private ModuleList runningModules;
 

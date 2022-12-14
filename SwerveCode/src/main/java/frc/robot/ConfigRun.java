@@ -2,7 +2,7 @@
 // Robot competition configuration
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-package frc.common;
+package frc.robot;
 
 public final class ConfigRun {
     // Treat like a static class.  No instantiation

@@ -2,7 +2,7 @@
 // Power measurement and control
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-package frc.robot.hardware;
+package frc.robot;
 
 import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.PowerDistribution;

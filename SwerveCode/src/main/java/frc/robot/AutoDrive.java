@@ -1,4 +1,4 @@
-package frc.robot.autonomous;
+package frc.robot;
 import edu.wpi.first.math.geometry.Pose2d;
 /**
  * @author gavin malzahn
@@ -6,8 +6,6 @@ import edu.wpi.first.math.geometry.Pose2d;
  * FRC Season 2022
  */
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Drivetrain;
-import frc.robot.Vision;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
