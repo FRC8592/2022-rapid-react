@@ -11,6 +11,10 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
 
 public class Shooter{ 
 
@@ -135,10 +139,13 @@ public class Shooter{
         else
             flywheelReady = false;
 
-        // Post flywheel parameters to Smart Dashboard
+        // Post flywheel parameters to Smart Dashboard and log them
         SmartDashboard.putNumber("Flywheel Actual", flywheelRpmActual);
+        Logger.getInstance().recordOutput("CustomLogs/Shooter/FlywheelRPMMeasured", flywheelRpmActual);
         SmartDashboard.putBoolean("Flywheel Ready", flywheelReady);
+        Logger.getInstance().recordOutput("CustomLogs/Shooter/FlywheelReady", flywheelReady);
         SmartDashboard.putNumber("Flywheel Set", flywheelRpmSet);
+        Logger.getInstance().recordOutput("CustomLogs/Shooter/FlywheelRPMSetpoint", flywheelRpmSet);
 
     }
 

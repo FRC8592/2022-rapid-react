@@ -149,11 +149,11 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Logger.getInstance().recordOutput("CustomLogs/SwerveModuleStatesRadians", drive.getSwerveModuleStates());
-    Logger.getInstance().recordOutput("CustomLogs/SwerveModuleStates", drive.getSwerveModuleStatesDegrees());
-    Logger.getInstance().recordOutput("CustomLogs/RobotRotation", drive.getYaw());
-    Logger.getInstance().recordOutput("CustomLogs/RobotPoseRadians", drive.getRobotPose2DRadians());
-    Logger.getInstance().recordOutput("CustomLogs/RobotPoseDegrees", drive.getRobotPose2DDegrees());
+  //   Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStatesRadians", drive.getSwerveModuleStates());
+  //   Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStates", drive.getSwerveModuleStatesDegrees());
+  //   Logger.getInstance().recordOutput("CustomLogs/Movement/RobotRotation", drive.getYaw());
+  //   Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseRadians", drive.getRobotPose2DRadians());
+  //   Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseDegrees", drive.getRobotPose2DDegrees());
   }
 
   /**
@@ -230,6 +230,7 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
     SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
+    //TODO: Add logging here if the logging in Drivetrain.drive() doesn't work.
   }
 
   /**
@@ -427,7 +428,7 @@ public class Robot extends LoggedRobot {
     // Display robot heading
     //
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-
+    Logger.getInstance().recordOutput("CustomLogs/Movement/Heading", drive.getGyroscopeRotation().getDegrees());
     //
     // Read gamepad controls for drivetrain and scale control values
     //

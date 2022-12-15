@@ -13,7 +13,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
 
 public class CollectorArmMM {
     // Configuration constants
@@ -122,8 +125,17 @@ public class CollectorArmMM {
         double feedForward = calcFeedForward(armMotor.getSelectedSensorPosition());
     
         SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
+        Logger.getInstance().recordOutput("CustomLogs/CollectorArm/LimitSwitchBool", limitSwitch.get());
+        if(limitSwitch.get()){
+          Logger.getInstance().recordOutput("CustomLogs/CollectorArm/LimitSwitchInt", 1);
+        }
+        else{
+          Logger.getInstance().recordOutput("CustomLogs/CollectorArm/LimitSwitchInt", 0);
+        }
         SmartDashboard.putString("Arm State", armState.toString());
+        Logger.getInstance().recordOutput("CustomLogs/CollectorArm/ArmStateString", armState.toString());
         SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        Logger.getInstance().recordOutput("CustomLogs/CollectorArm/CollectorArmPosition", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
@@ -139,6 +151,7 @@ public class CollectorArmMM {
                     armMotor.setSelectedSensorPosition(Constants.BALL_SET_POINT);
                     armState = armStates.ARM_RAISING;
                 }
+                Logger.getInstance().recordOutput("CustomLogs/CollectorArm/ArmStateInt", 0);
                 
             case ARM_UP:
                 // Disable power if the arm is pressed against the switch
@@ -151,6 +164,7 @@ public class CollectorArmMM {
                 else{
                     armState = armStates.ARM_RAISING;
                 }
+                Logger.getInstance().recordOutput("CustomLogs/CollectorArm/ArmStateInt", 1);
                 break;
 
             case ARM_RAISING:
@@ -162,7 +176,8 @@ public class CollectorArmMM {
                 
                 // Raise arm to position 0
                 armMotor.selectProfileSlot(RAISE_PID_SLOT, 0);
-                armMotor.set(ControlMode.MotionMagic, 100, DemandType.ArbitraryFeedForward, feedForward);               
+                armMotor.set(ControlMode.MotionMagic, 100, DemandType.ArbitraryFeedForward, feedForward);  
+                Logger.getInstance().recordOutput("CustomLogs/CollectorArm/ArmStateInt", 2);             
                 break;
 
             case ARM_DESCENDING:
@@ -172,6 +187,7 @@ public class CollectorArmMM {
 
                 if (armMotor.getSelectedSensorPosition() <= Constants.BALL_SET_POINT)
                     armState = armStates.ARM_COLLECTING;
+                Logger.getInstance().recordOutput("CustomLogs/CollectorArm/ArmStateInt", 3);  
                 break;
 
             case ARM_COLLECTING:
@@ -184,6 +200,7 @@ public class CollectorArmMM {
                 else
                     armMotor.set(ControlMode.PercentOutput, -0.20);
                 */
+                Logger.getInstance().recordOutput("CustomLogs/CollectorArm/ArmStateInt", 4); 
                     break;
         }
     }

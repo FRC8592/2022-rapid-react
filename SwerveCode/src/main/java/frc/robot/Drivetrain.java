@@ -22,6 +22,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.*;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
 
 public class Drivetrain {
     /**
@@ -220,6 +224,11 @@ public class Drivetrain {
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
         getSMState(m_backRightModule));
+        Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStatesRadians", getSwerveModuleStates());
+        Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStates", getSwerveModuleStatesDegrees());
+        Logger.getInstance().recordOutput("CustomLogs/Movement/RobotRotation", getYaw());
+        Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseRadians", getRobotPose2DRadians());
+        Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseDegrees", getRobotPose2DDegrees());
 
     } 
     SwerveModuleState getSMState(SwerveModule mod){

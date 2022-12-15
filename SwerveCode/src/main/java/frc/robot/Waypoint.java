@@ -2,6 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
+
 public class Waypoint {
     public double x;
     public double y;

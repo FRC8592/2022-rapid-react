@@ -12,6 +12,11 @@ import java.util.LinkedList;
 
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
+
 public class Vision {
   
   //constants passed in during initilization 
@@ -163,19 +168,42 @@ public class Vision {
       targetClose = false;
     }
 
-    //post driver data to smart dashboard periodically
+    //post driver data to smart dashboard and log periodically
     //SmartDashboard.putNumber(limelightName + "/xerror in radians", Math.toRadians(xError));
     //SmartDashboard.putNumber(limelightName + "/LimelightX", xError);
     //SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
     //SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
     SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
+    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetValidBool", targetValid);
+    if(targetValid){
+      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetValidInt", 1);
+    }
+    else{
+      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetValidInt", 0);
+    }
     //SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
     //SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
     //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
     //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
-    SmartDashboard.putBoolean(limelightName + "/inRange", targetRange >120 && targetRange < 265);
+    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetRange", targetRange);
+    boolean targetInRange = targetRange >120 && targetRange < 265;
+    SmartDashboard.putBoolean(limelightName + "/inRange", targetInRange);
+    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetInRangeBool", targetInRange);
+    if(targetInRange){
+      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetInRangeInt", 1);
+    }
+    else{
+      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetInRangeInt", 0);
+    }
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
+    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetLockedBool", targetLocked);
+    if(targetLocked){
+      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetLockedInt", 1);
+    }
+    else{
+      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetLockedInt", 0);
+    }
     //SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
     //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
@@ -243,6 +271,7 @@ public class Vision {
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
+    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TurnSpeed", turnSpeed);
 
     return turnSpeed;
   }
@@ -268,7 +297,7 @@ public class Vision {
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
-
+    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TurnSpeed", turnSpeed);
     return turnSpeed;
   }
 

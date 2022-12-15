@@ -14,7 +14,10 @@ import java.util.ResourceBundle.Control;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
-
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
 
 public class Climber {
     // Configuration constants
@@ -146,6 +149,8 @@ public class Climber {
         
         SmartDashboard.putNumber("Right Pos", liftMotorRight.getSelectedSensorPosition());
         SmartDashboard.putNumber("Left Pos", liftMotorLeft.getSelectedSensorPosition());
+        Logger.getInstance().recordOutput("CustomLogs/Climber/RightPosition", liftMotorRight.getSelectedSensorPosition());
+        Logger.getInstance().recordOutput("CustomLogs/Climber/LeftPosition", liftMotorLeft.getSelectedSensorPosition());
     }
 
 
@@ -194,5 +199,7 @@ public class Climber {
 
         SmartDashboard.putBoolean("Right Parked", rightArmParked);
         SmartDashboard.putBoolean("Left Parked",  leftArmParked);
+        Logger.getInstance().recordOutput("CustomLogs/Climber/RightPosition", rightArmParked);
+        Logger.getInstance().recordOutput("CustomLogs/Climber/RightPosition", leftArmParked);
     }
 }

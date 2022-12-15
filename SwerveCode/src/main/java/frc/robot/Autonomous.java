@@ -5,7 +5,10 @@ import frc.robot.Collector.CollectorState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.geometry.Rotation2d;
-
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
 
 public class Autonomous{
 
@@ -60,6 +63,7 @@ public Autonomous() {
   
   public void autonomousPeriodic(Vision visionBall, Vision visionRing, CollectorArmMM arm, AutoDrive locality, Collector collector, Shooter shooter, Power powerMonitor, Drivetrain drive) {
     SmartDashboard.putString("Auto State", autoState.toString());
+    Logger.getInstance().recordOutput("CustomLogs/Autonomous/State", autoState.toString()); // We're not logging the state an an int because there are too many states.
     visionBall.updateVision();
     visionRing.updateVision();
     locality.updatePosition(drive.getYaw(), visionRing);
@@ -68,6 +72,7 @@ public Autonomous() {
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), true, false);
     powerMonitor.powerPeriodic();
     SmartDashboard.putNumber("Auto Timer", timer.get());
+    Logger.getInstance().recordOutput("CustomLogs/Autonomous/State", timer.get());
     // Turn to ring, then shoot, then drive backwards until we see the ring being 13
     // feet away
     // decide state changes
@@ -86,6 +91,7 @@ public Autonomous() {
       case START:
         collector.enableCollectMode(arm, powerMonitor);
         SmartDashboard.putBoolean("Gyroscope Rotating?", drive.isGyroscopeRotating());
+        Logger.getInstance().recordOutput("CustomLogs/Autonomous/GyroRotating", drive.isGyroscopeRotating());
         drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0,0,
           visionRing.turnRobot(ConfigRun.VISION_SEARCH_SPEED), drive.getGyroscopeRotation()));
         

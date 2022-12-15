@@ -9,6 +9,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
+import org.littletonrobotics.junction.io.*;
 
 public class AutoDrive {
 
@@ -96,7 +100,13 @@ public class AutoDrive {
         SmartDashboard.putNumber("Position Y", this.metersToInches(positionY));
         SmartDashboard.putNumber("Position X", this.metersToInches(positionX));
         SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
-        
+        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/Yaw", robotRotation);
+        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosYMeters", positionY);
+        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosYInches", this.metersToInches(positionY));
+        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosXMeters", positionX);
+        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosXInches", this.metersToInches(positionX));
+        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosYMeters", positionY);
+        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosValid", isGoodData ? 1.0: 0.0);
     }
 
     /**
