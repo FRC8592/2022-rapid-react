@@ -104,7 +104,7 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     fastMode = true;
-    logger = new FRCLogger(true);
+    logger = new FRCLogger(true, "CustomLogs");
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
 

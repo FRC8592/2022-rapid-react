@@ -5,12 +5,15 @@ import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
 import org.littletonrobotics.junction.io.*;
 public class FRCLogger {
   private boolean log;
+  private String logFolder;
   /**
    * Initialize the logger
    * @param log Whether to log or not when a class calls the log function
+   * @param logFolder The folder to log to within RealOutputs; used to be "CustomLogs"
    */
-  public FRCLogger(boolean log){
+  public FRCLogger(boolean log, String logFolder){
     this.log = log;
+    this.logFolder = logFolder;
   }
   /**
    * Logs a single object. Acceptable datatypes are boolean, byte, int, double, String, boolean[], byte[], int[], double[], and String[].
@@ -20,50 +23,55 @@ public class FRCLogger {
    * @param data  An Object of one of the acceptable datatypes listed above containing the data to log.
    */
   public void log(Object path, String name, Object data){
-    if(log){
-      if(path.getClass().getSimpleName().equals("String")){
+    if(log){ // If we're logging
+      if(path.getClass().getSimpleName().equals("String")){ // If the path is a String
+        
+        // Check for the "data" object being one of the supported datatypes and log it.
         if(data.getClass().getSimpleName().equals("boolean"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (boolean)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (boolean)data);
         if(data.getClass().getSimpleName().equals("byte"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (byte)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (byte)data);
         if(data.getClass().getSimpleName().equals("int"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (int)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (int)data);
         if(data.getClass().getSimpleName().equals("double"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (double)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (double)data);
         if(data.getClass().getSimpleName().equals("String"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (String)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (String)data);
         if(data.getClass().getSimpleName().equals("boolean[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (boolean[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (boolean[])data);
         if(data.getClass().getSimpleName().equals("byte[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (byte[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (byte[])data);
         if(data.getClass().getSimpleName().equals("int[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (int[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (int[])data);
         if(data.getClass().getSimpleName().equals("double[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (double[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (double[])data);
         if(data.getClass().getSimpleName().equals("String[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + (String)path + "/" + name, (String[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + (String)path + "/" + name, (String[])data);
       }
-      else{
+      
+      else{ // If the path is another object
+        
+        // Use the name of the inputted object (e.g. Drivetrain) as the folder inside logFolder that the logs are stored in.
         if(data.getClass().getSimpleName().equals("boolean"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (boolean)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (boolean)data);
         if(data.getClass().getSimpleName().equals("byte"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (byte)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (byte)data);
         if(data.getClass().getSimpleName().equals("int"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (int)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (int)data);
         if(data.getClass().getSimpleName().equals("double"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (double)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (double)data);
         if(data.getClass().getSimpleName().equals("String"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (String)data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (String)data);
         if(data.getClass().getSimpleName().equals("boolean[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (boolean[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (boolean[])data);
         if(data.getClass().getSimpleName().equals("byte[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (byte[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (byte[])data);
         if(data.getClass().getSimpleName().equals("int[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (int[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (int[])data);
         if(data.getClass().getSimpleName().equals("double[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (double[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (double[])data);
         if(data.getClass().getSimpleName().equals("String[]"))
-          Logger.getInstance().recordOutput("CustomLogs/" + path.getClass().getSimpleName() + "/" + name, (String[])data);
+          Logger.getInstance().recordOutput(logFolder + "/" + path.getClass().getSimpleName() + "/" + name, (String[])data);
       }
     }
   }
