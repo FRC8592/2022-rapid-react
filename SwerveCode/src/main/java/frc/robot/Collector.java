@@ -10,10 +10,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
 
 public class Collector {
     // Control variables
@@ -35,12 +31,16 @@ public class Collector {
     private CollectorState collectorState = CollectorState.NO_BALLS_LOADED;
     Timer collectorTimer;
     Timer shootTimer;
+    
+    FRCLogger logger;
 
    
     //
     // Intialize hardware
     //
-    public Collector() {
+    public Collector(FRCLogger logger) {
+        this.logger = logger;
+
         processing   = new WPI_TalonFX(Constants.newFlywheelCollector);
         staging      = new WPI_TalonFX(Constants.newFlywheelStaging);
         collectorTimer = new Timer();
@@ -204,15 +204,15 @@ public class Collector {
 
         //Put the variables on SmartDashboard and log them
         SmartDashboard.putBoolean("LineSensorTop", topBall);
-        Logger.getInstance().recordOutput("CustomLogs/Collecter/TopBallLoaded", topBall);
+        logger.log(this, "TopBallLoaded", topBall);
         SmartDashboard.putBoolean("LineSensorBottom", bottomBall);
-        Logger.getInstance().recordOutput("CustomLogs/Collecter/BottomBallLoaded", bottomBall);
+        logger.log(this, "BottomBallLoaded", bottomBall);
         SmartDashboard.putString("Collector State", collectorState.toString());
-        Logger.getInstance().recordOutput("CustomLogs/Collecter/CollecterStateString", collectorState.toString()); //We'll log the collector state as an int later, in the switch statement.
+        logger.log(this, "CollecterStateString", collectorState.toString()); //We'll log the collector state as an int later, in the switch statement.
         SmartDashboard.putBoolean("Shoot Mode", shootMode);
-        Logger.getInstance().recordOutput("CustomLogs/Collecter/ShootMode", shootMode);
+        logger.log(this, "ShootMode", shootMode);
         SmartDashboard.putBoolean("Force Mode", forceShootMode);
-        Logger.getInstance().recordOutput("CustomLogs/Collecter/ForceShootMode", forceShootMode);
+        logger.log(this, "ForceShootMode", forceShootMode);
         
 
         //
@@ -282,7 +282,6 @@ public class Collector {
                         driveProcessingWheels(0);
                         driveStagingWheels(0);   
                     }
-                    Logger.getInstance().recordOutput("CustomLogs/Collecter/CollectorStateInt", 0);
                 break;
             
                 case ONE_BALL_BOTTOM: //when there is one ball at the bottom we want to move it to the top while we continue collecting
@@ -300,7 +299,6 @@ public class Collector {
                     //
                     driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                     driveStagingWheels(Constants.COLLECT_STAGING_POWER);
-                    Logger.getInstance().recordOutput("CustomLogs/Collecter/CollectorStateInt", 1);
                 break;
 
                 case BALL_XFER_TO_TOP:
@@ -320,7 +318,6 @@ public class Collector {
                     //
                     driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                     driveStagingWheels(Constants.COLLECT_STAGING_POWER);
-                    Logger.getInstance().recordOutput("CustomLogs/Collecter/CollectorStateInt", 2);
                 break;
 
                 case ONE_BALL_TOP: //when theres one ball at the top we want to make sure that the staging wheels don't move the ball\
@@ -341,7 +338,6 @@ public class Collector {
                         driveProcessingWheels(0);
                         driveStagingWheels(0);
                     }
-                    Logger.getInstance().recordOutput("CustomLogs/Collecter/CollectorStateInt", 3);
                 break;
 
                 case TWO_BALLS: //when we have 2 balls we don't want to run any of the intake modules
@@ -357,7 +353,6 @@ public class Collector {
                     driveStagingWheels(0);
 
                     disableCollectMode(arm, powerMonitor);
-                    Logger.getInstance().recordOutput("CustomLogs/Collecter/CollectorStateInt", 3);
                 break;
             }
         }   

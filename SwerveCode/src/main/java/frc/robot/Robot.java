@@ -61,6 +61,7 @@ public class Robot extends LoggedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
+  public FRCLogger logger;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -103,7 +104,7 @@ public class Robot extends LoggedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     fastMode = true;
-
+    logger = new FRCLogger(true);
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
 
@@ -111,21 +112,21 @@ public class Robot extends LoggedRobot {
         Constants.RING_CLOSE_ERROR, Constants.RING_CAMERA_HEIGHT,
         Constants.RING_CAMERA_ANGLE, Constants.RING_TARGET_HEIGHT,
         Constants.TURRET_ROTATE_KP, Constants.TURRET_ROTATE_KI,
-        Constants.TURRET_ROTATE_KD);
+        Constants.TURRET_ROTATE_KD, logger);
     visionBall = new Vision(Constants.LIMELIGHT_BALL, Constants.BALL_LOCK_ERROR,
         Constants.BALL_CLOSE_ERROR, Constants.BALL_CAMERA_HEIGHT,
         Constants.BALL_CAMERA_ANGLE, Constants.BALL_TARGET_HEIGHT,
         Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
-        Constants.BALL_ROTATE_KD);
-    drive = new Drivetrain();
-    locality = new AutoDrive(0, 0, drive);
-    shooter = new Shooter();
-    collector = new Collector();
-    arm = new CollectorArmMM();
-    climber = new Climber();
-    powerMonitor = new Power();
+        Constants.BALL_ROTATE_KD, logger);
+    drive = new Drivetrain(logger);
+    locality = new AutoDrive(0, 0, drive, logger);
+    shooter = new Shooter(logger);
+    collector = new Collector(logger);
+    arm = new CollectorArmMM(logger);
+    climber = new Climber(logger);
+    powerMonitor = new Power(logger);
     timer = new Timer();
-    autonomous = new Autonomous();
+    autonomous = new Autonomous(logger);
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -148,13 +149,7 @@ public class Robot extends LoggedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {
-  //   Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStatesRadians", drive.getSwerveModuleStates());
-  //   Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStates", drive.getSwerveModuleStatesDegrees());
-  //   Logger.getInstance().recordOutput("CustomLogs/Movement/RobotRotation", drive.getYaw());
-  //   Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseRadians", drive.getRobotPose2DRadians());
-  //   Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseDegrees", drive.getRobotPose2DDegrees());
-  }
+  public void robotPeriodic() {}
 
   /**
    * This autonomous (along with the chooser code above) shows how to select
@@ -176,7 +171,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     autonomous.resetAuto();
-    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
+    autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall, logger);
     if(ConfigRun.WAYPOINT){
       autoWaypoint.addWaypoint(new Waypoint(-2, 0, 0.5, false, true, false, new Timer()));
       autoWaypoint.addWaypoint(new Waypoint(-2, -1.5, 0.1, false, false, false, new Timer()));
@@ -428,7 +423,6 @@ public class Robot extends LoggedRobot {
     // Display robot heading
     //
     SmartDashboard.putNumber("Heading", 360 - drive.getGyroscopeRotation().getDegrees());
-    Logger.getInstance().recordOutput("CustomLogs/Movement/Heading", drive.getGyroscopeRotation().getDegrees());
     //
     // Read gamepad controls for drivetrain and scale control values
     //

@@ -10,10 +10,6 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.ColorSensorV3;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
 
 public class ColorSensor{
     // Color sensor I2C interface
@@ -27,11 +23,13 @@ public class ColorSensor{
     private BALL_COLOR allianceColor    = BALL_COLOR.NONE;
     private BALL_COLOR currentBallColor = BALL_COLOR.NONE;
 
+    private FRCLogger logger;
 
     /**
      * Set the alliance color for the match based on the ball loaded into the robot
      */
-    public ColorSensor() {
+    public ColorSensor(FRCLogger logger) {
+        this.logger = logger;
         int i = 0;
         
         //
@@ -50,7 +48,7 @@ public class ColorSensor{
             allianceColor = BALL_COLOR.BLUE;
 
         SmartDashboard.putString("Alliance", allianceColor.toString());
-        Logger.getInstance().recordOutput("CustomLogs/ColorSensor/AllienceColor", allianceColor.toString());
+        logger.log(this, "AllienceColor", allianceColor.toString());
     }
 
 
@@ -137,18 +135,9 @@ public class ColorSensor{
         // SmartDashboard.putNumber("Blue", detectedColor.blue);                   // Blue component of ball color
         // SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());    // Distance to ball (bigger numbers are closer). ~200 when no ball present
         SmartDashboard.putString("Ball", currentBallColor.toString());             // Computed ball color
-        Logger.getInstance().recordOutput("CustomLogs/ColorSensor/BallColorString", currentBallColor.toString());
-        if(currentBallColor.toString().equals("NONE")){
-          Logger.getInstance().recordOutput("CustomLogs/ColorSensor/BallColorInt", 0);
-        }
-        else if(currentBallColor.toString().equals("RED")){
-          Logger.getInstance().recordOutput("CustomLogs/ColorSensor/BallColorInt", 1);
-        }
-        if(currentBallColor.toString().equals("BLUE")){
-          Logger.getInstance().recordOutput("CustomLogs/ColorSensor/BallColorInt", 2);
-        }
+        logger.log(this, "BallColor", currentBallColor.toString());
         SmartDashboard.putString("Alliance", allianceColor.toString());
-        Logger.getInstance().recordOutput("CustomLogs/ColorSensor/AllienceColor", allianceColor.toString());
+        logger.log(this, "AllienceColor", allianceColor.toString());
 
         return currentBallColor;
     }

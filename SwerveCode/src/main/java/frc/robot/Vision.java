@@ -12,13 +12,14 @@ import java.util.LinkedList;
 
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
 
 public class Vision {
   
+  /**
+   * Logger object to handle logging
+   */
+  private FRCLogger logger;
+
   //constants passed in during initilization 
   private double lockError;
   private double closeError;
@@ -78,8 +79,11 @@ public class Vision {
    */
   public Vision(String limelightName, double lockError, double closeError,
                 double cameraHeight, double cameraAngle, double targetHeight,
-                double rotationKP, double rotationKI, double rotationKD) {
-
+                double rotationKP, double rotationKI, double rotationKD,
+                FRCLogger logger) {
+    
+    this.logger = logger;
+    
     // Set up networktables for limelight
     NetworkTable table = NetworkTableInstance.getDefault().getTable(limelightName);
     tx = table.getEntry("tx");
@@ -174,36 +178,18 @@ public class Vision {
     //SmartDashboard.putNumber(limelightName + "/LimelightY", yError);
     //SmartDashboard.putNumber(limelightName + "/LimelightArea", area);
     SmartDashboard.putBoolean(limelightName + "/Target Valid", targetValid);
-    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetValidBool", targetValid);
-    if(targetValid){
-      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetValidInt", 1);
-    }
-    else{
-      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetValidInt", 0);
-    }
+    logger.log("Vision"+limelightName, "TargetValid", targetValid);
     //SmartDashboard.putNumber(limelightName + "/Change in Angle Error", changeInAngleError);
     //SmartDashboard.putNumber(limelightName + "/Average Y", processedDy);
     //SmartDashboard.putNumber(limelightName + "/Average X", processedDx);
     //SmartDashboard.putNumber(limelightName + "/Total Valid", totalValid);
     SmartDashboard.putNumber(limelightName + "/Target Range", targetRange);
-    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetRange", targetRange);
+    logger.log("Vision"+limelightName, "TargetRange", targetRange);
     boolean targetInRange = targetRange >120 && targetRange < 265;
     SmartDashboard.putBoolean(limelightName + "/inRange", targetInRange);
-    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetInRangeBool", targetInRange);
-    if(targetInRange){
-      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetInRangeInt", 1);
-    }
-    else{
-      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetInRangeInt", 0);
-    }
+    logger.log("Vision"+limelightName, "TargetInRangeBool", targetInRange);
     SmartDashboard.putBoolean(limelightName + "/Target Locked", targetLocked);
-    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetLockedBool", targetLocked);
-    if(targetLocked){
-      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetLockedInt", 1);
-    }
-    else{
-      Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TargetLockedInt", 0);
-    }
+    logger.log("Vision"+limelightName, "TargetLockedBool", targetLocked);
     //SmartDashboard.putBoolean(limelightName + "/Target Close", targetClose);
     //SmartDashboard.putNumber(limelightName + "/lockError", lockError);
   }
@@ -271,7 +257,7 @@ public class Vision {
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
-    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TurnSpeed", turnSpeed);
+    logger.log("Vision"+limelightName, "TurnSpeed", turnSpeed);
 
     return turnSpeed;
   }
@@ -297,7 +283,7 @@ public class Vision {
     }
 
     SmartDashboard.putNumber(limelightName + "/Turn Speed", turnSpeed);
-    Logger.getInstance().recordOutput("CustomLogs/Vision"+limelightName+"/TurnSpeed", turnSpeed);
+    logger.log("Vision"+limelightName, "TurnSpeed", turnSpeed);
     return turnSpeed;
   }
 

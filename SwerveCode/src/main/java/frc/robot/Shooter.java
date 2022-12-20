@@ -11,13 +11,13 @@ import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
 
 public class Shooter{ 
 
+    /**
+     * Logger object to handle logging
+     */
+    FRCLogger logger;
     // Paired motor controllers to drive the launch wheel
     public WPI_TalonFX flyWheelRight;
     public WPI_TalonFX flyWheelLeft;
@@ -31,10 +31,14 @@ public class Shooter{
     private final int FAST = 1;
     private final int SLOW = 0;
 
-    //
-    // Constructor to instantiate the Collector object and the flywheel motors
-    //
-    public Shooter() {
+    /**
+    * Constructor to instantiate the Collector object and the flywheel motors
+    * @param logger An FRCLogger object to handle logs
+    */
+    public Shooter(FRCLogger logger) {
+
+        //Initialize the logger object
+        this.logger = logger;
         // Instantiate the launch motors and configure them to factory default settings
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
@@ -141,11 +145,11 @@ public class Shooter{
 
         // Post flywheel parameters to Smart Dashboard and log them
         SmartDashboard.putNumber("Flywheel Actual", flywheelRpmActual);
-        Logger.getInstance().recordOutput("CustomLogs/Shooter/FlywheelRPMMeasured", flywheelRpmActual);
+        logger.log(this, "FlywheelRPMMeasured", flywheelRpmActual);
         SmartDashboard.putBoolean("Flywheel Ready", flywheelReady);
-        Logger.getInstance().recordOutput("CustomLogs/Shooter/FlywheelReady", flywheelReady);
+        logger.log(this, "FlywheelReady", flywheelReady);
         SmartDashboard.putNumber("Flywheel Set", flywheelRpmSet);
-        Logger.getInstance().recordOutput("CustomLogs/Shooter/FlywheelRPMSetpoint", flywheelRpmSet);
+        logger.log(this, "FlywheelRPMSetpoint", flywheelRpmSet);
 
     }
 

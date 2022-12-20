@@ -22,21 +22,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static frc.robot.Constants.*;
 
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
-
 public class Drivetrain {
+
+    /**
+     * Logger object to handle logging
+     */
+    private FRCLogger logger;
+
     /**
      * Swerve module controllers, intialized in the constructor
      */  
-    private final SwerveModule m_frontLeftModule;
-    private final SwerveModule m_frontRightModule;
-    private final SwerveModule m_backLeftModule;
-    private final SwerveModule m_backRightModule;
+    private final SwerveModule m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule;
+
     private SwerveModuleState[] states;   //possible hold the state of the swerve modules
-    private SwerveDriveOdometry odometry; //Odometry object for swerve drive
+
+    /**
+     * Odometry object for the swerve drive
+     */
+    private SwerveDriveOdometry odometry;
 
 
     /**
@@ -53,8 +56,8 @@ public class Drivetrain {
         SdsModuleConfigurations.MK4_L2.getDriveReduction() *
         SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
 
-    // The maximum angular velocity of the robot in radians per second.\
-    //
+    // The maximum angular velocity of the robot in radians per second.
+
     // This calculated value could be replaced with a measured value.
     public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
         Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
@@ -79,10 +82,12 @@ public class Drivetrain {
     private final AHRS m_navx = new AHRS(SPI.Port.kMXP, (byte) 200); // NavX connected over MXP
     
 
-    /**Initialize drivetrain
-     * 
+    /**
+     * Initialize the drivetrain
      */
-    public Drivetrain() {
+    public Drivetrain(FRCLogger logger) {
+
+        this.logger = logger;
         Mk4ModuleConfiguration swerveMotorConfig;
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -167,21 +172,23 @@ public class Drivetrain {
         m_navx.zeroYaw();   // We're using a NavX
     }
 
-
+    /**
+     * Get the gyro rotation
+     * @return A Rotation2d where counter-clockwise rotation equals an increase in angle
+     */
     public Rotation2d getGyroscopeRotation() {
-        // FIXME Remove if you are using a Pigeon
-        // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+      // FIXME Remove if you are using a Pigeon
+      // return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
 
-        // FIXME Uncomment if you are using a NavX
-        //if (m_navx.isMagnetometerCalibrated()) {
-            // We will only get valid fused headings if the magnetometer is calibrated
-         //   return Rotation2d.fromDegrees(m_navx.getFusedHeading());
-        //}
+      // FIXME Uncomment if you are using a NavX
+      //if (m_navx.isMagnetometerCalibrated()) {
+          // We will only get valid fused headings if the magnetometer is calibrated
+        //   return Rotation2d.fromDegrees(m_navx.getFusedHeading());
+      //}
 
-    // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
-    return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
+      // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
+      return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
-
 
     public double getAutoHeading() {
         return m_navx.getYaw();
@@ -191,17 +198,18 @@ public class Drivetrain {
         return m_navx.isRotating();
     }
 
-
     public double getYaw(){
         return m_navx.getYaw();
-
     }
+
     public double getYawRadians(){
       return Math.toRadians(m_navx.getYaw());
+    }
 
-  }
-
-
+    /**
+     * Get the current robot pose
+     * @return A Pose2d containing the robot pose in meters
+     */
     public Pose2d getCurrentPos(){
         Pose2d pos = odometry.getPoseMeters();
         SmartDashboard.putNumber("Drive X (in)", pos.getX() * 39.3701); //meters to inches
@@ -213,7 +221,10 @@ public class Drivetrain {
         odometry.resetPosition(pose, new Rotation2d(0));
     }
 
-
+    /**
+     * Drive the robot based on the inputted ChassisSpeeds object
+     * @param chassisSpeeds
+     */
     public void drive(ChassisSpeeds chassisSpeeds) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
@@ -224,18 +235,23 @@ public class Drivetrain {
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
         getSMState(m_backRightModule));
-        Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStatesRadians", getSwerveModuleStates());
-        Logger.getInstance().recordOutput("CustomLogs/Movement/SwerveModuleStates", getSwerveModuleStatesDegrees());
-        Logger.getInstance().recordOutput("CustomLogs/Movement/RobotRotation", getYaw());
-        Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseRadians", getRobotPose2DRadians());
-        Logger.getInstance().recordOutput("CustomLogs/Movement/RobotPoseDegrees", getRobotPose2DDegrees());
+        logger.log(this, "SwerveModuleStatesRadians", getSwerveModuleStatesRadians());
+        logger.log(this, "SwerveModuleStatesDegrees", getSwerveModuleStatesDegrees());
+        logger.log(this, "RobotRotationDegrees", 360-getYaw());
+        logger.log(this, "RobotRotationRadians", Math.toRadians(360-getYaw()));
+        logger.log(this, "RobotPoseRadians", getRobotPose2DRadians());
+        logger.log(this, "RobotPoseDegrees", getRobotPose2DDegrees());
 
     } 
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
     }
-    //Get a list of doubles corresponding to swerve module states
-    public double[] getSwerveModuleStates(){
+
+    /**
+     * Get the swerve module states with rotation specifed in radians
+     * @return An array of doubles corresponding to swerve module states
+     */
+    public double[] getSwerveModuleStatesRadians(){
       double[] result = {
         m_frontLeftModule.getSteerAngle(), m_frontLeftModule.getDriveVelocity(), 
         m_frontRightModule.getSteerAngle(), m_frontRightModule.getDriveVelocity(), 
@@ -244,6 +260,11 @@ public class Drivetrain {
       };
       return result;
     }
+
+    /**
+     * Get the swerve module states with rotation specifed in degrees
+     * @return An array of doubles corresponding to the swerve module states
+     */
     public double[] getSwerveModuleStatesDegrees(){
       double[] result = {
         Math.toDegrees(m_frontLeftModule.getSteerAngle()), m_frontLeftModule.getDriveVelocity(), 
@@ -253,13 +274,21 @@ public class Drivetrain {
       };
       return result;
     }
-    //Get robot pose in meters and degrees
+
+    /**
+     * Get the robot pose in meters and degrees
+     * @return An array of doubles corresponding to the robot pose
+     */
     public double[] getRobotPose2DDegrees(){
       Pose2d pos = odometry.getPoseMeters();
       double[] result = {pos.getX(), pos.getY(), pos.getRotation().getDegrees()};
       return result;
     }
-    //Get robot pose in meters and radians
+
+    /**
+     * Get the robot pose in meters and radians
+     * @return An array of doubles corresponding to the robot pose
+     */
     public double[] getRobotPose2DRadians(){
       Pose2d pos = odometry.getPoseMeters();
       double[] result = {pos.getX(), pos.getY(), pos.getRotation().getRadians()};

@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.Collector.CollectorState;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
 
 public class AutoWaypoint {
     private ArrayList<Waypoint> waypoints;
@@ -21,9 +17,10 @@ public class AutoWaypoint {
     private Vision ringVision;
     private Vision ballVision;
     private CollectorState collectorState;
+    private FRCLogger logger;
 
     public AutoWaypoint(AutoDrive locality, Drivetrain drivetrain, Collector collector, Shooter shooter,
-            Vision ringVision, Vision ballVision) {
+            Vision ringVision, Vision ballVision, FRCLogger logger) {
         waypoints = new ArrayList<Waypoint>();
         this.drivetrain = drivetrain;
         this.collector = collector;
@@ -31,6 +28,7 @@ public class AutoWaypoint {
         this.ringVision = ringVision;
         this.autoDrive = locality;
         this.ballVision = ballVision;
+        this.logger = logger;
     }
 
     public void addWaypoint(Waypoint waypoint) {

@@ -9,10 +9,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
 
 public class AutoDrive {
 
@@ -40,6 +36,7 @@ public class AutoDrive {
     public double lastMoveTime;
     public double lastTurnTime;
     private Drivetrain drive;
+    private FRCLogger logger;
 
 
     /**
@@ -47,7 +44,8 @@ public class AutoDrive {
      * @param hubCenterX
      * @param hubCenterY
      */
-    public AutoDrive(double hubCenterX, double hubCenterY, Drivetrain drive) { 
+    public AutoDrive(double hubCenterX, double hubCenterY, Drivetrain drive, FRCLogger logger) { 
+        this.logger = logger;
         AutoDrive.hubCenterX = hubCenterX;
         AutoDrive.hubCenterY = hubCenterY;
         this.robotRotation = 0;
@@ -100,13 +98,13 @@ public class AutoDrive {
         SmartDashboard.putNumber("Position Y", this.metersToInches(positionY));
         SmartDashboard.putNumber("Position X", this.metersToInches(positionX));
         SmartDashboard.putNumber("Position Valid", isGoodData ? 1.0: 0.0);
-        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/Yaw", robotRotation);
-        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosYMeters", positionY);
-        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosYInches", this.metersToInches(positionY));
-        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosXMeters", positionX);
-        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosXInches", this.metersToInches(positionX));
-        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosYMeters", positionY);
-        Logger.getInstance().recordOutput("CustomLogs/AutoDrive/PosValid", isGoodData ? 1.0: 0.0);
+        logger.log(this, "Yaw", robotRotation);
+        logger.log(this, "PosYMeters", positionY);
+        logger.log(this, "PosYInches", this.metersToInches(positionY));
+        logger.log(this, "PosXMeters", positionX);
+        logger.log(this, "PosXInches", this.metersToInches(positionX));
+        logger.log(this, "PosYMeters", positionY);
+        logger.log(this, "PosValid", isGoodData ? 1.0: 0.0);
     }
 
     /**

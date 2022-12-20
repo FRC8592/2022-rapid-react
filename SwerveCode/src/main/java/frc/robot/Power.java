@@ -8,10 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.*;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables;
-import org.littletonrobotics.junction.io.*;
 
 public class Power {
     // Object variables
@@ -25,15 +21,19 @@ public class Power {
     public double current;
     public double power;
     public double energy;
+    
+    FRCLogger logger;
 
     // Shuffleboard for power data
     ShuffleboardTab powerTab;
 
 
-    //
-    // Constructor for power control
-    //
-    public Power() {
+    /**
+    * Constructor for power control
+    */
+    public Power(FRCLogger logger) {
+      
+        this.logger = logger;
         // Create new Rev Power Distribution object
        // revPDH = new PowerDistribution(Constants.PDH_CAN, PowerDistribution.ModuleType.kRev);
         
@@ -43,9 +43,9 @@ public class Power {
     }
 
 
-    //
-    // Periodically post power data to the dashboard
-    //
+    /**
+    * Periodically post power data to the dashboard
+    */
     public void powerPeriodic() {
         // Get parameters from the PDH
         /*
@@ -69,17 +69,17 @@ public class Power {
     }
 
 
-    //
-    // Turn the switchable 12v port on
-    //
+    /**
+    * Turn the switchable 12v port on
+    */
     public void relayOn() {
         // revPDH.setSwitchableChannel(true);
     }
 
 
-    //
-    // Turn the switchable 12v port off
-    //
+    /**
+    * Turn the switchable 12v port off
+    */
     public void relayOff() {
         // revPDH.setSwitchableChannel(false);
     }
