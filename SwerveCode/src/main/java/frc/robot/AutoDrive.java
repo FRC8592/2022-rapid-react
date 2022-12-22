@@ -79,8 +79,8 @@ public class AutoDrive {
         mFollower = new TrajectoryFollower(trajectory);
     }
 
-    public void followTrajectory(double pTime) {
-        ChassisSpeeds speeds = mFollower.follow(drive.getCurrentPos(), pTime);
+    public void followTrajectory(double pTime, boolean targetLock) {
+        ChassisSpeeds speeds = mFollower.follow(drive.getCurrentPos(), pTime, targetLock);
         drive.drive(speeds);
     }
 

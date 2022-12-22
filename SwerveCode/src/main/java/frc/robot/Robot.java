@@ -16,8 +16,13 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+
+import static frc.robot.Trajectories.*;
+
+import java.time.Clock;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -71,6 +76,8 @@ public class Robot extends TimedRobot {
   // teleopInit()
   private boolean AutonomousHasRun = false;
 
+  private double prevTime = 0;
+  private Timer mTimer = new Timer();
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -107,9 +114,15 @@ public class Robot extends TimedRobot {
     climber = new Climber();
     powerMonitor = new Power();
     timer = new Timer();
-    autonomous = new Autonomous(drive);
+    // autonomous = new Autonomous(drive);
     LEDstrips = new LEDstrips();
     
+    autonomous = new Autonomous(drive, 
+      TEST_PATH.toTrajectory(false), 
+      NEXT_PATH.toTrajectory(true), 
+      BALL_PATH.toTrajectory(false),
+      EXTRA_AUTO.toTrajectory(false)
+      );
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -119,6 +132,9 @@ public class Robot extends TimedRobot {
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
 
     SmartDashboard.putData(FIELD);
+
+    mTimer.reset();
+    mTimer.start();
   }
 
   /**
@@ -134,7 +150,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    NetworkTableInstance.getDefault().getTable("Testing").getEntry("Delta Time").setValue(mTimer.get() - prevTime);
   }
 
   /**
@@ -213,6 +229,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     // autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
     autonomous.autonomousPeriodic();
+    prevTime = mTimer.get();
     //SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
   }
 

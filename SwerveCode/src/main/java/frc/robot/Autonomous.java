@@ -5,6 +5,11 @@ import frc.robot.Collector.CollectorState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy.FirstCharBasedValidator;
 
@@ -38,33 +43,55 @@ public class Autonomous{
 
     private AutoDrive autoDrive;
 
-    private Trajectory mFirst, mSecond, mThird, mFourth;
-
     private Drivetrain mDrive;
 
     private boolean mFirstStage = true;
     private boolean mSecondStage = false;
     private boolean mThirdStage = false;
 
+    private TrajectoryQueue trajectoryQueue;
+    private Trajectory currentTrajectory;
+
+    private TrajectoryConfig config = new TrajectoryConfig(50, 20);
+
+    private double prevTime = 0;
+
   public Autonomous(Drivetrain drive) {
     timer = new Timer();
     timer.start();
     autoState = AutoState.START;
-
     trajectoryTimer = new Timer();
-
-    Trajectory firstBallTrajectory = TrajectoryUtils.buildJSONTrajectory("output/B_to_C.wpilib.json");
-    Trajectory otherTrajectory = TrajectoryUtils.buildJSONTrajectory("output/Tarmac_to_B.wpilib.json");
-    Trajectory otherOtherTrajectory = TrajectoryUtils.buildJSONTrajectory("output/C_to_Shoot.wpilib.json");
-    Trajectory lastTrajectory = TrajectoryUtils.buildJSONTrajectory("output/Shoot_to_A.wpilib.json");
-
-    mSecond = firstBallTrajectory;
-    mFirst = otherTrajectory;
-    mThird = otherOtherTrajectory;
-    mFourth = lastTrajectory;
-
-    autoDrive = new AutoDrive(mFirst, drive);
     mDrive = drive;
+  }
+
+  public Autonomous(Drivetrain drive, Trajectory ... trajectories) {
+    trajectoryQueue = new TrajectoryQueue(trajectories);
+    trajectoryTimer = new Timer();
+    mDrive = drive;
+    trajectoryTimer.reset();
+    // trajectoryQueue.configTrajectories(config);
+  }
+
+  public void initialize() {
+    trajectoryTimer.reset();
+    trajectoryTimer.start();
+    autoDrive = new AutoDrive(trajectoryQueue.currentTrajectory(), mDrive);
+  }
+
+  public void autonomousPeriodic() 
+  {
+    if (!trajectoryQueue.isFinished()) {
+      if (trajectoryQueue.isTrajectoryComplete()) {
+        autoDrive = new AutoDrive(trajectoryQueue.nextTrajectory(), mDrive);
+        trajectoryTimer.reset();
+        // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Finished").setBoolean(true);
+      } else {
+        autoDrive.followTrajectory(trajectoryTimer.get(), trajectoryQueue.lockToTarget());
+        // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Finished").setBoolean(false);
+        // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Trajectory Time").setValue(trajectoryTimer.get());
+      }
+    }
+    // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Trajectories Left").setValue(trajectoryQueue.size());
   }
 
   public void resetAuto(){
@@ -86,44 +113,9 @@ public class Autonomous{
     return isDoneShooting;
   }
 
-  public void initialize() {
-    autoDrive = new AutoDrive(mFirst, mDrive);
-    trajectoryTimer.reset();
-    trajectoryTimer.start();
-    mFirstStage = true;
-    mSecondStage = false;
-    mThirdStage = false;
-  }
+  
 
-  public void autonomousPeriodic() 
-  {
-    if (trajectoryTimer.get() >= mFirst.getTotalTimeSeconds() + 0.02 && mFirstStage) {
-      autoDrive = new AutoDrive(mSecond, mDrive);
-      trajectoryTimer.reset();
-      trajectoryTimer.start();
-      mFirstStage = false;
-      mSecondStage = true;
-    }
-
-    if (trajectoryTimer.get() >= mSecond.getTotalTimeSeconds() + 0.02 && mSecondStage) {
-      autoDrive = new AutoDrive(mThird, mDrive);
-      trajectoryTimer.reset();
-      trajectoryTimer.start();
-      mFirstStage = false;
-      mSecondStage = false;
-      mThirdStage = true;
-    }
-
-    if (trajectoryTimer.get() >= mThird.getTotalTimeSeconds() + 0.02 && mThirdStage) {
-      autoDrive = new AutoDrive(mFourth, mDrive);
-      trajectoryTimer.reset();
-      trajectoryTimer.start();
-      mThirdStage = false;
-      mSecondStage = false;
-    }
-
-    autoDrive.followTrajectory(trajectoryTimer.get());
-  }
+  
   
   public void autonomousPeriodic(Vision visionBall, Vision visionRing, CollectorArmMM arm, AutoDrive locality, Collector collector, Shooter shooter, Power powerMonitor, Drivetrain drive) {
     SmartDashboard.putString("Auto State", autoState.toString());

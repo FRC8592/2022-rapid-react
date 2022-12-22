@@ -39,7 +39,7 @@ public class LEDstrips {
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+        // System.out.println("LED METHOD RUNNING");
     }
 
     public void upAndDown(){
@@ -67,7 +67,7 @@ public class LEDstrips {
             }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+        // System.out.println("LED METHOD RUNNING");
         
     }
 }
