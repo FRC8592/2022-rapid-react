@@ -15,7 +15,7 @@ import com.ctre.phoenix.motorcontrol.DemandType;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 
-public class CollectorArmMM {
+public class CollectorArmMM extends Module {
     // Configuration constants
     private static final int    RAISE_PID_SLOT = 0;
     private static final int    LOWER_PID_SLOT = 1;
@@ -71,6 +71,20 @@ public class CollectorArmMM {
 
         // Instantiate the limit switch
         limitSwitch = new DigitalInput(Constants.COLLECTOR_ARM_LIMIT_SWITCH);
+    }
+
+    @Override
+    public void initialize(GameMode mode) {
+        switch (mode) {
+            case AUTONOMOUS:
+                break;
+        }
+    }
+
+
+    @Override
+    public void periodic(GameMode mode) {
+        
     }
 
 
@@ -187,5 +201,5 @@ public class CollectorArmMM {
                     break;
         }
     }
-    
+
 }

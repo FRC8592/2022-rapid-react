@@ -12,7 +12,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 
-public class Shooter{ 
+public class Shooter extends Module { 
 
     // Paired motor controllers to drive the launch wheel
     public WPI_TalonFX flyWheelRight;
@@ -70,6 +70,20 @@ public class Shooter{
 
         //private final double rpm[] = {};
         //private final double distance[] = {};
+
+    }
+
+    @Override
+    public void initialize(GameMode mode) {
+        switch (mode) {
+            case AUTONOMOUS:
+                reset();
+                break;
+        }
+    }
+
+    @Override
+    public void periodic(GameMode mode) {
 
     }
 

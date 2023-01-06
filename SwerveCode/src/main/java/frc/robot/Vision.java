@@ -12,7 +12,7 @@ import java.util.LinkedList;
 
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
-public class Vision {
+public class Vision extends Module {
   
   //constants passed in during initilization 
   private double lockError;
@@ -104,6 +104,20 @@ public class Vision {
     closeTurnPID = new PIDController(closeRotationKP, closeRotationKI, closeRotationKD);
   }
 
+  @Override
+  public void initialize(GameMode mode) {
+    switch (mode) {
+      case AUTONOMOUS:
+        reset();
+        break;
+    }
+  }
+
+
+  @Override
+  public void periodic(GameMode mode) {
+    
+  }
 
   //
   // Reset internal variables to a benign state

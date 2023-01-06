@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public class Collector {
+public class Collector extends Module {
     // Control variables
     private boolean unjamMode      = false;
     private boolean shootMode      = false;
@@ -59,6 +59,16 @@ public class Collector {
         shootTimer.start();
     }
 
+    @Override
+    public void initialize(GameMode mode) {
+        reset();
+    }
+
+
+    @Override
+    public void periodic(GameMode mode) {
+
+    }
 
     //
     // Reset internal variables to a benign starting state
@@ -356,5 +366,4 @@ public class Collector {
     public CollectorState getCollectorState() {
             return collectorState;
     }
-
 }

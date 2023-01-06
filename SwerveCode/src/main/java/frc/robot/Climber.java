@@ -16,7 +16,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 
 
-public class Climber {
+public class Climber extends Module {
     // Configuration constants
     private static final int    RAISE_PID_SLOT = 0;
     private static final int    LOWER_PID_SLOT = 1;
@@ -101,6 +101,20 @@ public class Climber {
         liftMotorRight.configMotionSCurveStrength(Constants.LIFT_MM_SMOOTHING);
         liftMotorRight.configMotionCruiseVelocity(Constants.LIFT_MM_CRUISE_VELO);
         liftMotorRight.configMotionAcceleration(Constants.LIFT_MM_ACCEL);
+    }
+
+    @Override
+    public void initialize(GameMode mode) {
+        switch(mode) {
+            case AUTONOMOUS:
+                reset();
+                break;
+        }
+    }
+
+    @Override
+    public void periodic(GameMode mode) {
+
     }
 
     public void reset() {

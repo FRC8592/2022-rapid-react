@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public class Drivetrain {
+public class Drivetrain extends Module {
     /**
      * Swerve module controllers, intialized in the constructor
      */  
@@ -152,6 +152,25 @@ public class Drivetrain {
         this.odometry = new SwerveDriveOdometry(m_kinematics, new Rotation2d());
     }
 
+    @Override
+    public void initialize(GameMode mode) {
+        switch(mode) {
+            case AUTONOMOUS:
+                zeroGyroscope();
+                resetPose(new Pose2d());
+                break;
+        }
+    }
+
+    @Override
+    public void periodic(GameMode mode) {
+        switch(mode) {
+            case AUTONOMOUS:
+                break;
+            case TELEOP:
+                break;
+        }
+    }
 
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
@@ -162,7 +181,6 @@ public class Drivetrain {
         // m_pigeon.setFusedHeading(0.0);
         m_navx.zeroYaw();   // We're using a NavX
     }
-
 
     public Rotation2d getGyroscopeRotation() {
         // FIXME Remove if you are using a Pigeon
@@ -177,7 +195,6 @@ public class Drivetrain {
     // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
     return Rotation2d.fromDegrees(360.0 - m_navx.getYaw());
     }
-
 
     public double getAutoHeading() {
         return m_navx.getYaw();
@@ -221,7 +238,9 @@ public class Drivetrain {
             Robot.FIELD.setRobotPose(getCurrentPos());
         }
     } 
-    SwerveModuleState getSMState(SwerveModule mod){
+
+    public SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
     }
+   
 }
