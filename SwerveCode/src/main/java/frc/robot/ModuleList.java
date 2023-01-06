@@ -16,4 +16,16 @@ public class ModuleList {
     public boolean removeModule(Module module) {
         return modules.remove(module);
     }
+
+    public void initialize(GameMode mode) {
+        for (Module module : modules) {
+            module.initialize(mode);
+        }
+    }
+
+    public void periodic(GameMode mode) {
+        for (Module module : modules) {
+            module.periodic(mode);
+        }
+    }
 }

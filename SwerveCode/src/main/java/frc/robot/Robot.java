@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.ConfigRun.AutoOptions;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.Timer;
@@ -86,6 +87,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    runningModules = new ModuleList();
+    runningModules.addModule(drive);
+    runningModules.addModule(collector);
+    runningModules.addModule(shooter);
+
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -172,6 +178,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    runningModules.initialize(GameMode.AUTONOMOUS);
+
     autonomous.initialize();
     autonomous.resetAuto();
     autoWaypoint = new AutoWaypoint(locality,drive, collector, shooter, visionRing, visionBall);
@@ -228,6 +236,7 @@ public class Robot extends TimedRobot {
    */
   public void autonomousPeriodic() {
     // autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
+    runningModules.periodic(GameMode.AUTONOMOUS);
     autonomous.autonomousPeriodic();
     prevTime = mTimer.get();
     //SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
@@ -238,6 +247,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
+    runningModules.initialize(GameMode.TELEOP);
+
     LEDstrips.upAndDown();
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
@@ -294,6 +305,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    runningModules.periodic(GameMode.TELEOP);
+
     double rotatePower;
     double translatePower;
     double translateX;
@@ -486,6 +499,7 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
+    runningModules.initialize(GameMode.DISABLED);
 
     // Turn off lights when not operating. Make more friends and fewer enemies this
     // way.
@@ -500,6 +514,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() {
+    runningModules.periodic(GameMode.DISABLED);
+
     LEDstrips.upAndDown();
     // Prevent possible(?) timeouts from occuring by sending commands to the motor
     // continuously
@@ -519,12 +535,14 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
+    runningModules.initialize(GameMode.TEST);
     climber.reset();
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    runningModules.periodic(GameMode.TEST);
     climber.pullArmDown();
   }
 
