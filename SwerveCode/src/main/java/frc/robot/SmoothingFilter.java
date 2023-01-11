@@ -13,7 +13,9 @@ public class SmoothingFilter {
 
     /**
      * Create smoothing object, will slowly and smoothly adjust speed values until target is hit
-     * @param size Size for smoothing array, bigger will be smoothed slower
+     * @param sizeX Size for X velocity smoothing array, bigger will be smoothed slower
+     * @param sizeY Size for Y velocity smoothing array, bigger will be smoothed slower
+     * @param sizeOmegas Size for Omega velocity smoothing array, bigger will be smoothed slower
      */
     public SmoothingFilter(int sizeX, int sizeY, int sizeOmegas) {
         this.sizeX = sizeX;
@@ -34,8 +36,8 @@ public class SmoothingFilter {
         double smoothedOmegas = 0;
         if(!desiredSpeed.equals(null)) {
             smoothedX = smoothX(desiredSpeed.vxMetersPerSecond);
-            smoothedY = smoothX(desiredSpeed.vyMetersPerSecond);
-            smoothedOmegas = smoothX(desiredSpeed.omegaRadiansPerSecond);
+            smoothedY = smoothY(desiredSpeed.vyMetersPerSecond);
+            smoothedOmegas = smoothOmega(desiredSpeed.omegaRadiansPerSecond);
         }
         index++;
         return new ChassisSpeeds(smoothedX, smoothedY, smoothedOmegas);

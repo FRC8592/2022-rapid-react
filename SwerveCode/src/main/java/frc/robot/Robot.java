@@ -104,7 +104,10 @@ public class Robot extends TimedRobot {
         Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
         Constants.BALL_ROTATE_KD);
     locality = new AutoDrive(0, 0, drive);
-    drive2 = new AutoDrive2(2.0, 0, 0, 2.0, 0, 0, 2.0, 0, 0, 4, 0.9, 0.1);
+    drive2 = new AutoDrive2(4, 0.9, 0.1);
+    drive2.setXPIDValues(2.0, 0, 0);
+    drive2.setYPIDValues(2.0, 0, 0);
+    drive2.setRotationPIDValues(2.0, 0, 0);
     shooter = new Shooter();
     collector = new Collector();
     arm = new CollectorArmMM();

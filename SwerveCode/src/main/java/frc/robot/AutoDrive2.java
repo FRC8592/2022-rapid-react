@@ -7,63 +7,63 @@ import java.util.ArrayList;
 import java.lang.Math;
 
 public class AutoDrive2 {
-    double maxVelocity; 
-    double maxTheta;
-    double acceptanceRadius;
+    // Values for clamping and finishing actions
+    private double maxVelocity; 
+    private double maxTheta;
+    private double acceptanceRadius;
+    private boolean nextWaypoint;
     
-    double velocityKpX;
-    double velocityKdX;
-    double velocityKiX; 
+    /*
+    // PID Values
+    private double kVelocityPX;
+    private double kVelocityIX;
+    private double kVelocityDX; 
     
-    double velocityKpY;
-    double velocityKdY;
-    double velocityKiY;
+    private double kVelocityPY;
+    private double kVelocityIY;
+    private double kVelocityDY;
 
-    double velocityKpOmega;
-    double velocityKdOmega;
-    double velocityKiOmega;
+    private double kOmegaP;
+    private double kOmegaI;
+    private double kOmegaD;
+    */
 
-    Pose2d currentGoal;
-    boolean nextWaypoint;
+    // PID Controllers
+    private PIDController pidVelocityControlX;
+    private PIDController pidVelocityControlY;
+    private PIDController pidOmegaControl;
 
-    PIDController pidVelocityControlX;
-    PIDController pidVelocityControlY;
-    PIDController pidOmegaControl;
-    SmoothingFilter sf = new SmoothingFilter(5, 5, 5);
+    // Goal to move towards
+    private Pose2d currentGoal;
+
+    // Smoothing filter to smooth velocity values
+    private SmoothingFilter sf = new SmoothingFilter(5, 5, 5);
 
     private ArrayList<Pose2d> waypoints;
     /**
-     * Construct object and assign values
+     * Construct object and assign values, PID values will default to 0, use pid set methods to change
      * 
-     * @param kPX P for X direction
-     * @param kDX D for X direction
-     * @param kIX I for X direction
-     * @param kPY P for Y direction
-     * @param kDY D for Y direction
-     * @param kIY I for Y direction
-     * @param kPTheta P for rotational direction
-     * @param kDTheta D for rotational direction
-     * @param kITheta I for rotational direction
      * @param maxV Max velocity the robot will move
+     * @param maxOmega Max omegas (in radians) the robot will move
+     * @param acceptanceRadius Largest distance before robot is considered at a waypoint
      */
-    public AutoDrive2(double kPX, double kDX, double kIX, 
-                      double kPY, double kDY, double kIY, 
-                      double kPTheta, double kDTheta, double kITheta, 
-                      double maxV, double maxTheta, double acceptanceRadius){
-        velocityKpX = kPX;
-        velocityKdX = kDX;
-        velocityKiX = kIX;
-        velocityKpY = kPY;
-        velocityKdY = kDY;
-        velocityKiY = kIY;
-        velocityKpOmega = kPTheta;
-        velocityKdOmega = kDTheta;
-        velocityKiOmega = kITheta;  
+    public AutoDrive2(double maxV, double maxTheta, double acceptanceRadius){
+        /*
+        kVelocityPX = 0;
+        kVelocityIX = 0;
+        kVelocityDX = 0;
+        kVelocityPY = 0;
+        kVelocityIY = 0;
+        kVelocityDY = 0;
+        kOmegaP = 0;
+        kOmegaI = 0;
+        kOmegaD = 0;  
+        */
         maxVelocity = maxV;
         this.maxTheta = maxTheta;
-        pidVelocityControlX = new PIDController(kPX, kIX, kDX);
-        pidVelocityControlY = new PIDController(kPY, kIY, kDY);
-        pidOmegaControl = new PIDController(kPTheta, kITheta, kDTheta);
+        pidVelocityControlX = new PIDController(0, 0, 0);
+        pidVelocityControlY = new PIDController(0, 0, 0);
+        pidOmegaControl = new PIDController(0, 0, 0);
         this.acceptanceRadius = acceptanceRadius;
         this.waypoints = new ArrayList<Pose2d>();
     }
@@ -132,4 +132,44 @@ public class AutoDrive2 {
         this.waypoints = new ArrayList<Pose2d>();
         this.nextWaypoint = true;
     }
+
+    /**
+     * Set the PID values in the X direction 
+     * 
+     * @param p 
+     * @param i 
+     * @param d 
+     */
+    public void setXPIDValues(double p, double i, double d){
+        pidVelocityControlX.setP(p);
+        pidVelocityControlX.setI(i);
+        pidVelocityControlX.setD(d);
+    }
+    
+    /**
+     * Set the PID values in the Y direction 
+     * 
+     * @param p 
+     * @param i 
+     * @param d 
+     */
+    public void setYPIDValues(double p, double i, double d){
+        pidVelocityControlY.setP(p);
+        pidVelocityControlY.setI(i);
+        pidVelocityControlY.setD(d);
+    }
+
+    /**
+     * Set the PID values for rotation
+     * 
+     * @param p 
+     * @param i 
+     * @param d 
+     */
+    public void setRotationPIDValues(double p, double i, double d){
+        pidOmegaControl.setP(p);
+        pidOmegaControl.setI(i);
+        pidOmegaControl.setD(d);
+    }
+    
 }
