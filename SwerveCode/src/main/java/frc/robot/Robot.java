@@ -294,7 +294,7 @@ public class Robot extends TimedRobot {
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
     powerMonitor.powerPeriodic();
-    LEDstrips.off();
+    // LEDstrips.off();
     
     //
     // Current control scheme
@@ -369,11 +369,11 @@ public class Robot extends TimedRobot {
       .setNumber(1);
     }
 
-    if (driverController.getXButtonPressed() && driverController.getLeftStickButtonPressed()){
+    if (shooterController.getXButtonPressed()){
       LEDstrips.setPurple();
     }
 
-    if (driverController.getYButtonPressed() && driverController.getLeftStickButtonPressed()){
+    if (shooterController.getYButtonPressed()){
       LEDstrips.setYellow();
     }
     
