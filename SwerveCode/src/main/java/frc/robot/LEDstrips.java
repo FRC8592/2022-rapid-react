@@ -42,6 +42,36 @@ public class LEDstrips {
         System.out.println("LED METHOD RUNNING");
     }
 
+
+    public void setPurple(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            liftBuffer.setRGB(ledIndex, 138,43,226);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+    }
+    
+    public void setYellow(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            liftBuffer.setRGB(ledIndex, 255,255, 0);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+        
+    }
+    
+    public void off(){
+        for (int ledIndex = 0; ledIndex < LED_LENGTH; ledIndex++){
+            liftBuffer.setRGB(ledIndex, 0, 0, 0);
+        }
+        liftNEOPIXELS.setData(liftBuffer);
+        liftNEOPIXELS.start();
+        System.out.println("LED METHOD RUNNING");
+
+    }
+
     public void upAndDown(){
         timer.start();
 

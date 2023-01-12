@@ -222,7 +222,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
-    LEDstrips.upAndDown();
+    LEDstrips.off();
     //
     // If we haven't run autonomous, do most of the autonomous initialization here
     //
@@ -294,6 +294,7 @@ public class Robot extends TimedRobot {
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
     shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
     powerMonitor.powerPeriodic();
+    LEDstrips.off();
     
     //
     // Current control scheme
@@ -366,6 +367,14 @@ public class Robot extends TimedRobot {
       allianceColor = DriverStation.Alliance.Blue;
       NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
       .setNumber(1);
+    }
+
+    if (shooterController.getXButtonPressed()){
+      LEDstrips.setPurple();
+    }
+
+    if (shooterController.getYButtonPressed()){
+      LEDstrips.setYellow();
     }
     
     //
