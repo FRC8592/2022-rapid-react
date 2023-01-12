@@ -369,11 +369,11 @@ public class Robot extends TimedRobot {
       .setNumber(1);
     }
 
-    if (shooterController.getXButtonPressed()){
+    if (driverController.getXButtonPressed() && driverController.getLeftStickButtonPressed()){
       LEDstrips.setPurple();
     }
 
-    if (shooterController.getYButtonPressed()){
+    if (driverController.getYButtonPressed() && driverController.getLeftStickButtonPressed()){
       LEDstrips.setYellow();
     }
     
