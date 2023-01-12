@@ -41,6 +41,8 @@ public class Robot extends TimedRobot {
 
   public static Field2d FIELD = new Field2d();
 
+  // private AutonomousSelector autonSelector;
+
   // Our robot objects
   public XboxController driverController;
   public XboxController shooterController;
@@ -92,6 +94,8 @@ public class Robot extends TimedRobot {
 
     fastMode = true;
     runningModules = new ModuleList();
+
+    // autonSelector = new AutonomousSelector();
 
     driverController = new XboxController(0);
     shooterController = new XboxController(1);
@@ -151,6 +155,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     NetworkTableInstance.getDefault().getTable("Testing").getEntry("Delta Time").setValue(mTimer.get() - prevTime);
+    // autonSelector.getSelectedAutonomous();
   }
 
   /**

@@ -56,12 +56,15 @@ public class Autonomous{
 
     private double prevTime = 0;
 
+    private AutonomousSelector selector;
+
   public Autonomous(Drivetrain drive) {
     timer = new Timer();
     timer.start();
     autoState = AutoState.START;
     trajectoryTimer = new Timer();
     mDrive = drive;
+    selector = new AutonomousSelector();
   }
 
   public Autonomous(Drivetrain drive, Trajectory ... trajectories) {
@@ -69,10 +72,41 @@ public class Autonomous{
     trajectoryTimer = new Timer();
     mDrive = drive;
     trajectoryTimer.reset();
+    selector = new AutonomousSelector();
     // trajectoryQueue.configTrajectories(config);
   }
 
   public void initialize() {
+    switch (selector.getSelectedAutonomous()) {
+      case RED_1:
+        trajectoryQueue = new TrajectoryQueue(Trajectories.BALL_PATH.toTrajectory(false));
+      break;
+      case BLUE_1:
+        trajectoryQueue = new TrajectoryQueue(Trajectories.EXTRA_AUTO.toTrajectory(false));
+      break;
+      case RED_2:
+        trajectoryQueue = new TrajectoryQueue(
+          // Trajectories.NEXT_PATH.toTrajectory(false),
+          Trajectories.TEST_PATH.toTrajectory(true)
+        );
+      break;
+      case RED_3:
+        trajectoryQueue = new TrajectoryQueue(Trajectories.TEST_TURN.toTrajectory(false));
+      break;
+      case PRE_LOAD_GRAB_SECOND_CUBE_SCORE:
+        trajectoryQueue = new TrajectoryQueue(
+          Trajectories.GRID_TO_FIRST_CUBE.toTrajectory(false),
+          Trajectories.FIRST_CUBE_TO_GRID.toTrajectory(false),
+          Trajectories.GRID_TO_CLIMB.toTrajectory(false)
+        );
+      break;
+      case Straight_Path:
+        trajectoryQueue = new TrajectoryQueue(
+          Trajectories.Straight_Path.toTrajectory(false)  
+        );
+      break;
+    }
+
     trajectoryTimer.reset();
     trajectoryTimer.start();
     autoDrive = new AutoDrive(trajectoryQueue.currentTrajectory(), mDrive);
@@ -84,14 +118,10 @@ public class Autonomous{
       if (trajectoryQueue.isTrajectoryComplete()) {
         autoDrive = new AutoDrive(trajectoryQueue.nextTrajectory(), mDrive);
         trajectoryTimer.reset();
-        // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Finished").setBoolean(true);
       } else {
         autoDrive.followTrajectory(trajectoryTimer.get(), trajectoryQueue.lockToTarget());
-        // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Finished").setBoolean(false);
-        // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Trajectory Time").setValue(trajectoryTimer.get());
       }
     }
-    // NetworkTableInstance.getDefault().getTable("Testing").getEntry("Trajectories Left").setValue(trajectoryQueue.size());
   }
 
   public void resetAuto(){

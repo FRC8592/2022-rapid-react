@@ -17,7 +17,12 @@ public enum Trajectories {
     TEST_PATH("output/Test_Path.wpilib.json"),
     NEXT_PATH("output/Next_Path.wpilib.json"),
     BALL_PATH("output/Ball_Path.wpilib.json"),
-    EXTRA_AUTO("output/Example_Path.wpilib.json")
+    EXTRA_AUTO("output/Example_Path.wpilib.json"),
+    GRID_TO_FIRST_CUBE("output/Grid_to_First_Cube.wpilib.json"),
+    FIRST_CUBE_TO_GRID("output/First_Cube_to_Grid.wpilib.json"),
+    GRID_TO_CLIMB("output/Grid_to_Climb.wpilib.json"),
+    TEST_TURN("output/Test_Turn.wpilib.json"),
+    Straight_Path("output/STRAIGHT_PATH.wpilib.json")
     ;
 
     private String path;
