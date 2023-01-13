@@ -211,7 +211,7 @@ public class Drivetrain {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
         SmartDashboard.putNumber("Swerve Module Speed Meters Per Second", states[0].speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve Odometry Stuff", odometry.getPoseMeters().getX());
+        // SmartDashboard.putNumber("Swerve Odometry Stuff", odometry.getPoseMeters().getX());
 
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());

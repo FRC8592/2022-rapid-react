@@ -11,6 +11,8 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.ejml.dense.row.mult.SubmatrixOps_FDRM;
+
 import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy.FirstCharBasedValidator;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -59,56 +61,38 @@ public class Autonomous{
     private AutonomousSelector selector;
 
   public Autonomous(Drivetrain drive) {
-    timer = new Timer();
-    timer.start();
-    autoState = AutoState.START;
-    trajectoryTimer = new Timer();
-    mDrive = drive;
-    selector = new AutonomousSelector();
-  }
-
-  public Autonomous(Drivetrain drive, Trajectory ... trajectories) {
-    trajectoryQueue = new TrajectoryQueue(trajectories);
     trajectoryTimer = new Timer();
     mDrive = drive;
     trajectoryTimer.reset();
     selector = new AutonomousSelector();
-    // trajectoryQueue.configTrajectories(config);
   }
 
   public void initialize() {
     switch (selector.getSelectedAutonomous()) {
-      case RED_1:
-        trajectoryQueue = new TrajectoryQueue(Trajectories.BALL_PATH.toTrajectory(false));
-      break;
-      case BLUE_1:
-        trajectoryQueue = new TrajectoryQueue(Trajectories.EXTRA_AUTO.toTrajectory(false));
-      break;
-      case RED_2:
+      case CrossLinePark:
         trajectoryQueue = new TrajectoryQueue(
-          // Trajectories.NEXT_PATH.toTrajectory(false),
-          Trajectories.TEST_PATH.toTrajectory(true)
+          Trajectories.CROSS_LINE_PARK_1.toTrajectory(),
+          Trajectories.CROSS_LINE_PARK_2.toTrajectory()
         );
-      break;
-      case RED_3:
-        trajectoryQueue = new TrajectoryQueue(Trajectories.TEST_TURN.toTrajectory(false));
-      break;
-      case PRE_LOAD_GRAB_SECOND_CUBE_SCORE:
+        break;
+      case Low2Cube:
         trajectoryQueue = new TrajectoryQueue(
-          Trajectories.GRID_TO_FIRST_CUBE.toTrajectory(false),
-          Trajectories.FIRST_CUBE_TO_GRID.toTrajectory(false),
-          Trajectories.GRID_TO_CLIMB.toTrajectory(false)
+          Trajectories.LOW_2_CUBE_1.toTrajectory(),
+          Trajectories.LOW_2_CUBE_2.toTrajectory()
         );
-      break;
-      case Straight_Path:
-        trajectoryQueue = new TrajectoryQueue(
-          Trajectories.Straight_Path.toTrajectory(false)  
-        );
-      break;
+        break;
+      case Low2CubePark:
+      trajectoryQueue = new TrajectoryQueue(
+        Trajectories.LOW_2_CUBE_PARK1.toTrajectory(),
+        Trajectories.LOW_2_CUBE_PARK2.toTrajectory(),
+        Trajectories.LOW_2_CUBE_PARK3.toTrajectory()
+      );
+        break;
     }
 
     trajectoryTimer.reset();
     trajectoryTimer.start();
+
     autoDrive = new AutoDrive(trajectoryQueue.currentTrajectory(), mDrive);
   }
 
@@ -119,7 +103,7 @@ public class Autonomous{
         autoDrive = new AutoDrive(trajectoryQueue.nextTrajectory(), mDrive);
         trajectoryTimer.reset();
       } else {
-        autoDrive.followTrajectory(trajectoryTimer.get(), trajectoryQueue.lockToTarget());
+        autoDrive.followTrajectory(trajectoryTimer.get(), false);
       }
     }
   }

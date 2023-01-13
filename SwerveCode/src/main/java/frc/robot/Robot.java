@@ -121,12 +121,7 @@ public class Robot extends TimedRobot {
     // autonomous = new Autonomous(drive);
     LEDstrips = new LEDstrips();
     
-    autonomous = new Autonomous(drive, 
-      TEST_PATH.toTrajectory(false), 
-      NEXT_PATH.toTrajectory(true), 
-      BALL_PATH.toTrajectory(false),
-      EXTRA_AUTO.toTrajectory(false)
-      );
+    autonomous = new Autonomous(drive);
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();

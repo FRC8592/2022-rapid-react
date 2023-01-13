@@ -11,20 +11,15 @@ public class AutonomousSelector {
     private SendableChooser<Enum> chooser = new SendableChooser<>();
 
     public enum Autons {
-        RED_1,
-        RED_2,
-        RED_3,
-        BLUE_1,
-        BLUE_2,
-        BLUE_3,
-        PRE_LOAD_GRAB_SECOND_CUBE_SCORE,
-        Straight_Path
+        CrossLinePark,
+        Low2Cube,
+        Low2CubePark
     }
 
     private Enum[] mAutons = Autons.values();
 
     public AutonomousSelector() {
-        chooser.setDefaultOption("DEFAULT - RED_1", mAutons[0]);
+        chooser.setDefaultOption("DEFAULT - CrossLinePark", mAutons[0]);
         for (Enum auto : mAutons) {
             chooser.addOption(auto.name(), auto);
         }

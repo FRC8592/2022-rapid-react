@@ -14,12 +14,12 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TrajectoryQueue {
-    private Queue<Trajectory> mQueue;
+    private Queue<SwerveTrajectory> mQueue;
     private Timer mTimer;
 
-    public TrajectoryQueue(Trajectory ... trajectories) {
-        mQueue = new LinkedList<Trajectory>();
-        for (Trajectory trajectory : trajectories) {
+    public TrajectoryQueue(SwerveTrajectory ... trajectories) {
+        mQueue = new LinkedList<SwerveTrajectory>();
+        for (SwerveTrajectory trajectory : trajectories) {
           mQueue.add(trajectory);
         }
 
@@ -27,17 +27,17 @@ public class TrajectoryQueue {
     }
 
     public void configTrajectories(TrajectoryConfig config) {
-        for (Trajectory traj : mQueue) {
-            Pose2d start = traj.getInitialPose();
-            Pose2d end = traj.sample(traj.getTotalTimeSeconds() - 0.02).poseMeters;
+        for (SwerveTrajectory traj : mQueue) {
+            Pose2d start = traj.trajectory().getInitialPose();
+            Pose2d end = traj.trajectory().sample(traj.trajectory().getTotalTimeSeconds() - 0.02).poseMeters;
             List<Translation2d> interior = new ArrayList<>();
-            List<State> states = traj.getStates();
+            List<State> states = traj.trajectory().getStates();
             states.remove(0);
             states.remove(states.size() - 1);
             for (State state : states) {
                 interior.add(state.poseMeters.getTranslation());
             }
-            traj = TrajectoryGenerator.generateTrajectory(start, interior, end, config);
+            traj = new SwerveTrajectory(TrajectoryGenerator.generateTrajectory(start, interior, end, config));
         }
     }
 
@@ -46,15 +46,15 @@ public class TrajectoryQueue {
     }
 
     public boolean isTrajectoryComplete() {
-        return mTimer.get() >= currentTrajectory().getTotalTimeSeconds();
+        return mTimer.get() >= currentTrajectory().trajectory().getTotalTimeSeconds();
     }
 
-    public Trajectory currentTrajectory() {
+    public SwerveTrajectory currentTrajectory() {
         mTimer.start();
         return mQueue.peek();
     }
 
-    public Trajectory nextTrajectory() {
+    public SwerveTrajectory nextTrajectory() {
         mTimer.reset();
         mTimer.start();
         mQueue.poll();
@@ -63,9 +63,5 @@ public class TrajectoryQueue {
 
     public int size() {
         return mQueue.size();
-    }
-
-    public boolean lockToTarget() {
-        return Trajectories.parseEnum(mQueue.peek()).lockToTarget();
     }
 }

@@ -63,7 +63,7 @@ public class AutoDrive {
         this.drive = drive;
     }
 
-    public AutoDrive(Trajectory trajectory, Drivetrain pDrive) {
+    public AutoDrive(SwerveTrajectory trajectory, Drivetrain pDrive) {
         //robotRotation = trajectory.sample(0).poseMeters.getRotation().getRadians();
         isGoodData = false;
         drive = pDrive;
