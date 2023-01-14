@@ -235,63 +235,13 @@ public class Drivetrain {
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         this.odometry.update(getGyroscopeRotation(), getSMState( m_frontLeftModule), getSMState(m_frontRightModule),getSMState(m_backLeftModule),
         getSMState(m_backRightModule));
-        logger.log(this, "SwerveModuleStatesRadians", getSwerveModuleStatesRadians());
-        logger.log(this, "SwerveModuleStatesDegrees", getSwerveModuleStatesDegrees());
-        logger.log(this, "RobotRotationDegrees", 360-getYaw());
-        logger.log(this, "RobotRotationRadians", Math.toRadians(360-getYaw()));
-        logger.log(this, "RobotPoseRadians", getRobotPose2DRadians());
-        logger.log(this, "RobotPoseDegrees", getRobotPose2DDegrees());
+        SwerveModule[] modules = {m_frontLeftModule, m_frontRightModule, m_backLeftModule, m_backRightModule};
+        logger.log(this, "SwerveModules", modules);
+        logger.log(this, "RobotRotation", getGyroscopeRotation());
+        logger.log(this, "RobotPose", getCurrentPos());
 
     } 
     SwerveModuleState getSMState(SwerveModule mod){
         return new SwerveModuleState(mod.getDriveVelocity(), new Rotation2d(mod.getSteerAngle()));
-    }
-
-    /**
-     * Get the swerve module states with rotation specifed in radians
-     * @return An array of doubles corresponding to swerve module states
-     */
-    public double[] getSwerveModuleStatesRadians(){
-      double[] result = {
-        m_frontLeftModule.getSteerAngle(), m_frontLeftModule.getDriveVelocity(), 
-        m_frontRightModule.getSteerAngle(), m_frontRightModule.getDriveVelocity(), 
-        m_backLeftModule.getSteerAngle(), m_backLeftModule.getDriveVelocity(), 
-        m_backRightModule.getSteerAngle(), m_backRightModule.getDriveVelocity()
-      };
-      return result;
-    }
-
-    /**
-     * Get the swerve module states with rotation specifed in degrees
-     * @return An array of doubles corresponding to the swerve module states
-     */
-    public double[] getSwerveModuleStatesDegrees(){
-      double[] result = {
-        Math.toDegrees(m_frontLeftModule.getSteerAngle()), m_frontLeftModule.getDriveVelocity(), 
-        Math.toDegrees(m_frontRightModule.getSteerAngle()), m_frontRightModule.getDriveVelocity(), 
-        Math.toDegrees(m_backLeftModule.getSteerAngle()), m_backLeftModule.getDriveVelocity(), 
-        Math.toDegrees(m_backRightModule.getSteerAngle()), m_backRightModule.getDriveVelocity()
-      };
-      return result;
-    }
-
-    /**
-     * Get the robot pose in meters and degrees
-     * @return An array of doubles corresponding to the robot pose
-     */
-    public double[] getRobotPose2DDegrees(){
-      Pose2d pos = odometry.getPoseMeters();
-      double[] result = {pos.getX(), pos.getY(), pos.getRotation().getDegrees()};
-      return result;
-    }
-
-    /**
-     * Get the robot pose in meters and radians
-     * @return An array of doubles corresponding to the robot pose
-     */
-    public double[] getRobotPose2DRadians(){
-      Pose2d pos = odometry.getPoseMeters();
-      double[] result = {pos.getX(), pos.getY(), pos.getRotation().getRadians()};
-      return result;
     }
 }

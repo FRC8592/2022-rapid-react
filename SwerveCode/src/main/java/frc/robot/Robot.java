@@ -225,7 +225,6 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     autonomous.autonomousPeriodic(visionBall, visionRing, arm, locality, collector, shooter, powerMonitor, drive);
     SmartDashboard.putNumber("Gyroscope Value", drive.getAutoHeading());
-    //TODO: Add logging here if the logging in Drivetrain.drive() doesn't work.
   }
 
   /**
