@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
+  public Intake intake;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -104,6 +105,7 @@ public class Robot extends TimedRobot {
     powerMonitor = new Power();
     timer = new Timer();
     autonomous = new Autonomous();
+    intake = new Intake();
 
     // Turn all of our blindingly bright lights off until neeeded.
     powerMonitor.relayOff();
@@ -278,7 +280,7 @@ public class Robot extends TimedRobot {
     locality.updatePosition(drive.getYaw(), visionRing);
     arm.update();
     collector.ballControl(arm, shooter, visionRing, powerMonitor);
-    shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
+    // shooter.computeFlywheelRPM(visionRing.distanceToTarget(), fastMode, flywheelLock);
     powerMonitor.powerPeriodic();
 
     //
@@ -309,9 +311,9 @@ public class Robot extends TimedRobot {
     // Unjam the intake by reversing the staging and collector motors. This function
     // has top priority
     //
-  if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
-    collector.unjam(arm);
-  else {
+  // if (shooterController.getLeftStickButton() && shooterController.getRightStickButton())
+  //   collector.unjam(arm);
+  // else {
     //
     // Enter collect mode
     //
@@ -323,18 +325,19 @@ public class Robot extends TimedRobot {
     else if ((driverController.getYButtonPressed()) || shooterController.getYButtonPressed())
       collector.disableCollectMode(arm, powerMonitor);
 
-    //
-    // Shoot ball with aiming automation disabled
-    //
-    if (shooterController.getRightBumper() && shooterController.getBackButton())
-      collector.forceShoot();
+      arm.logCollectorArm();
+    // //
+    // // Shoot ball with aiming automation disabled
+    // //
+    // if (shooterController.getRightBumper() && shooterController.getBackButton())
+    //   collector.forceShoot();
 
-    //
-    // Shoot ball
-    //
-    else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
-      collector.shoot();
-  }
+  //   //
+  //   // Shoot ball
+  //   //
+  //   else if ((driverController.getRightTriggerAxis() > 0.1) || (shooterController.getRightTriggerAxis() > 0.1))
+  //     collector.shoot();
+  // }
     
 
     //
@@ -345,23 +348,23 @@ public class Robot extends TimedRobot {
       drive.zeroGyroscope();
     }
 
-    //
-    // Force Blue alliance
-    //
-    if (shooterController.getXButtonPressed() && shooterController.getBackButton()) {
-      allianceColor = DriverStation.Alliance.Blue;
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(1);
-    }
+    // //
+    // // Force Blue alliance
+    // //
+    // if (shooterController.getXButtonPressed() && shooterController.getBackButton()) {
+    //   allianceColor = DriverStation.Alliance.Blue;
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+    //       .setNumber(1);
+    // }
 
-    //
-    // Force Red alliance
-    //
-    if (shooterController.getBButtonPressed() && shooterController.getBackButton()) {
-      allianceColor = DriverStation.Alliance.Red;
-      NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
-          .setNumber(0);
-    }
+    // //
+    // // Force Red alliance
+    // //
+    // if (shooterController.getBButtonPressed() && shooterController.getBackButton()) {
+    //   allianceColor = DriverStation.Alliance.Red;
+    //   NetworkTableInstance.getDefault().getTable("limelight-ball").getEntry("pipeline")
+    //       .setNumber(0);
+    // }
 
     //
     // Toggle fast/slow mode
@@ -371,18 +374,18 @@ public class Robot extends TimedRobot {
     if (driverController.getRightBumperPressed())
       fastMode = ! fastMode;
 
-    //
-    // Toggle flywheel lock mode
-    //
-    if (shooterController.getRightBumperPressed())
-      flywheelLock = ! flywheelLock;
+    // //
+    // // Toggle flywheel lock mode
+    // //
+    // if (shooterController.getRightBumperPressed())
+    //   flywheelLock = ! flywheelLock;
 
-    //
-    // Control for climber
-    // Moves arm up and down, checks that arm doesn't overextend
-    //
-    //climber.liftPeriodic(joystickDeadband(shooterController.getRightY()));
-    climber.moveLift(joystickDeadband(shooterController.getRightY()));
+    // //
+    // // Control for climber
+    // // Moves arm up and down, checks that arm doesn't overextend
+    // //
+    // //climber.liftPeriodic(joystickDeadband(shooterController.getRightY()));
+    // climber.moveLift(joystickDeadband(shooterController.getRightY()));
 
     //
     // Select driver power settings based on fast/slow mode
@@ -418,33 +421,44 @@ public class Robot extends TimedRobot {
                                                                                                                         // Y
     translateY = (driverController.getLeftX() * Drivetrain.MAX_VELOCITY_METERS_PER_SECOND) * translatePower;
 
-    //
-    // Activate ring targetting. Robot translate controls are functional while
-    // targetting
-    //
-    if ((driverController.getLeftTriggerAxis() > 0.1) || (shooterController.getLeftTriggerAxis() > 0.1)) {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
-          visionRing.turnRobot(-1), drive.getGyroscopeRotation()));
-    }
+    // //
+    // // Activate ring targetting. Robot translate controls are functional while
+    // // targetting
+    // //
+    // if ((driverController.getLeftTriggerAxis() > 0.1) || (shooterController.getLeftTriggerAxis() > 0.1)) {
+    //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
+    //       visionRing.turnRobot(-1), drive.getGyroscopeRotation()));
+    // }
 
-    //
-    // Activate ball (cargo) targetting and fetching. Robot motion controls are
-    // unavailable while targetting balls
-    //
-    else if (driverController.getLeftBumper() || shooterController.getLeftBumper()) {
-      drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED), 0,
-          visionBall.turnRobot(-1), Rotation2d.fromDegrees(0)));
-    }
+    // //
+    // // Activate ball (cargo) targetting and fetching. Robot motion controls are
+    // // unavailable while targetting balls
+    // //
+    // else if (driverController.getLeftBumper() || shooterController.getLeftBumper()) {
+    //   drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(visionBall.moveTowardsTarget(ConfigRun.TARGET_LOCKED_SPEED, ConfigRun.TARGET_CLOSE_SPEED), 0,
+    //       visionBall.turnRobot(-1), Rotation2d.fromDegrees(0)));
+    // }
 
     //
     // Normal teleop drive
     //
-    else {
+    // else {
       drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(-joystickDeadband(translateX), -joystickDeadband(translateY),
           -joystickDeadband(rotate), drive.getGyroscopeRotation())); // Inverted due to Robot Directions being the
                                                                      // opposite of controller directions
-    }
+    // }
     drive.getCurrentPos();
+
+    if(shooterController.getLeftTriggerAxis() > 0.05) {
+      intake.intakePiece(shooterController.getLeftTriggerAxis());
+    } 
+    else if(shooterController.getRightTriggerAxis() > 0.05) {
+      intake.outtakePiece(shooterController.getRightTriggerAxis());
+    } 
+    else {
+      intake.stop();
+    }
+
   }
 
   /** This function is called once when the robot is disabled. */
@@ -474,6 +488,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("limitSwitch", arm.outputLimitSwitch());
 
     drive.getCurrentPos();
+
+    arm.logCollectorArm();
     // Pulls arm down until motor current peaks, current peaks = arm is parked
     
 

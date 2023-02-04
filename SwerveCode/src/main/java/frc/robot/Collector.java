@@ -134,7 +134,7 @@ public class Collector {
      */
     public boolean enableCollectMode(CollectorArmMM arm, Power powerMonitor) {
         if (collectorState != CollectorState.TWO_BALLS) {
-            collectorMode = true;
+            // collectorMode = true;
             arm.lowerArm();
             //powerMonitor.relayOn(); // Turn on light
         } else
@@ -264,7 +264,8 @@ public class Collector {
 
                     if (collectorMode) {
                         driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
-                        driveStagingWheels(Constants.COLLECT_STAGING_POWER);
+                        // uncomment when done testing
+                        // driveStagingWheels(Constants.COLLECT_STAGING_POWER);
                     }
                     else {
                         driveProcessingWheels(0);

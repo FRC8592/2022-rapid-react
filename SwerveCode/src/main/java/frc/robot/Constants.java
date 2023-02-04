@@ -137,15 +137,15 @@ public final class Constants {
     public static double SHOOT_STAGING_POWER      =  1.0;
 
     // Collector arm
-    public static int BALL_SET_POINT = -27500;   // -3025 is bottom
-    public static double ARM_UP_P = 0.12;
+    public static int BALL_SET_POINT = -18600;   // -3025 is bottom
+    public static double ARM_UP_P = 0.3;
     public static double ARM_UP_I = 0.0001;
-    public static double ARM_UP_D = 15.0;
+    public static double ARM_UP_D = 20.0;
     public static double ARM_UP_F = 0.0;
 
-    public static double ARM_DOWN_P = 0.12;
-    public static double ARM_DOWN_I = 0.0;
-    public static double ARM_DOWN_D = 10.0;
+    public static double ARM_DOWN_P = 0.3;
+    public static double ARM_DOWN_I = 0.001;
+    public static double ARM_DOWN_D = 20.0;
     public static double ARM_DOWN_F = 0.0;
 
     public static int    ARM_MM_SMOOTHING   = 1;

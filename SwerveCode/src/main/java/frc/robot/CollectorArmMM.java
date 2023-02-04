@@ -114,6 +114,11 @@ public class CollectorArmMM {
         armState = armStates.ARM_START;
     }
 
+    public void logCollectorArm() {
+        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        SmartDashboard.putString("Arm State", armState.toString());
+        SmartDashboard.putBoolean("limit switch value", !limitSwitch.get());
+    }
 
     /**
      * Control the arm state machine
@@ -121,9 +126,10 @@ public class CollectorArmMM {
     public void update(){
         double feedForward = calcFeedForward(armMotor.getSelectedSensorPosition());
     
-        SmartDashboard.putBoolean("limit switch value", limitSwitch.get());
-        SmartDashboard.putString("Arm State", armState.toString());
-        SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
+        //log true if switch is activated, false if not
+        // SmartDashboard.putBoolean("limit switch value", !limitSwitch.get());
+        // SmartDashboard.putString("Arm State", armState.toString());
+        // SmartDashboard.putNumber("Collector arm position", armMotor.getSelectedSensorPosition());
         
         switch (armState) {
 
@@ -141,6 +147,7 @@ public class CollectorArmMM {
                 }
                 
             case ARM_UP:
+                armMotor.setNeutralMode(NeutralMode.Brake);
                 // Disable power if the arm is pressed against the switch
                 if(limitSwitch.get() == false){
                     armMotor.set(ControlMode.PercentOutput, 0.0);
@@ -148,12 +155,13 @@ public class CollectorArmMM {
                 }
 
                 // If the arm moves away from the switch, go back to ARM_RAISING to recover
-                else{
-                    armState = armStates.ARM_RAISING;
-                }
+                // else{
+                //      armState = armStates.ARM_RAISING;
+                // }
                 break;
 
             case ARM_RAISING:
+                armMotor.setNeutralMode(NeutralMode.Coast);
                 // Stop when the limit switch is hit
                 if (limitSwitch.get() == false){
                     armState = armStates.ARM_UP;
@@ -166,6 +174,7 @@ public class CollectorArmMM {
                 break;
 
             case ARM_DESCENDING:
+                armMotor.setNeutralMode(NeutralMode.Coast);
                 // Apply power to lower arm.  Power is proportional to angle.
                 armMotor.selectProfileSlot(LOWER_PID_SLOT, 0);
                 armMotor.set(ControlMode.MotionMagic, Constants.BALL_SET_POINT, DemandType.ArbitraryFeedForward, feedForward);
@@ -175,6 +184,11 @@ public class CollectorArmMM {
                 break;
 
             case ARM_COLLECTING:
+                armMotor.setNeutralMode(NeutralMode.Brake);
+                armMotor.set(ControlMode.PercentOutput, 0.0);
+
+                if (armMotor.getSelectedSensorPosition() > Constants.BALL_SET_POINT)
+                    armState = armStates.ARM_DESCENDING;
                 //
                 // If we are below BALL_SET_POINT.  If we are above, apply a bit more power
                 // to push down on the ball we are probably collecting
