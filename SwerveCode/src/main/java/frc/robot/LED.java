@@ -43,7 +43,7 @@ public class LED {
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+       
     }
 
 
@@ -72,7 +72,7 @@ public class LED {
             }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+       
         
     }
 
@@ -82,7 +82,7 @@ public class LED {
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+       
     }
     
     public void setFullYellow(){
@@ -91,7 +91,7 @@ public class LED {
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+       
         
     }
     
@@ -107,7 +107,7 @@ public class LED {
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+       
     }
     
     public void setHalfYellow(){
@@ -121,6 +121,6 @@ public class LED {
         }
         liftNEOPIXELS.setData(liftBuffer);
         liftNEOPIXELS.start();
-        System.out.println("LED METHOD RUNNING");
+       
     }
 }
