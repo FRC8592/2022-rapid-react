@@ -55,6 +55,7 @@ public class Robot extends TimedRobot {
   public Power powerMonitor;
   public Timer timer;
   public AutoWaypoint autoWaypoint;
+  public LED ledStrips;
 
   // Toggle for fast/slow mode
   private boolean fastMode;
@@ -97,7 +98,8 @@ public class Robot extends TimedRobot {
         Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
         Constants.BALL_ROTATE_KD);
     locality = new AutoDrive(0, 0, drive);
-    
+    ledStrips = new LED();
+
     //put flywheel in slow mode (for demoing)
     shooter = new Shooter(Constants.SLOW_FLYWHEEL_LIMIT);
     collector = new Collector();
@@ -132,7 +134,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    ledStrips.upAndDown();
   }
 
   /**
