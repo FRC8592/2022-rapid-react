@@ -97,7 +97,9 @@ public class Robot extends TimedRobot {
         Constants.BALL_ROTATE_KP, Constants.BALL_ROTATE_KI,
         Constants.BALL_ROTATE_KD);
     locality = new AutoDrive(0, 0, drive);
-    shooter = new Shooter();
+    
+    //put flywheel in slow mode (for demoing)
+    shooter = new Shooter(Constants.SLOW_FLYWHEEL_LIMIT);
     collector = new Collector();
     arm = new CollectorArmMM();
     climber = new Climber();
@@ -111,6 +113,9 @@ public class Robot extends TimedRobot {
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
     NetworkTableInstance.getDefault().getTable("limelight-ring").getEntry("ledMode")
         .setNumber(Constants.LIMELIGHT_LIGHT.FORCE_OFF.ordinal());
+
+
+    
 
   }
 

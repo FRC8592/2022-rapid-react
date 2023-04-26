@@ -27,10 +27,12 @@ public class Shooter{
     private final int FAST = 1;
     private final int SLOW = 0;
 
+    private double FLY_WHEEL_CONFIGURED_MAX_RPM = Constants.SLOW_FLYWHEEL_LIMIT;
+
     //
     // Constructor to instantiate the Collector object and the flywheel motors
     //
-    public Shooter() {
+    public Shooter(double flyWheelConfiguredLimit) {
         // Instantiate the launch motors and configure them to factory default settings
         flyWheelLeft  = new WPI_TalonFX(Constants.newFlywheelLeft);
         flyWheelRight = new WPI_TalonFX(Constants.newFlywheelRight);
@@ -67,6 +69,8 @@ public class Shooter{
         flyWheelRight.configClosedloopRamp(1);
 
         flyWheelRight.set(ControlMode.Velocity, 0);
+
+        FLY_WHEEL_CONFIGURED_MAX_RPM = flyWheelConfiguredLimit;
 
         //private final double rpm[] = {};
         //private final double distance[] = {};
@@ -126,7 +130,7 @@ public class Shooter{
             flyWheelRight.selectProfileSlot(SLOW, 0);
         }
 
-        flyWheelRight.set(ControlMode.Velocity, rpmToFalcon(Math.min(flywheelRpmSet, Constants.FLYWHEEL_LIMIT)));
+        flyWheelRight.set(ControlMode.Velocity, rpmToFalcon(Math.min(flywheelRpmSet, FLY_WHEEL_CONFIGURED_MAX_RPM)));
         flywheelRpmActual = falconToRpm(flyWheelRight.getSelectedSensorVelocity());
         flywheelRpmError  = Math.abs(flywheelRpmSet - flywheelRpmActual);
 
@@ -142,6 +146,15 @@ public class Shooter{
 
     }
 
+
+    public void setFlyWheelSlow(){
+        FLY_WHEEL_CONFIGURED_MAX_RPM = Constants.FLYWHEEL_LIMIT;
+    }
+    
+    public void setFlyWheelFast(){
+        FLY_WHEEL_CONFIGURED_MAX_RPM = Constants.SLOW_FLYWHEEL_LIMIT;
+
+    }
 
     /**
      * 
