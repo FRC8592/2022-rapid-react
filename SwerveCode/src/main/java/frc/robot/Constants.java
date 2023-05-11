@@ -38,22 +38,22 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR    = 6;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR    = 5;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER  = 4;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(148.8);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(43.066);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR     = 3;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR     = 2;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER   = 13;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(79.5);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(258.662);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR     = 9;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR     = 8;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER   = 7;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(134.7);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(237.832);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR     = 12;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR     = 11;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER   = 10;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(233.6);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(53.174);
 
     //
     // CAN IDs for the ball collector and launching system
@@ -212,7 +212,7 @@ public final class Constants {
         3400,  // 19 ft
         3400}; // 20 ft
 
-    public static double FLYWHEEL_LIMIT = 3280;
+    public static double FLYWHEEL_LIMIT = 1200;
 
     // Limelight LED modes
     public static enum LIMELIGHT_LIGHT {PIPELINE_MODE, FORCE_OFF, FORCE_BLINK, FORCE_ON}

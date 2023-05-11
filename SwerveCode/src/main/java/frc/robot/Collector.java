@@ -236,11 +236,11 @@ public class Collector {
         // Shoot mode overrides normal loading operations
         //
         else if (shootMode) {
-            if ((shooter.isFlywheelReady()) && vision.isTargetLocked() && shootTimer.get() >= ConfigRun.TIME_BEFORE_SHOT) {
+            if (true) {
                 driveProcessingWheels(Constants.COLLECT_PROCESSING_POWER);
                 driveStagingWheels(Constants.SHOOT_STAGING_POWER);
                 shootTimer.reset();
-            }
+            } 
 
             // Stop shoot mode once the top ball is gone
             if (!topBall)
